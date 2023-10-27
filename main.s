@@ -1,11 +1,12 @@
  :StartProg
-    jsr Alphabet        
+    jsr PrintAlphabet        
     jsr CopySetToRam                        
     jsr MakeCharacters                        
     jsr ScreenFiller                       
     jsr CopyRamToChars                    
     rts  
- 
+
+#define _getKey		$EB78    
  
  ; ** PRINT CHAR AT X,Y           
  ; ** Y IS STORED AT #$71         
@@ -26,7 +27,7 @@
 
 
 // Fill screen in turn with characters from a-z and repeat
-// Exit it key pressed
+// Exit if key pressed
 :ScreenFiller
     lda #2 ; Start AT COLUMN 2  
     sta $70                          
@@ -34,98 +35,110 @@
     sta $71                          
     lda #97; Start with lower case a
     sta $72                        
-    :PrintNextChar jsr PlotChar                      
+.(
+PrintNextChar 
+    jsr PlotChar                      
     ldx $70                          
     cpx #39 ;CHECK FOR LAST COLUMN   
-    beq NextLine                        
-    inx ;MOVE TO NEXT COLUMN         
-    stx $70                          
+    beq NextLine                                               
+    inc $70 ;move to next column
     jmp PrintNextChar                           
     :NextLine 
     lda #2 ;MOVE BACK TO COL 2 
     sta $70                          
     ldx $71                          
     cpx #26 ;CHECK IF AT LAST LINE   
-    beq NextChar                        
-    inx ;MOVE TO NEXT LINE           
-    stx $71                          
+    beq NextChar                                               
+    inc $71 ;move to next line
     jmp PrintNextChar                           
     :NextChar 
-    ldx $72; SET NEXT CHAR     
-    cpx #122                         
-    beq ScreenFiller
-    inx                     
-    stx $72                          
-    lda #2; MOVE BACK TO staRT OF SCREEN                                   
+    ldx $72; load current char     
+    cpx #122; check if we've reached last char                        
+    beq ScreenFiller                       
+    inc $72 ; move to next char
+    lda #2; Set next character at start of screen                                  
     sta $70                          
     lda #0                           
     sta $71                          
-    ;TEST FOR KEY PRESS              
-    ;jsr $EB78                        
-    ;ldx $0208                        
+    ;TEST FOR KEY PRESS  (temporarily disabled)            
+    ;jsr _getKey                        
+    ;;ldx $0208                        
     ;cpx #56 ;No key pressed                                         
-    ;bne ExitScreenFill                          
-    jmp PrintNextChar                           
-    :ExitScreenFill rts       
+    ;bne ExitScreenFill    
+
+    jmp PrintNextChar 
+    ;rts
+.)                          
+    :ExitScreenFill 
+    rts       
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; SHOW LOWER CASE CHARS ON staTUS LINE (just for info)
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  
 :Alphabet .byt "abcdefghijklmnopqrstuvwxyz"                                 
-    :PrintAlphabet ldy #0                      
-    :L2 cpy #26                       
+:PrintAlphabet 
+    ldy #0                      
+.(
+Loop
+    cpy #26                       
     beq ExitAlphabet                        
     lda Alphabet,Y                      
     sta $BB82,Y                     
     iny                             
-    jmp L2                          
-    :ExitAlphabet RTS      
+    jmp Loop
+.)
+    :ExitAlphabet 
+    rts      
 
                   
 ;>>>>> staRT OF COPY MEM ROUTINE
 ;$78 IS LOW BYTE OF SOURCE ADDR 
 ;$79 IS HI BYTE OF SOURCE ADDR  
-;$80 IS LO BYTE OF BYTES TO COPY
-;$81 IS HI BYTE OF BYTES TO COPY
-;82 IS LO BYTE OF DEST ADDRESS  
-;83 IS HI BYTE OF DEST ADDRESS  
+;$7A IS LO BYTE OF BYTES TO COPY
+;$7B IS HI BYTE OF BYTES TO COPY
+;$7C IS LO BYTE OF DEST ADDRESS  
+;$7D IS HI BYTE OF DEST ADDRESS  
 :CopyMemory 
     ldx $78          
-    stx BSRC+1                      
+    stx LoadSourceByte+1                      
     ldx $79                         
-    stx BSRC+2                      
-    ldx $82                         
-    stx BDEST+1                     
-    ldx $83                         
-    stx BDEST+2                     
+    stx LoadSourceByte+2                      
+    ldx $7C                      
+    stx SaveDestByte+1                     
+    ldx $7D                         
+    stx SaveDestByte+2                     
     :CopyLoop 
-    lda $8A; LO BYTE OF COUNT 1300 ;DECREMENT BYTES REMAINING      
+    lda $7A; LO BYTE OF COUNT 
     bne DecLo                        
-    dec $8                         
+    dec $7B                         
     :DecLo 
-    dec $80                    
+    dec $7A                    
     ; CHECK IF ALL BYTES COPIED     
-    lda $80                         
-   bne BSRC                        
-   lda $81                         
-   bne BSRC                        
-   rts ; ZERO BYTES REMAIN          
-   ; COPY SRC TO DEST              
-   :BSRC 
-   lda $FFFF                  
-   :BDEST 
-   sta $FFFF                 
-   ; <<<<<<<<<                     
-   inc BSRC+1                      
-   bne DPLUS                       
-   inc BSRC+2                      
-   ; INCREMENT DEST POINTER        
-   :DPLUS 
-   inc BDEST+1               
-   bne IDONE                       
-   inc BDEST+2                     
-   :IDONE 
-   jmp CopyLoop 
+    lda $7A                         
+    bne LoadSourceByte                        
+    lda $7B                        
+    bne LoadSourceByte                        
+    rts ; ZERO BYTES REMAIN          
+    
+    ; Copy source byte to destination              
+:LoadSourceByte 
+    lda $FFFF                  
+:SaveDestByte 
+    sta $FFFF                 
+    
+    ; Increment Source pointer
+    inc LoadSourceByte+1                      
+    bne IncDestAddress                       
+    inc LoadSourceByte+2                      
+    
+    ; Increment Destination pointer      
+:IncDestAddress 
+    inc SaveDestByte+1               
+    bne IncrementDone                       
+    inc SaveDestByte+2                     
+
+:IncrementDone 
+    jmp CopyLoop 
 
 
                     
@@ -136,13 +149,13 @@
     lda #$B7 ;hi byte of src                       
     sta $79                         
     lda #$D1                        
-    sta $80                         
+    sta $7A                        
     lda #$00                        
-    sta $81                         
-    lda #>_SpriteBackup_; lo byte of dest                         
-    sta $82                         
-    lda #<_SpriteBackup_ ; hi byte of dest
-    sta $83                         
+    sta $7B                        
+    lda #<_SpriteBackup_; lo byte of dest                         
+    sta $7C                       
+    lda #>_SpriteBackup_ ; hi byte of dest
+    sta $7D                         
     jsr CopyMemory                       
     rts                             
 
@@ -154,30 +167,30 @@
     lda #>_SpriteBackup_; hi byte of source
     sta $79                         
     lda #$D1                        
-    sta $80                     
+    sta $7A                    
     lda #$00                        
-    sta $81                         
+    sta $7B                         
     lda #$08  ;lo bye of dest                      
-    sta $82                         
+    sta $7C                         
     lda #$B7  ;hi byte of dest                      
-    sta $83                         
+    sta $7D                         
     jsr CopyMemory                       
     rts                             
 
 
 ; Create characters a-z from data                  
 :MakeCharacters 
-    lda #<_SpriteData_ ; finally the correct incantation (:_SpriteData_)                   
+    lda #<_SpriteData_                   
     sta $78                         
     lda #>_SpriteData_
     sta $79                         
     lda #$D1 ; BYTE COUNT           
-    sta $80                         
+    sta $7A                         
     lda #$00                        
-    sta $81                         
+    sta $7B                         
     lda #$08                        
-    sta $82                         
+    sta $7C                      
     lda #$B7                        
-    sta $83                         
+    sta $7D                         
     jsr CopyMemory                                              
     rts                                               
