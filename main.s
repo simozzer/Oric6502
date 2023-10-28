@@ -5,7 +5,7 @@
     jsr ScreenFiller                       
     jsr CopyRamToChars     
 
-    jsr MazeDisplay               
+    ;jsr MazeDisplay // Working on this at the moment
     rts  
 
 #define _getKey		$EB78    
