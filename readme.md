@@ -32,5 +32,8 @@ TODO (in approximate order):
 - think of a playable game using the code.
 - implement it.
 - test
+- compress maze data (possibly using an external compression routine lz77)
+- decompress maze data (lz77?)
+- apply decompression to sprites, maze and sound.
 
 
