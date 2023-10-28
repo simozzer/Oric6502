@@ -16,4 +16,21 @@ The main idea is to keep the 'maze' stored as a block/array of bytes, with each 
 I'm not intending on pixel level scrolling. Ideally the scrolling will be performed on a character level - but the maze will be 'magnified'. So 1 bit set in the maze data will be a 2 * 2 character in the maze,  and this will be scrolled 1 char at a time.
 
 
-I'll repeat - this is very much a work in progress
+I'll repeat - this is very much a work in progress.
+
+TODO (in approximate order):
+- fix routines in maze_procs for finding which bits represent a wall.
+- create routine to plot maze on screen for top-left coordinates.
+- test.
+- adjust routines to handle split screen (both vertical and horizontal).
+- implement fast keyboard handling to scroll each view of the maze (and disable ROM interupt for these).
+- test again.
+- create 'tracker' for creating music.
+- play music in background.
+- implement 'player', with keyboard handling and detection with maze walls.
+- implement 'chararacter designer', to allow creation of custom chars.
+- think of a playable game using the code.
+- implement it.
+- test
+
+
