@@ -3,7 +3,9 @@
     jsr CopySetToRam                        
     jsr MakeCharacters                        
     jsr ScreenFiller                       
-    jsr CopyRamToChars                    
+    jsr CopyRamToChars     
+
+    jsr MazeDisplay               
     rts  
 
 #define _getKey		$EB78    
@@ -61,13 +63,12 @@ PrintNextChar
     lda #0                           
     sta $71                          
     ;TEST FOR KEY PRESS  (temporarily disabled)            
-    ;jsr _getKey                        
-    ;;ldx $0208                        
-    ;cpx #56 ;No key pressed                                         
-    ;bne ExitScreenFill    
+    jsr _getKey                        
+    ldx $0208                        
+    cpx #56 ;No key pressed                                         
+    bne ExitScreenFill    
 
     jmp PrintNextChar 
-    ;rts
 .)                          
     :ExitScreenFill 
     rts       
@@ -193,4 +194,4 @@ Loop
     lda #$B7                        
     sta $7D                         
     jsr CopyMemory                                              
-    rts                                               
+    rts          
