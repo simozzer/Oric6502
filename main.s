@@ -1,5 +1,6 @@
  :StartProg
-    jsr PrintAlphabet        
+    ;jsr PrintAlphabet 
+    jsr PrintInstructions       
     jsr CopySetToRam                        
     jsr MakeCharacters                        
     jsr ScreenFiller                       
@@ -91,6 +92,22 @@ Loop
     :ExitAlphabet 
     rts      
 
+
+:Instructions .byt "TEST: PRESS ANY KEY TO EXIT"                                 
+:PrintInstructions
+    ldy #0                      
+.(
+Loop
+    cpy #27                   
+    beq ExitInstructions                        
+    lda Instructions,Y                      
+    sta $BB82,Y                     
+    iny                             
+    jmp Loop
+.)
+    :ExitInstructions 
+    rts       
+
                   
 ;>>>>> staRT OF COPY MEM ROUTINE
 ;$78 IS LOW BYTE OF SOURCE ADDR 
@@ -181,9 +198,9 @@ Loop
 
 ; Create characters a-z from data                  
 :MakeCharacters 
-    lda #<_SpriteData_                   
+    lda #<_AltSpriteData                   
     sta $78                         
-    lda #>_SpriteData_
+    lda #>_AltSpriteData
     sta $79                         
     lda #$D1 ; BYTE COUNT           
     sta $7A                         
