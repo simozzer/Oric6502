@@ -26,7 +26,8 @@ _copy_mem_count_hi .byt 1
 _maze_left .byt 1
 _maze_top .byt 1
 _maze_byte .byt 1
-
+_bits_to_process .byt 1
+_maze_bitmask .byt 1
 
 
 _zp_end_
@@ -36,10 +37,11 @@ _zp_end_
     ;jsr PrintAlphabet 
     jsr PrintInstructions       
     ;jsr CopySetToRam                        
-    jsr MakeCharacters                        
+    jsr MakeCharacters_0                      
     jsr screen_filler                       
     ;jsr CopyRamToChars     
 
+    jsr MakeCharacters_1
     jsr MazeDisplay // Working on this at the moment
     rts  
 
@@ -66,21 +68,32 @@ screen_filler
     sta _plot_ch_y                          
     lda #97; Start with lower case a
     sta _plot_ascii 
-print_next_char 
-    jsr plotchar                      
-    ldx _plot_ch_x                          
-    cpx #39 ;CHECK FOR LAST COLUMN   
+
+print_line ; get the line address once a line
+    ldy _plot_ch_y        ; Load row value                     
+    lda LineLookupLo,Y    ; lookup low byte for row value and store
+    sta _line_start_lo                
+    lda LineLookupHi,Y     ; lookup hi byte for row value and store
+    sta _line_start_hi
+
+    ldy #2
+    lda _plot_ascii
+print_next_char
+    sta (_line_start),Y                     
+                           
+    cpy #39 ;CHECK FOR LAST COLUMN   
     beq next_line                                               
-    inc _plot_ch_x ;move to next column
+    iny
     jmp print_next_char                           
+    
     next_line
-    lda #2 ;MOVE BACK TO COL 2 
-    sta _plot_ch_x                          
+    ldy #2 
     ldx _plot_ch_y                          
     cpx #26 ;CHECK IF AT LAST LINE   
     beq next_char                                              
     inc _plot_ch_y ;move to next line
-    jmp print_next_char                           
+    jmp print_line                           
+    
     next_char
     ldx _plot_ascii; load current char     
     cpx #122; check if we've reached last char                        
@@ -91,12 +104,12 @@ print_next_char
     lda #0                           
     sta _plot_ch_y                          
     ;TEST FOR KEY PRESS  (temporarily disabled)            
-    jsr _getKey                        
+    ;jsr _getKey                        
     ldx $0208                        
     cpx #56 ;No key pressed                                         
     bne ExitScreenFill    
 
-    jmp print_next_char                          
+    jmp print_line                          
     :ExitScreenFill 
     rts       
 
@@ -217,7 +230,23 @@ Loop
 
 
 ; Create characters a-z from data                  
-:MakeCharacters 
+:MakeCharacters_0
+    lda #<_SpriteData_                   
+    sta _copy_mem_src_lo                         
+    lda #>_SpriteData_
+    sta _copy_mem_src_hi                         
+    lda #$D1 ; BYTE COUNT           
+    sta _copy_mem_count_lo                         
+    lda #$00                        
+    sta _copy_mem_count_hi                        
+    lda #$08                        
+    sta _copy_mem_dest_lo                      
+    lda #$B7                        
+    sta _copy_mem_dest_hi                        
+    jsr CopyMemory                                              
+    rts          
+
+:MakeCharacters_1
     lda #<_AltSpriteData                   
     sta _copy_mem_src_lo                         
     lda #>_AltSpriteData
@@ -231,4 +260,4 @@ Loop
     lda #$B7                        
     sta _copy_mem_dest_hi                        
     jsr CopyMemory                                              
-    rts          
+    rts    
