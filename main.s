@@ -23,6 +23,10 @@ _copy_mem_count
 _copy_mem_count_lo .byt 1
 _copy_mem_count_hi .byt 1
 
+_maze_left .byt 1
+_maze_top .byt 1
+_maze_byte .byt 1
+
 
 
 _zp_end_
@@ -31,12 +35,12 @@ _zp_end_
  StartProg
     ;jsr PrintAlphabet 
     jsr PrintInstructions       
-    jsr CopySetToRam                        
+    ;jsr CopySetToRam                        
     jsr MakeCharacters                        
     jsr screen_filler                       
-    jsr CopyRamToChars     
+    ;jsr CopyRamToChars     
 
-    ;jsr MazeDisplay // Working on this at the moment
+    jsr MazeDisplay // Working on this at the moment
     rts  
 
     
