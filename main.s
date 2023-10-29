@@ -1,76 +1,98 @@
- :StartProg
+    
+#define _getKey		$EB78
+
+    .zero
+     *= $50
+
+_zp_start_
+
+_plot_ch_x .byt 1
+_plot_ch_y .byt 1
+_plot_ascii .byt 1
+_line_start
+_line_start_lo .byt 1
+_line_start_hi .byt 1
+
+_copy_mem_src
+_copy_mem_src_lo .byt 1
+_copy_mem_src_hi .byt 1
+_copy_mem_dest
+_copy_mem_dest_lo .byt 1
+_copy_mem_dest_hi .byt 1
+_copy_mem_count
+_copy_mem_count_lo .byt 1
+_copy_mem_count_hi .byt 1
+
+
+
+_zp_end_
+.text
+
+ StartProg
     ;jsr PrintAlphabet 
     jsr PrintInstructions       
     jsr CopySetToRam                        
     jsr MakeCharacters                        
-    jsr ScreenFiller                       
+    jsr screen_filler                       
     jsr CopyRamToChars     
 
     ;jsr MazeDisplay // Working on this at the moment
     rts  
 
-#define _getKey		$EB78    
+    
  
  ; ** PRINT CHAR AT X,Y           
- ; ** Y IS STORED AT #$71         
- ; ** X IS STORED AT #$70         
- ; ** ASCII CODE STORED AT #$72   
- ; ** LO BYTE OF LINE staRT AT $73
- ; ** HI BYTE OF LINE staRT AT $74
- :PlotChar
-    ldy $71                 ; Load row value                     
+ :plotchar ldy _plot_ch_y                 ; Load row value                     
     lda LineLookupLo,Y    ; lookup low byte for row value and store
-    sta $73                
+    sta _line_start_lo                
     lda LineLookupHi,Y     ; lookup hi byte for row value and store
-    sta $74
-    lda $72                 ; load ascii code
-    ldy $70                 ; load column value                   
-    sta ($73),Y             ; plot character on screen
+    sta _line_start_hi
+    lda _plot_ascii                 ; load ascii code
+    ldy _plot_ch_x                 ; load column value                   
+    sta (_line_start),Y             ; plot character on screen
     rts
 
 
 // Fill screen in turn with characters from a-z and repeat
 // Exit if key pressed
-:ScreenFiller
+screen_filler
     lda #2 ; Start AT COLUMN 2  
-    sta $70                          
+    sta _plot_ch_x                          
     lda #0; Start ON ROW 0           
-    sta $71                          
+    sta _plot_ch_y                          
     lda #97; Start with lower case a
-    sta $72                        
-.(
-PrintNextChar 
-    jsr PlotChar                      
-    ldx $70                          
+    sta _plot_ascii 
+print_next_char 
+    jsr plotchar                      
+    ldx _plot_ch_x                          
     cpx #39 ;CHECK FOR LAST COLUMN   
-    beq NextLine                                               
-    inc $70 ;move to next column
-    jmp PrintNextChar                           
-    :NextLine 
+    beq next_line                                               
+    inc _plot_ch_x ;move to next column
+    jmp print_next_char                           
+    next_line
     lda #2 ;MOVE BACK TO COL 2 
-    sta $70                          
-    ldx $71                          
+    sta _plot_ch_x                          
+    ldx _plot_ch_y                          
     cpx #26 ;CHECK IF AT LAST LINE   
-    beq NextChar                                               
-    inc $71 ;move to next line
-    jmp PrintNextChar                           
-    :NextChar 
-    ldx $72; load current char     
+    beq next_char                                              
+    inc _plot_ch_y ;move to next line
+    jmp print_next_char                           
+    next_char
+    ldx _plot_ascii; load current char     
     cpx #122; check if we've reached last char                        
-    beq ScreenFiller                       
-    inc $72 ; move to next char
+    beq screen_filler                       
+    inc _plot_ascii ; move to next char
     lda #2; Set next character at start of screen                                  
-    sta $70                          
+    sta _plot_ch_x                          
     lda #0                           
-    sta $71                          
+    sta _plot_ch_y                          
     ;TEST FOR KEY PRESS  (temporarily disabled)            
     jsr _getKey                        
     ldx $0208                        
     cpx #56 ;No key pressed                                         
     bne ExitScreenFill    
 
-    jmp PrintNextChar 
-.)                          
+    jmp print_next_char                          
     :ExitScreenFill 
     rts       
 
@@ -110,31 +132,25 @@ Loop
 
                   
 ;>>>>> staRT OF COPY MEM ROUTINE
-;$78 IS LOW BYTE OF SOURCE ADDR 
-;$79 IS HI BYTE OF SOURCE ADDR  
-;$7A IS LO BYTE OF BYTES TO COPY
-;$7B IS HI BYTE OF BYTES TO COPY
-;$7C IS LO BYTE OF DEST ADDRESS  
-;$7D IS HI BYTE OF DEST ADDRESS  
 :CopyMemory 
-    ldx $78          
+    ldx _copy_mem_src_lo          
     stx LoadSourceByte+1                      
-    ldx $79                         
+    ldx _copy_mem_src_hi                        
     stx LoadSourceByte+2                      
-    ldx $7C                      
+    ldx _copy_mem_dest_lo                      
     stx SaveDestByte+1                     
-    ldx $7D                         
+    ldx _copy_mem_dest_hi           
     stx SaveDestByte+2                     
     :CopyLoop 
-    lda $7A; LO BYTE OF COUNT 
+    lda _copy_mem_count_lo; LO BYTE OF COUNT 
     bne DecLo                        
-    dec $7B                         
+    dec _copy_mem_count_hi                         
     :DecLo 
-    dec $7A                    
+    dec _copy_mem_count_lo                   
     ; CHECK IF ALL BYTES COPIED     
-    lda $7A                         
+    lda _copy_mem_count_lo                         
     bne LoadSourceByte                        
-    lda $7B                        
+    lda _copy_mem_count_hi                        
     bne LoadSourceByte                        
     rts ; ZERO BYTES REMAIN          
     
@@ -163,17 +179,17 @@ Loop
 ; Copy initial data for characters a-z into a buffer so we can restore them later
 :CopySetToRam 
     lda #$08 ;lo byte of src                  
-    sta $78                         
+    sta _copy_mem_src_lo                         
     lda #$B7 ;hi byte of src                       
-    sta $79                         
+    sta _copy_mem_src_hi                         
     lda #$D1                        
-    sta $7A                        
+    sta _copy_mem_count_lo                        
     lda #$00                        
-    sta $7B                        
+    sta _copy_mem_count_hi                        
     lda #<_SpriteBackup_; lo byte of dest                         
-    sta $7C                       
+    sta _copy_mem_dest_lo                       
     lda #>_SpriteBackup_ ; hi byte of dest
-    sta $7D                         
+    sta _copy_mem_dest_hi                        
     jsr CopyMemory                       
     rts                             
 
@@ -181,17 +197,17 @@ Loop
 ; Copy initial character defintions back to restore a-z   
 :CopyRamToChars 
     lda #<_SpriteBackup_; lo byte of source                 
-    sta $78                         
+    sta _copy_mem_src_lo                        
     lda #>_SpriteBackup_; hi byte of source
-    sta $79                         
+    sta _copy_mem_src_hi                         
     lda #$D1                        
-    sta $7A                    
+    sta _copy_mem_count_lo                    
     lda #$00                        
-    sta $7B                         
+    sta _copy_mem_count_hi                        
     lda #$08  ;lo bye of dest                      
-    sta $7C                         
+    sta _copy_mem_dest_lo                         
     lda #$B7  ;hi byte of dest                      
-    sta $7D                         
+    sta _copy_mem_dest_hi                         
     jsr CopyMemory                       
     rts                             
 
@@ -199,16 +215,16 @@ Loop
 ; Create characters a-z from data                  
 :MakeCharacters 
     lda #<_AltSpriteData                   
-    sta $78                         
+    sta _copy_mem_src_lo                         
     lda #>_AltSpriteData
-    sta $79                         
+    sta _copy_mem_src_hi                         
     lda #$D1 ; BYTE COUNT           
-    sta $7A                         
+    sta _copy_mem_count_lo                         
     lda #$00                        
-    sta $7B                         
+    sta _copy_mem_count_hi                        
     lda #$08                        
-    sta $7C                      
+    sta _copy_mem_dest_lo                      
     lda #$B7                        
-    sta $7D                         
+    sta _copy_mem_dest_hi                        
     jsr CopyMemory                                              
     rts          
