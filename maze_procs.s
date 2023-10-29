@@ -3,7 +3,7 @@
 ; Whilst this is currently working on a very basic level
 ; several changes must be made.
 ; - when processing a maze byte  process all BITs to prevent re-looking up the 
-; maze data (i.e unroll the loop and increment screen x pos for all BITS processed)
+; maze data
 
 :MazeDisplay
 // set the position of the maze
@@ -66,10 +66,8 @@
     lda #32
 
 plot_on_screen
-    sta _plot_ascii
     ldx _plot_ch_x;
     :plot_pos sta $ffff,X
-    //jsr plotchar; will be faster in-line
 
     ldx _plot_ch_x;
     cpx #39;

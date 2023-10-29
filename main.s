@@ -29,9 +29,27 @@ _maze_byte .byt 1
 _bits_to_process .byt 1
 _maze_bitmask .byt 1
 
-
 _zp_end_
+
 .text
+
+#DEFINE PAPER_BLACK 16
+#DEFINE PAPER_RED 17
+#DEFINE PAPER_GREEN 18
+#DEFINE PAPER_YELLOW 19
+#DEFINE PAPER_BLUE 20
+#DEFINE PAPER_MAGENTA 21
+#DEFINE PAPER_CYAN 22
+#DEFINE PAPER_WHITE 23
+
+#DEFINE INK_BLACK 0
+#DEFINE INK_RED 1
+#DEFINE INK_GREEN 2
+#DEFINE INK_YELLOW 3
+#DEFINE INK_BLUE 4
+#DEFINE INK_MAGENTA 5
+#DEFINE INK_CYAN 6
+#DEFINE INK_WHITE 7
 
  StartProg
     ;jsr PrintAlphabet 
@@ -42,6 +60,8 @@ _zp_end_
     ;jsr CopyRamToChars     
 
     jsr MakeCharacters_1
+    jsr SetPaper
+    jsr SetInk
     jsr MazeDisplay // Working on this at the moment
     rts  
 
@@ -261,3 +281,41 @@ Loop
     sta _copy_mem_dest_hi                        
     jsr CopyMemory                                              
     rts    
+
+:SetPaper
+    ldy #26
+    ldx #PAPER_YELLOW
+.(
+    loop
+    lda LineLookupLo,Y
+    sta writePaper+1
+    lda LineLookupHi,y
+    sta writePaper+2
+    :writePaper stx $ffff
+    dey
+    bpl loop
+
+    rts
+.)
+
+:SetInk
+    ldy #26
+    ldx #01
+.(
+    loop
+    lda LineLookupLo,Y
+    sta writeInk+1
+    lda LineLookupHi,y
+    sta writeInk+2
+    lda #INK_RED
+    :writeInk sta $ffff,x
+    dey
+    bpl loop
+
+    rts
+.)
+    
+    
+
+
+
