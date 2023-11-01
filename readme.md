@@ -19,8 +19,10 @@ I'm not intending on pixel level scrolling. Ideally the scrolling will be perfor
 I'll repeat - this is very much a work in progress.
 
 TODO (in approximate order):
-- fix routines in maze_procs for finding which bits represent a wall.
-- create routine to plot maze on screen for top-left coordinates.
+- ~~fix routines in maze_procs for finding which bits represent a wall.~~
+- Optimise the above routine
+- ~~create routine to plot maze on screen for top-left coordinates.~~
+- Use the above routine to parse maze bitmasks into an off screen buffer and create a new routine to render from that (should be faster)
 - test.
 - adjust routines to handle split screen (both vertical and horizontal).
 - implement fast keyboard handling to scroll each view of the maze (and disable ROM interupt for these).
