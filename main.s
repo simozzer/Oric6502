@@ -2,7 +2,6 @@
 #define _getKey		$EB78
 
     .zero
-     *= $50
 
 _zp_start_
 
@@ -28,6 +27,8 @@ _maze_top .byt 1
 _maze_byte .byt 1
 _bits_to_process .byt 1
 _maze_bitmask .byt 1
+_maze_x_tmp .byt 1
+_maze_y_tmp .byt 1
 
 _zp_end_
 
