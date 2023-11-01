@@ -52,6 +52,13 @@ _zp_end_
 #DEFINE INK_CYAN 6
 #DEFINE INK_WHITE 7
 
+#DEFINE KEY_UP_ARROW 156
+#DEFINE KEY_DOWN_ARROW 180
+#DEFINE KEY_LEFT_ARROW 172
+#DEFINE KEY_RIGHT_ARROW 188
+#DEFINE KEY_SPACE 132
+#DEFINE KEY_Q 177
+
  StartProg
     ;jsr PrintAlphabet 
     jsr PrintInstructions       
@@ -63,6 +70,9 @@ _zp_end_
     jsr MakeCharacters_1
     jsr SetPaper
     jsr SetInk
+    lda #$00
+    sta maze_start_left+1
+    sta maze_start_top+1
     jsr MazeDisplay // Working on this at the moment
     rts  
 

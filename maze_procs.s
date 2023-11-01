@@ -7,8 +7,10 @@
 
 :MazeDisplay
 // set the position of the maze
-    lda #$00 ; left
+maze_start_left
+    lda #00; left
     sta _maze_left
+maze_start_top
     lda #00 ; top
     sta _maze_top
 
@@ -84,7 +86,7 @@ plot_on_screen
     ldx #02
     stx _plot_ch_x;
     inc _plot_ch_y;
-    ldx #00
+    ldx maze_start_left+1
     ldy _plot_ch_y                 ; Load row value                     
     lda LineLookupLo,Y    ; lookup low byte for row value and store
     sta plot_pos+1                
@@ -102,6 +104,31 @@ plot_on_screen
     jmp getMazeBit
 
 screen_done
+
+    ldx $0208                         
+    cpx #KEY_UP_ARROW                                         
+    bne nextKey1
+    k0
+    dec maze_start_top+1
+
+    nextKey1
+    cpx #KEY_DOWN_ARROW
+    bne nextKey2
+    inc maze_start_top+1
+
+    nextKey2
+    cpx #KEY_RIGHT_ARROW
+    bne nextKey3
+    inc maze_start_left+1
+
+    nextKey3
+    cpx #KEY_LEFT_ARROW
+    bne nextKey4
+    k2
+    dec maze_start_left+1
+
+    nextKey4
+    jmp MazeDisplay;
     rts
     
     
