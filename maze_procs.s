@@ -24,26 +24,26 @@ maze_start_top
 
     ldy _plot_ch_y                 ; Load row value                     
     lda LineLookupLo,Y    ; lookup low byte for row value and store
-    sta plot_pos+1                
+    sta _line_start_lo               
     lda LineLookupHi,Y     ; lookup hi byte for row value and store
-    sta plot_pos+2
+    sta _line_start_hi
 
     ldy _maze_top
     lda mazeRowLookupTableLo,Y    ; lookup low byte for row value and store
-    sta getTheByte+1               
+    sta _maze_line_start_lo               
     lda mazeRowLookupTableHi,Y     ; lookup hi byte for row value and store
-    sta getTheByte+2
+    sta _maze_line_start_hi
 
 :getMazeBit
 
 
 ; find the correct byte from that row by dividing col b y 8
-    ldx _maze_left
-    lda divideBy8Table,x
-    tax
+    ldy _maze_left
+    lda divideBy8Table,y
+    tay
 
-:getTheByte
-    lda $ffff,X
+; get the byte for the maze data
+    lda (_maze_line_start),y
     sta _maze_byte ; should now contain the maze byte for the column and row
 
 ; Get the remainder of the above divison to find the
@@ -68,12 +68,13 @@ maze_start_top
     lda #32
 
 plot_on_screen
-    ldx _plot_ch_x;
-    :plot_pos sta $ffff,X
+    ldy _plot_ch_x;
+    sta (_line_start),y
 
-    ldx _plot_ch_x;
-    cpx #39;
+    cpy #39;
     beq nexty;
+
+
     inc _plot_ch_x;
     inc _maze_left;
     jmp getMazeBit
@@ -89,18 +90,18 @@ plot_on_screen
     ldx maze_start_left+1
     ldy _plot_ch_y                 ; Load row value                     
     lda LineLookupLo,Y    ; lookup low byte for row value and store
-    sta plot_pos+1                
+    sta _line_start_lo                
     lda LineLookupHi,Y     ; lookup hi byte for row value and store
-    sta plot_pos+2
+    sta _line_start_hi
 
     stx _maze_left;
     inc _maze_top;
 
     ldy _maze_top
     lda mazeRowLookupTableLo,Y    ; lookup low byte for row value and store
-    sta getTheByte+1               
+    sta _maze_line_start_lo              
     lda mazeRowLookupTableHi,Y     ; lookup hi byte for row value and store
-    sta getTheByte+2
+    sta _maze_line_start_hi
     jmp getMazeBit
 
 screen_done
