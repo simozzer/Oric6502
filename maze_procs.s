@@ -22,22 +22,21 @@ maze_start_top
 
 // get the screen address for the 1st line
 
-    ldy _plot_ch_y                 ; Load row value                     
-    lda LineLookupLo,Y    ; lookup low byte for row value and store
+    ldy _plot_ch_y                  ; Load row value                     
+    lda LineLookupLo,Y              ; lookup low byte for row value and store
     sta _line_start_lo               
-    lda LineLookupHi,Y     ; lookup hi byte for row value and store
+    lda LineLookupHi,Y              ; lookup hi byte for row value and store
     sta _line_start_hi
 
     ldy _maze_top
-    lda mazeRowLookupTableLo,Y    ; lookup low byte for row value and store
+    lda mazeRowLookupTableLo,Y      ; lookup low byte for row value and store
     sta _maze_line_start_lo               
-    lda mazeRowLookupTableHi,Y     ; lookup hi byte for row value and store
+    lda mazeRowLookupTableHi,Y      ; lookup hi byte for row value and store
     sta _maze_line_start_hi
 
-:getMazeBit
+:getMazeByte
 
-
-; find the correct byte from that row by dividing col b y 8
+; find the correct byte from row by dividing col b y 8
     ldy _maze_left
     lda divideBy8Table,y
     tay
@@ -77,7 +76,7 @@ plot_on_screen
 
     inc _plot_ch_x;
     inc _maze_left;
-    jmp getMazeBit
+    jmp getMazeByte;
 
     nexty ldx _plot_ch_y;
     cpx #26
@@ -102,7 +101,7 @@ plot_on_screen
     sta _maze_line_start_lo              
     lda mazeRowLookupTableHi,Y     ; lookup hi byte for row value and store
     sta _maze_line_start_hi
-    jmp getMazeBit
+    jmp getMazeByte
 
 screen_done
 
