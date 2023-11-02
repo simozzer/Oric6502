@@ -5,6 +5,8 @@
 ; - when processing a maze byte  process all BITs to prevent re-looking up the 
 ; maze data
 
+; This will eventually render off screen to another area, and that area will be rendered on screen
+; (which should be much faster)
 :MazeDisplay
 // set the position of the maze
 maze_start_left
@@ -15,7 +17,7 @@ maze_start_top
     sta _maze_top
 
 // set the position for plotting on the screen
-    lda #02
+    lda #TEXT_FIRST_COLUMN
     sta _plot_ch_x
     lda #00
     sta _plot_ch_y
@@ -36,28 +38,29 @@ maze_start_top
 
 :getMazeByte
 
-; find the correct byte from row by dividing col b y 8
+    ; find the correct byte from row by dividing col b y 8
     ldy _maze_left
     lda divideBy8Table,y
     tay
 
-; get the byte for the maze data
+    ; get the byte for the maze data
     lda (_maze_line_start),y
     sta _maze_byte ; should now contain the maze byte for the column and row
 
-; Get the remainder of the above divison to find the
-; correct BIT for the maze wall  ; Faster with lookup
+    ; Get the remainder of the above divison to find the
+    ; correct BIT for the maze wall
     ldx _maze_left
     lda mod8Table,X
 
     tax
     lda reverseBitmaskTable,X
 
-    ; Logical AND with accumulator AND $80 should tell us if bit is set (i.e there is a wall)
+    ; Logical AND with accumulator should tell us if bit is set (i.e there is a wall)
     and _maze_byte
 
     ;; if accumulator is non zero there is a wall
     beq nowall
+    
     ; Plot a section of wall
     lda #97
     
@@ -83,7 +86,7 @@ plot_on_screen
     beq screen_done;
     
     ;move to next line
-    ldx #02
+    ldx #TEXT_FIRST_COLUMN
     stx _plot_ch_x;
     inc _plot_ch_y;
     ldx maze_start_left+1
@@ -105,10 +108,11 @@ plot_on_screen
 
 screen_done
 
-    ldx $0208                         
+    ;check key presses
+    ldx KEY_PRESS_LOOKUP                     
     cpx #KEY_UP_ARROW                                         
     bne nextKey1
-    k0
+    lda maze_start_top
     dec maze_start_top+1
 
     nextKey1

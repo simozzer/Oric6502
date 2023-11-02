@@ -62,6 +62,9 @@ _zp_end_
 #DEFINE KEY_SPACE 132
 #DEFINE KEY_Q 177
 
+#DEFINE KEY_PRESS_LOOKUP $0208
+#DEFINE TEXT_FIRST_COLUMN 2
+
  StartProg
     ;jsr PrintAlphabet 
     jsr PrintInstructions       
@@ -137,9 +140,8 @@ print_next_char
     sta _plot_ch_x                          
     lda #0                           
     sta _plot_ch_y                          
-    ;TEST FOR KEY PRESS  (temporarily disabled)            
-    ;jsr _getKey                        
-    ldx $0208                        
+    ;TEST FOR KEY PRESS  (temporarily disabled)                                   
+    ldx KEY_PRESS_LOOKUP
     cpx #56 ;No key pressed                                         
     bne ExitScreenFill    
 
