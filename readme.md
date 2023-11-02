@@ -40,6 +40,6 @@ TODO (in approximate order):
 
 
 The aim of this bit of coding is to provide a scrolling area which is much bigger than the Oric screen
-![The aim](scrollArea.png)
+![The aim](ScrollArea.png)
 
 
