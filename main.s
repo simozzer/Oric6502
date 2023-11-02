@@ -64,6 +64,8 @@ _zp_end_
 
 #DEFINE KEY_PRESS_LOOKUP $0208
 #DEFINE TEXT_FIRST_COLUMN 2
+#DEFINE TEXT_LAST_COLUMN 39
+#DEFINE TEXT_LAST_LINE 26
 
  StartProg
     ;jsr PrintAlphabet 
@@ -76,6 +78,7 @@ _zp_end_
     jsr MakeCharacters_1
     jsr SetPaper
     jsr SetInk
+    jsr PrintScrollInstructions
     lda #$00
     sta maze_start_left+1
     sta maze_start_top+1
@@ -99,7 +102,7 @@ _zp_end_
 // Fill screen in turn with characters from a-z and repeat
 // Exit if key pressed
 screen_filler
-    lda #2 ; Start AT COLUMN 2  
+    lda #TEXT_FIRST_COLUMN
     sta _plot_ch_x                          
     lda #0; Start ON ROW 0           
     sta _plot_ch_y                          
@@ -113,20 +116,20 @@ print_line ; get the line address once a line
     lda LineLookupHi,Y     ; lookup hi byte for row value and store
     sta _line_start_hi
 
-    ldy #2
+    ldy #TEXT_FIRST_COLUMN
     lda _plot_ascii
 print_next_char
     sta (_line_start),Y                     
                            
-    cpy #39 ;CHECK FOR LAST COLUMN   
+    cpy #TEXT_LAST_COLUMN ;CHECK FOR LAST COLUMN   
     beq next_line                                               
     iny
     jmp print_next_char                           
     
     next_line
-    ldy #2 
+    ldy #TEXT_FIRST_COLUMN 
     ldx _plot_ch_y                          
-    cpx #26 ;CHECK IF AT LAST LINE   
+    cpx #TEXT_LAST_LINE ;CHECK IF AT LAST LINE   
     beq next_char                                              
     inc _plot_ch_y ;move to next line
     jmp print_line                           
@@ -136,7 +139,7 @@ print_next_char
     cpx #122; check if we've reached last char                        
     beq screen_filler                       
     inc _plot_ascii ; move to next char
-    lda #2; Set next character at start of screen                                  
+    lda #TEXT_FIRST_COLUMN; Set next character at start of screen                                  
     sta _plot_ch_x                          
     lda #0                           
     sta _plot_ch_y                          
@@ -179,10 +182,27 @@ Loop
     sta $BB82,Y                     
     iny                             
     jmp Loop
-.)
-    :ExitInstructions 
+    ExitInstructions 
     rts       
+.)
+    
 
+
+:ScrollInstructions .byt "PRESS ARROWS TO SCROLL       "                                 
+:PrintScrollInstructions
+    ldy #0                      
+.(
+Loop
+    cpy #27 ; overwrite                  
+    beq ExitInstructions                        
+    lda ScrollInstructions,Y                      
+    sta $BB82,Y                     
+    iny                             
+    jmp Loop
+    ExitInstructions 
+    rts
+.)
+    
                   
 ;>>>>> staRT OF COPY MEM ROUTINE
 :CopyMemory 
@@ -299,7 +319,7 @@ Loop
     rts    
 
 :SetPaper
-    ldy #26
+    ldy #TEXT_LAST_LINE
     ldx #PAPER_YELLOW
 .(
     loop
@@ -315,7 +335,7 @@ Loop
 .)
 
 :SetInk
-    ldy #26
+    ldy #TEXT_LAST_LINE
     ldx #01
 .(
     loop

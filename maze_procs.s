@@ -73,7 +73,7 @@ plot_on_screen
     ldy _plot_ch_x;
     sta (_line_start),y
 
-    cpy #39;
+    cpy #TEXT_LAST_COLUMN
     beq nexty;
 
 
@@ -82,7 +82,7 @@ plot_on_screen
     jmp getMazeByte;
 
     nexty ldx _plot_ch_y;
-    cpx #26
+    cpx #TEXT_LAST_LINE
     beq screen_done;
     
     ;move to next line
