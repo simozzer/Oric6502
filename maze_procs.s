@@ -184,6 +184,10 @@ innerloop
 complete
 
     ldx KEY_PRESS_LOOKUP  
+
+    cpx KEY_PRESS_NONE
+    beq ScreenRender
+    
     cpx #KEY_LEFT_ARROW
     bne nextKey0
     lda _maze_left
@@ -218,129 +222,3 @@ nextKey2
 nextKey3
     jmp ScreenRender
 .)
-
-
-
-
-
-; <<<<< ScreenRender
-
-
-
-    ;check key presses
-    ;ldx KEY_PRESS_LOOKUP                     
-    ;cpx #KEY_UP_ARROW                                         
-    ;bne nextKey1
-    ;lda maze_start_top
-    ;dec maze_start_top+1
-
-    ;nextKey1
-    ;cpx #KEY_DOWN_ARROW
-    ;bne nextKey2
-    ;inc maze_start_top+1
-
-    ;nextKey2
-    ;cpx #KEY_RIGHT_ARROW
-    ;bne nextKey3
-    ;jsr scroll_right
-    ;inc maze_start_left+1
-
-    nextKey3
-    ;cpx #KEY_LEFT_ARROW
-    ;bne nextKey4
-    k2
-    ;jsr scroll_left
-    ;dec maze_start_left+1
-
-    nextKey4
-    ;jmp screen_done; MazeDisplay;
-    ;rts
-
-
-;/// IN PROGREES
-scroll_left
-.(
-    ldy #26 ; start at last line
-
-process_line  
-    sty _plot_ch_y;  
-    lda ScreenLineLookupLo,Y
-    sta _line_start_lo
-    lda ScreenLineLookupHi,y
-    sta _line_start_hi
-
-    ldy #03 ; start at 2nd visible column
-loop   
-    lda (_line_start),Y
-    dey ; copy into previous column
-    sta (_line_start),Y
-    iny
-    iny
-    cpy #39 ; check if we've reached right column
-    beq prev_line
-    jmp loop
-
-    prev_line
-    ldy _plot_ch_y
-    dey
-    cpy #00
-    beq done    
-    jmp process_line
-
-    done
-      ; TODO.. fill in right column
-      rts
-
-.)
-
-
-scroll_right
-.(
-    ldy #26 ; start at last line
-
-process_line  
-    sty _plot_ch_y;  
-    lda ScreenLineLookupLo,Y
-    sta _line_start_lo
-    lda ScreenLineLookupHi,y
-    sta _line_start_hi
-
-    ldy #38 ; start at last visible column
-loop   
-    lda (_line_start),Y
-    iny ; copy into next column
-    sta (_line_start),Y
-    dey
-    dey
-    cpy #01 ; check if we've reached left column
-    beq prev_line
-    jmp loop
-
-    prev_line
-    ldy _plot_ch_y
-    dey
-    cpy #00
-    beq done    
-    jmp process_line
-
-    done
-      ; TODO.. fill in right column
-      rts
-
-.)
-
-
-
-
-
-
-    
-    
-    
-
-
-
-
-
-
-                                     
