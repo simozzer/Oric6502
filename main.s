@@ -76,6 +76,11 @@ _zp_end_
 #DEFINE OFFSCREEN_LAST_ROW 79
 
  StartProg
+
+    ;// NOKEYCLICK+SCREEN no cursor
+	lda #8+2	
+	sta $26a
+    
     ;jsr PrintAlphabet 
     jsr PrintInstructions       
     ;jsr CopySetToRam                        
