@@ -13,7 +13,7 @@ I'm just starting to re-learn the stuff I knew back then.  I'll continue to upda
 
 The main idea is to keep the 'maze' stored as a block/array of bytes, with each BIT used to denote if there is a maze wall or not. At runtime the routine for drawing the maze will process the maze data and plot the current state of the maze on the screen for the current top-left position.
 
-I'm not intending on pixel level scrolling. Ideally the scrolling will be performed on a character level - but the maze will be 'magnified'. So 1 bit set in the maze data will be a 2 * 2 character in the maze,  and this will be scrolled 1 char at a time.
+I'm not intending on pixel level scrolling. Ideally the scrolling will be performed on a character level (maybe the maze will be 'magnified'. So 1 bit set in the maze data will be a 2 * 2 character in the maze,  and this will be scrolled 1 char at a time?)
 
 
 I'll repeat - this is very much a work in progress.
