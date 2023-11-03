@@ -147,6 +147,7 @@ loop
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
 
+innerloop
     // grab character from offscreen 
     ldy _maze_x_tmp
     lda (_maze_line_start),Y
@@ -163,7 +164,7 @@ loop
     
     stx _plot_ch_x
     dec _maze_x_tmp
-    jmp loop
+    jmp innerloop
 
     RenderNextLine
     ldx _plot_ch_y
