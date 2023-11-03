@@ -124,6 +124,7 @@ ScreenRender
     clc
     adc #39
     sta _maze_x_tmp
+    sta _maze_right
 
     lda _maze_top
     clc
@@ -167,17 +168,15 @@ loop
     RenderNextLine
     ldx _plot_ch_y
     dex
-    cmp #00
-    beq complete
+    cpx #00
+    bmi complete
     
     ; move maze data to previous line
     stx _plot_ch_y
     lda #39
     sta _plot_ch_x
     dec _maze_y_tmp
-    lda _maze_left
-    clc
-    adc #39
+    lda _maze_right
     sta _maze_x_tmp
     jmp loop
 

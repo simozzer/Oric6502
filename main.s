@@ -33,6 +33,8 @@ _maze_line_start
 _maze_line_start_lo .byt 1
 _maze_line_start_hi .byt 1
 
+_maze_right .byt 1
+
 _zp_end_
 
 .text
