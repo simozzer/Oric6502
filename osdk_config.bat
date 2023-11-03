@@ -6,6 +6,6 @@
 SET OSDKADDR=$600
 SET OSDKNAME=Scroll
 SET OSDKLINK=-B
-SET OSDKFILE=main spr lookup vars maze_data maze_procs
+SET OSDKFILE=main spr lookup maze_procs maze_data
 
 
