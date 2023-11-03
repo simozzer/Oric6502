@@ -3,6 +3,8 @@
 
     .zero
 
+    *= $50
+
 _zp_start_
 
 _plot_ch_x .byt 1
@@ -63,6 +65,7 @@ _zp_end_
 #DEFINE KEY_RIGHT_ARROW 188
 #DEFINE KEY_SPACE 132
 #DEFINE KEY_Q 177
+#DEFINE KEY_PRESS_NONE 56
 
 #DEFINE KEY_PRESS_LOOKUP $0208
 #DEFINE TEXT_FIRST_COLUMN 2
@@ -85,7 +88,7 @@ _zp_end_
     jsr SetInk
     jsr PrintWaitMessage
     jsr MazeRender // Working on this at the moment
-    jsr ClearStatus
+    jsr PrintScrollInstructions
 
     lda #0
     sta _maze_left
@@ -165,6 +168,7 @@ print_next_char
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  
 :Alphabet .byt "abcdefghijklmnopqrstuvwxyz"                                 
 :PrintAlphabet 
+    jsr ClearStatus
     ldy #0                      
 .(
 Loop
@@ -181,6 +185,7 @@ Loop
 
 :Instructions .byt "TEST: PRESS ANY KEY TO EXIT"                                 
 :PrintInstructions
+    jsr ClearStatus
     ldy #0                      
 .(
 Loop
@@ -193,15 +198,33 @@ Loop
     ExitInstructions 
     rts       
 .)
-    
 
 
-:WaitMessage .byt "PLEASE WAIT...             "                                 
-:PrintWaitMessage
+:ScrollInstructions .byt "PRESS ARROW KEYS TO SCROLL"                                 
+:PrintScrollInstructions
+    jsr ClearStatus
     ldy #0                      
 .(
 Loop
-    cpy #27 ; overwrite                  
+    cpy #26                  
+    beq ExitInstructions                        
+    lda ScrollInstructions,Y                      
+    sta $BB82,Y                     
+    iny                             
+    jmp Loop
+    ExitInstructions 
+    rts       
+.)
+    
+
+
+:WaitMessage .byt "PLEASE WAIT..."                                 
+:PrintWaitMessage
+    jsr ClearStatus
+    ldy #0                      
+.(
+Loop
+    cpy #14;
     beq ExitInstructions                        
     lda WaitMessage,Y                      
     sta $BB82,Y                     

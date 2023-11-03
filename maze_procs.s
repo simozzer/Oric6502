@@ -180,8 +180,42 @@ loop
     sta _maze_x_tmp
     jmp loop
 
-    complete
-    rts
+complete
+
+    ldx KEY_PRESS_LOOKUP  
+    cpx #KEY_LEFT_ARROW
+    bne nextKey0
+    lda _maze_left
+    cmp #00
+    beq nextKey0
+    dec _maze_left
+
+nextKey0
+    cpx #KEY_RIGHT_ARROW
+    bne nextKey1
+    lda _maze_left
+    cmp #206
+    beq nextKey1
+    inc _maze_left
+
+nextKey1
+    cpx #KEY_DOWN_ARROW
+    bne nextKey2
+    lda _maze_top
+    cmp #49
+    bpl nextKey2
+    inc _maze_top
+
+nextKey2
+    cpx #KEY_UP_ARROW
+    bne nextKey3
+    lda _maze_top
+    cmp #00
+    beq nextKey3
+    dec _maze_top
+
+nextKey3
+    jmp ScreenRender
 .)
 
 
