@@ -22,7 +22,8 @@ TODO (in approximate order):
 - ~~fix routines in maze_procs for finding which bits represent a wall.~~
 - Optimise the above routine
 - ~~create routine to plot maze on screen for top-left coordinates.~~
-- Use the above routine to parse maze bitmasks into an off screen buffer and create a new routine to render from that (should be faster)
+- ~~Use the above routine to parse maze bitmasks into an off screen buffer and create a new routine to render from that (should be faster)~~
+- When scrolling move the existing data on screen, and just add in the new column or row.
 - test.
 - adjust routines to handle split screen (both vertical and horizontal).
 - implement fast keyboard handling to scroll each view of the maze (and disable ROM interupt for these).

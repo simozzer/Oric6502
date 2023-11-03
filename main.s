@@ -67,31 +67,37 @@ _zp_end_
 #DEFINE TEXT_LAST_COLUMN 39
 #DEFINE TEXT_LAST_LINE 26
 
+#DEFINE OFFSCREEN_LAST_COLUMN 248
+#DEFINE OFFSCREEN_LAST_ROW 79
+
  StartProg
     ;jsr PrintAlphabet 
     jsr PrintInstructions       
     ;jsr CopySetToRam                        
-    jsr MakeCharacters_0                      
+    jsr MakeCharacters_0               
     jsr screen_filler                       
     ;jsr CopyRamToChars     
 
     jsr MakeCharacters_1
     jsr SetPaper
     jsr SetInk
-    jsr PrintScrollInstructions
-    lda #$00
-    sta maze_start_left+1
-    sta maze_start_top+1
-    jsr MazeDisplay // Working on this at the moment
+    jsr PrintWaitMessage
+    jsr MazeRender // Working on this at the moment
+    jsr ClearStatus
+
+    lda #0
+    sta _maze_left
+    sta _maze_top
+    jsr ScreenRender
     rts  
 
     
  
  ; ** PRINT CHAR AT X,Y           
  :plotchar ldy _plot_ch_y                 ; Load row value                     
-    lda LineLookupLo,Y    ; lookup low byte for row value and store
+    lda ScreenLineLookupLo,Y    ; lookup low byte for row value and store
     sta _line_start_lo                
-    lda LineLookupHi,Y     ; lookup hi byte for row value and store
+    lda ScreenLineLookupHi,Y     ; lookup hi byte for row value and store
     sta _line_start_hi
     lda _plot_ascii                 ; load ascii code
     ldy _plot_ch_x                 ; load column value                   
@@ -111,9 +117,9 @@ screen_filler
 
 print_line ; get the line address once a line
     ldy _plot_ch_y        ; Load row value                     
-    lda LineLookupLo,Y    ; lookup low byte for row value and store
+    lda ScreenLineLookupLo,Y    ; lookup low byte for row value and store
     sta _line_start_lo                
-    lda LineLookupHi,Y     ; lookup hi byte for row value and store
+    lda ScreenLineLookupHi,Y     ; lookup hi byte for row value and store
     sta _line_start_hi
 
     ldy #TEXT_FIRST_COLUMN
@@ -188,20 +194,35 @@ Loop
     
 
 
-:ScrollInstructions .byt "PRESS ARROWS TO SCROLL       "                                 
-:PrintScrollInstructions
+:WaitMessage .byt "PLEASE WAIT...             "                                 
+:PrintWaitMessage
     ldy #0                      
 .(
 Loop
     cpy #27 ; overwrite                  
     beq ExitInstructions                        
-    lda ScrollInstructions,Y                      
+    lda WaitMessage,Y                      
     sta $BB82,Y                     
     iny                             
     jmp Loop
     ExitInstructions 
     rts
 .)
+
+:ClearStatus
+    ldy #0                      
+    lda #32
+.(
+Loop
+    cpy #38 ;
+    beq ExitInstructions                        
+    sta $BB82,Y                     
+    iny                             
+    jmp Loop
+    ExitInstructions 
+    rts
+.)
+  
     
                   
 ;>>>>> staRT OF COPY MEM ROUTINE
@@ -323,9 +344,9 @@ Loop
     ldx #PAPER_YELLOW
 .(
     loop
-    lda LineLookupLo,Y
+    lda ScreenLineLookupLo,Y
     sta writePaper+1
-    lda LineLookupHi,y
+    lda ScreenLineLookupHi,y
     sta writePaper+2
     :writePaper stx $ffff
     dey
@@ -339,9 +360,9 @@ Loop
     ldx #01
 .(
     loop
-    lda LineLookupLo,Y
+    lda ScreenLineLookupLo,Y
     sta writeInk+1
-    lda LineLookupHi,y
+    lda ScreenLineLookupHi,y
     sta writeInk+2
     lda #INK_RED
     :writeInk sta $ffff,x
