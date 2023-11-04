@@ -41,6 +41,15 @@ _player1_x .byt 1
 _player1_y .byt 1
 _player1_direction .byt 1
 _player_status .byt 1
+_player1_maze_x .byt 1
+_player1_maze_y .byt 1
+
+_player2_x .byt 1
+_player2_y .byt 1
+_player2_direction .byt 1
+_player2_maze_x .byt 1
+_player2_maze_y .byt 1
+
 
 _screen_render_right .byt 1
 _screen_render_bottom .byt 1
@@ -187,7 +196,7 @@ b_tmp1          .dsb 1
     sta _display_mode
 
     
-    lda _display_mode
+    //lda _display_mode
     cmp #DISPLAY_MODE_FULLSCREEN
     bne nextMode0
     jsr runFullScreen   
@@ -201,16 +210,17 @@ b_tmp1          .dsb 1
 
 nextMode1
 end
-    jsr CopyRamToChars    
-    jsr _cls
+   // jsr CopyRamToChars    
     rts  
 
 runFullScreen
     // set initial maze position
     lda #FULLSCREEN_MAZE_X
     sta _maze_left
+    sta _player1_maze_x
     lda #FULLSCREEN_MAZE_Y
     sta _maze_top
+    sta _player1_maze_y
     
     // set up dimensions for screen to render    
     fullScreenLoop
@@ -224,10 +234,18 @@ runFullScreen
     sta _screen_render_x_wrap
     lda #FULLSCREEN_TEXT_Y_WRAP 
     sta _screen_render_y_wrap
+    lda _player1_maze_x
+    sta _maze_left
+    lda _player1_maze_y
+    sta _maze_top
 
     jsr ScreenRender
 
     jsr processMovement
+    lda _maze_left
+    sta _player1_maze_x
+    lda _maze_top
+    sta _player1_maze_y
     lda _player_status
     cmp #PLAYER_STATUS_DEAD
     bne fullScreenLoop
@@ -236,9 +254,14 @@ runFullScreen
 runSideBySide
     // set initial maze position
     lda #LEFT_SCREEN_MAZE_X
-    sta _maze_left
+    sta _player1_maze_x
     lda #LEFT_SCREEN_MAZE_Y
-    sta _maze_top
+    sta _player1_maze_y
+
+    lda #RIGHT_SCREEN_MAZE_X
+    sta _player1_maze_x
+    lda #RIGHT_SCREEN_MAZE_Y
+    sta _player1_maze_y
     
     // set up dimensions for screen to render    
     sideScreenLoop
@@ -252,16 +275,13 @@ runSideBySide
     sta _screen_render_x_wrap
     lda #LEFT_SCREEN_TEXT_Y_WRAP 
     sta _screen_render_y_wrap
+    lda _player1_maze_x
+    sta _maze_left
+    lda _player1_maze_y
+    sta _maze_top
 
     jsr ScreenRender
 
-
-// TODO -- need to have maze1_left and maze2_left
-    // set initial maze position
-    lda #RIGHT_SCREEN_MAZE_X
-    sta _maze_left
-    lda #RIGHT_SCREEN_MAZE_Y
-    sta _maze_top
     
     // set up dimensions for screen to render    
     lda #RIGHT_SCREEN_TEXT_LAST_COLUMN
@@ -274,11 +294,20 @@ runSideBySide
     sta _screen_render_x_wrap
     lda #RIGHT_SCREEN_TEXT_Y_WRAP 
     sta _screen_render_y_wrap
+    lda _player2_maze_x
+    sta _maze_left
+    lda _player2_maze_y
+    sta _maze_top
 
     
     jsr ScreenRender
 
     jsr processMovement
+    lda _player1_maze_x
+    sta _maze_left
+    lda _player1_maze_y
+    sta _maze_top
+
     lda _player_status
     cmp #PLAYER_STATUS_DEAD
     bne sideScreenLoop
@@ -584,7 +613,8 @@ Loop
 
     rts
 .)
-    
+
+
     
 
 

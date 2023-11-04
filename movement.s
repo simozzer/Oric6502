@@ -66,7 +66,7 @@ checkUp
     cmp #PLAYER_DIRECTION_UP
     bne checkDown
 
-    ;scroll if we can
+    ;scroll if we can (and if we need to)
     lda _maze_top
     cmp #00
     beq movePlayerUp
@@ -102,7 +102,7 @@ renderPlayer
     ; check for collision
     ldy _player1_x
     lda (_maze_line_start),Y
-    cmp #97
+    cmp #97 + 128
     beq playerDead 
     cmp #108
     beq playerDead
@@ -116,6 +116,9 @@ checkDone
 
 :DeadMessage .byt "YOU'RE DEAD"                                 
 :playerDead
+    jsr ScreenRender
+    lda #108 ; character code for segment of light trail
+    sta (_maze_line_start),y
     jsr ClearStatus
     ldy #0                      
 .(
