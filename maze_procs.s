@@ -73,7 +73,7 @@ maze_start_top
     ; plot some random 'grains' to give a background texture to ensure a feeling of motion when scrolling through 'empty' space
     jsr _GetRand
     lda rand_low;
-    and #08
+    and #15
     adc #98
 
 plot_offscreen

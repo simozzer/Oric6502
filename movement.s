@@ -126,11 +126,11 @@ renderPlayer
     lda (_maze_line_start),Y
     cmp #97 + 128
     beq playerDead 
-    cmp #108
+    cmp #115
     beq playerDead
 
 
-    lda #108 ; character code for segment of light trail
+    lda #115 ; character code for segment of light trail
     sta (_maze_line_start),y
 
 checkDone
@@ -139,7 +139,7 @@ checkDone
    :DeadMessage .byt "YOU'RE DEAD"                                 
 :playerDead
     jsr ScreenRender
-    lda #108 ; character code for segment of light trail
+    lda #115 ; character code for segment of light trail
     sta (_maze_line_start),y
     jsr ClearStatus
     ldy #0                      
@@ -191,7 +191,7 @@ checkRight
     BCC movePlayerRight
 
     lda _player1_maze_x
-    cmp #244
+    cmp #250
     beq movePlayerRight
     inc _player1_maze_x
 
@@ -250,11 +250,11 @@ renderPlayer
     lda (_maze_line_start),Y
     cmp #97 + 128
     beq playerDead 
-    cmp #108
+    cmp #115
     beq playerDead
 
 
-    lda #108 ; character code for segment of light trail
+    lda #115 ; character code for segment of light trail
     sta (_maze_line_start),y
 
 checkDone
@@ -263,7 +263,7 @@ checkDone
 :DeadMessage .byt "YOU'RE DEAD"                                 
 :playerDead
     jsr ScreenRender
-    lda #108 ; character code for segment of light trail
+    lda #115 ; character code for segment of light trail
     sta (_maze_line_start),y
     jsr ClearStatus
     ldy #0                      

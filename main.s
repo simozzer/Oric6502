@@ -121,9 +121,9 @@ b_tmp1          .dsb 1
 #DEFINE LEFT_SCREEN_MAZE_X 117
 #DEFINE LEFT_SCREEN_MAZE_Y 21
 
-#DEFINE RIGHT_SCREEN_TEXT_FIRST_COLUMN 22
+#DEFINE RIGHT_SCREEN_TEXT_FIRST_COLUMN 24
 #DEFINE RIGHT_SCREEN_TEXT_LAST_COLUMN 39
-#DEFINE RIGHT_SCREEN_TEXT_MAZE_OFFSET_X 18 ; First 2 columns on screen are for text and paper attributes
+#DEFINE RIGHT_SCREEN_TEXT_MAZE_OFFSET_X 17 ; First 2 columns on screen are for text and paper attributes
 #DEFINE RIGHT_SCREEN_TEXT_LAST_LINE 26
 #DEFINE RIGHT_SCREEN_TEXT_X_WRAP 20
 #DEFINE RIGHT_SCREEN_TEXT_Y_WRAP 0
@@ -188,11 +188,11 @@ b_tmp1          .dsb 1
     sta _maze_line_start_lo
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
-    lda #108 ; character code for segment of light trail
+    lda #115 ; character code for segment of light trail
     ldy _player1_x
     sta (_maze_line_start),y
 
-    lda #DISPLAY_MODE_FULLSCREEN; // DISPLAY_MODE_SIDE_BY_SIDE
+    lda #DISPLAY_MODE_FULLSCREEN ;#DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
 
     
@@ -261,9 +261,9 @@ runSideBySide
     sta _player1_maze_y
 
     lda #RIGHT_SCREEN_MAZE_X
-    sta _player1_maze_x
+    sta _player2_maze_x
     lda #RIGHT_SCREEN_MAZE_Y
-    sta _player1_maze_y
+    sta _player2_maze_y
     
     // set up dimensions for screen to render    
     sideScreenLoop
@@ -334,6 +334,12 @@ runSideBySide
 
 smallDelay
 .(
+    txa
+    pha
+    ldx #10
+
+    outer_loop
+    
     ; a small delay
     ldy #255
     loop
@@ -341,7 +347,15 @@ smallDelay
     nop
     cpy #00
     Bne loop
+    dex
+    cpx #00 
+    bne outer_loop
+
+    pla
+    tax
     rts
+
+    
 .)
 
 
