@@ -187,7 +187,7 @@
     .byt %00000010
     .byt %00000001
 
-:OffscreenScrollArea .dsb 20400, 1
+#DEFINE OffscreenScrollArea $6000
 
 :OffscreenLineLookupLo 
     .byt <OffscreenScrollArea+0,<OffscreenScrollArea+255,<OffscreenScrollArea+510,<OffscreenScrollArea+765,<OffscreenScrollArea+1020
