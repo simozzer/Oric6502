@@ -40,12 +40,15 @@ _maze_right .byt 1
 _player1_x .byt 1
 _player1_y .byt 1
 _player1_direction .byt 1
+_player_status .byt 1
 
 _screen_render_right .byt 1
 _screen_render_bottom .byt 1
 _maze_render_offset_x .byt 1
 _screen_render_x_wrap .byt 1 ; the value x must hit to go to the previous line
 _screen_render_y_wrap .byt 1 ; the value y must be for render complete
+
+_display_mode .byt 1
 
 _zp_end_
 
@@ -54,7 +57,9 @@ rand_low		.dsb 1		;// Random number generator, low part
 rand_high		.dsb 1		;// Random number generator, high part
 b_tmp1          .dsb 1
 
+
 .text
+#define _cls		$ccce
 
 #DEFINE PAPER_BLACK 16
 #DEFINE PAPER_RED 17
@@ -100,12 +105,21 @@ b_tmp1          .dsb 1
 
 #DEFINE LEFT_SCREEN_TEXT_FIRST_COLUMN 2
 #DEFINE LEFT_SCREEN_TEXT_LAST_COLUMN 18
-#DEFINE LEFT_SCREEN_TEXT_MAZE_OFFSET_X 16 ; First 2 columns on screen are for text and paper attributes
+#DEFINE LEFT_SCREEN_TEXT_MAZE_OFFSET_X 20 ; First 2 columns on screen are for text and paper attributes
 #DEFINE LEFT_SCREEN_TEXT_LAST_LINE 26
 #DEFINE LEFT_SCREEN_TEXT_X_WRAP 1
 #DEFINE LEFT_SCREEN_TEXT_Y_WRAP 0
 #DEFINE LEFT_SCREEN_MAZE_X 119
 #DEFINE LEFT_SCREEN_MAZE_Y 21
+
+#DEFINE RIGHT_SCREEN_TEXT_FIRST_COLUMN 20
+#DEFINE RIGHT_SCREEN_TEXT_LAST_COLUMN 39
+#DEFINE RIGHT_SCREEN_TEXT_MAZE_OFFSET_X 39 ; First 2 columns on screen are for text and paper attributes
+#DEFINE RIGHT_SCREEN_TEXT_LAST_LINE 26
+#DEFINE RIGHT_SCREEN_TEXT_X_WRAP 19
+#DEFINE RIGHT_SCREEN_TEXT_Y_WRAP 0
+#DEFINE RIGHT_SCREEN_MAZE_X 119
+#DEFINE RIGHT_SCREEN_MAZE_Y 21
 
 
 #DEFINE OFFSCREEN_LAST_COLUMN 254
@@ -115,6 +129,9 @@ b_tmp1          .dsb 1
 #DEFINE PLAYER_DIRECTION_RIGHT 1;
 #DEFINE PLAYER_DIRECTION_UP 2;
 #DEFINE PLAYER_DIRECTION_DOWN 3;
+
+#DEFINE PLAYER_STATUS_ALIVE 0
+#DEFINE PLAYER_STATUS_DEAD 1
 
  StartProg
 
@@ -141,6 +158,9 @@ b_tmp1          .dsb 1
 	sta rand_high
     jsr MazeRender
     jsr PrintScrollInstructions
+    jsr _cls
+    jsr SetPaper
+    jsr SetInk
 
 
     //setup player 
@@ -150,6 +170,8 @@ b_tmp1          .dsb 1
     sta _player1_y
     lda #PLAYER_DIRECTION_UP
     sta _player1_direction
+    lda #PLAYER_STATUS_ALIVE
+    sta _player_status
 
     // render player
     ldy _player1_y
@@ -161,13 +183,37 @@ b_tmp1          .dsb 1
     ldy _player1_x
     sta (_maze_line_start),y
 
+    lda #DISPLAY_MODE_FULLSCREEN
+    sta _display_mode
+
+    
+    lda _display_mode
+    cmp #DISPLAY_MODE_FULLSCREEN
+    bne nextMode0
+    jsr runFullScreen   
+    jmp end
+     
+    nextMode0
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE // SIDE BY SIDE IS A WORK IN PROGRESS AND DOES NOT YET FUNCTION CORRECTLY!!!!
+    bne nextMode1
+    jsr runSideBySide  
+    jmp end
+
+nextMode1
+end
+    jsr CopyRamToChars    
+    jsr _cls
+    rts  
+
+runFullScreen
     // set initial maze position
     lda #FULLSCREEN_MAZE_X
     sta _maze_left
     lda #FULLSCREEN_MAZE_Y
     sta _maze_top
     
-    // set up dimensions for screen to render
+    // set up dimensions for screen to render    
+    fullScreenLoop
     lda #FULLSCREEN_TEXT_LAST_COLUMN
     sta _screen_render_right
     lda #FULLSCREEN_TEXT_LAST_LINE
@@ -179,11 +225,64 @@ b_tmp1          .dsb 1
     lda #FULLSCREEN_TEXT_Y_WRAP 
     sta _screen_render_y_wrap
 
+    jsr ScreenRender
+
+    jsr processMovement
+    lda _player_status
+    cmp #PLAYER_STATUS_DEAD
+    bne fullScreenLoop
+    rts
+
+runSideBySide
+    // set initial maze position
+    lda #LEFT_SCREEN_MAZE_X
+    sta _maze_left
+    lda #LEFT_SCREEN_MAZE_Y
+    sta _maze_top
+    
+    // set up dimensions for screen to render    
+    sideScreenLoop
+    lda #LEFT_SCREEN_TEXT_LAST_COLUMN
+    sta _screen_render_right
+    lda #LEFT_SCREEN_TEXT_LAST_LINE
+    sta _screen_render_bottom
+    lda #LEFT_SCREEN_TEXT_MAZE_OFFSET_X
+    sta _maze_render_offset_x
+    lda #LEFT_SCREEN_TEXT_X_WRAP
+    sta _screen_render_x_wrap
+    lda #LEFT_SCREEN_TEXT_Y_WRAP 
+    sta _screen_render_y_wrap
 
     jsr ScreenRender
-    jsr CopyRamToChars
-    jmp PrintInstructions
-    rts  
+
+
+// TODO -- need to have maze1_left and maze2_left
+    // set initial maze position
+    lda #RIGHT_SCREEN_MAZE_X
+    sta _maze_left
+    lda #RIGHT_SCREEN_MAZE_Y
+    sta _maze_top
+    
+    // set up dimensions for screen to render    
+    lda #RIGHT_SCREEN_TEXT_LAST_COLUMN
+    sta _screen_render_right
+    lda #RIGHT_SCREEN_TEXT_LAST_LINE
+    sta _screen_render_bottom
+    lda #RIGHT_SCREEN_TEXT_MAZE_OFFSET_X
+    sta _maze_render_offset_x
+    lda #RIGHT_SCREEN_TEXT_X_WRAP
+    sta _screen_render_x_wrap
+    lda #RIGHT_SCREEN_TEXT_Y_WRAP 
+    sta _screen_render_y_wrap
+
+    
+    jsr ScreenRender
+
+    jsr processMovement
+    lda _player_status
+    cmp #PLAYER_STATUS_DEAD
+    bne sideScreenLoop
+    rts
 
     
  
@@ -329,11 +428,11 @@ Loop
 .(
 Loop
     cpy #38 ;
-    beq ExitInstructions                        
+    beq ExitClear                        
     sta $BB82,Y                     
     iny                             
     jmp Loop
-    ExitInstructions 
+    ExitClear 
     rts
 .)
   
