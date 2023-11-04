@@ -13,7 +13,7 @@ I'm just starting to re-learn the stuff I knew back then.  I'll continue to upda
 
 The main idea is to keep the 'maze' stored as a block/array of bytes, with each BIT used to denote if there is a maze wall or not. At runtime the routine for drawing the maze will process the maze data and plot the current state of the maze on the screen for the current top-left position.
 
-I'm not intending on pixel level scrolling. Ideally the scrolling will be performed on a character level (maybe the maze will be 'magnified'. So 1 bit set in the maze data will be a 2 * 2 character in the maze,  and this will be scrolled 1 char at a time?)
+I'm not intending on pixel level scrolling. Ideally the scrolling will be performed on a character level (as a future enhancement maybe the maze will be 'magnified'. So 1 bit set in the maze data will be a 2 * 2 character in the maze,  and this will be scrolled 1 char at a time?)
 
 
 I'll repeat - this is very much a work in progress.
@@ -23,16 +23,16 @@ TODO (in approximate order):
 - Optimise the above routine
 - ~~create routine to plot maze on screen for top-left coordinates.~~
 - ~~Use the above routine to parse maze bitmasks into an off screen buffer and create a new routine to render from that (should be faster)~~
-- When scrolling move the existing data on screen, and just add in the new column or row.
+- ~~When scrolling move the existing data on screen, and just add in the new column or row~~ (I've decided not to do this, as any moving items will be plotted directly to the offscreen buffer - will make the code easier)
 - test.
 - adjust routines to handle split screen (both vertical and horizontal).
 - implement fast keyboard handling to scroll each view of the maze (and disable ROM interupt for these).
 - test again.
 - create 'tracker' for creating music.
 - play music in background.
-- implement 'player', with keyboard handling and detection with maze walls.
+- ~~implement 'player', with keyboard handling and detection with maze walls.~~
 - implement 'chararacter designer', to allow creation of custom chars.
-- think of a playable game using the code.
+- ~~think of a playable game using the code~~ (For now I'm going with the idea of tron/light-cycles)
 - implement it.
 - test
 - compress maze data (possibly using an external compression routine lz77)
