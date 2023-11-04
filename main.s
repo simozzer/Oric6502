@@ -37,6 +37,10 @@ _maze_line_start_hi .byt 1
 
 _maze_right .byt 1
 
+_player_x .byt 1
+_player_y .byt 1
+_player_direction .byt 1
+
 _zp_end_
 
 // Part of code copied from Kong, which was supplied with the OSDK
@@ -80,6 +84,11 @@ b_tmp1          .dsb 1
 #DEFINE OFFSCREEN_LAST_COLUMN 254
 #DEFINE OFFSCREEN_LAST_ROW 80
 
+#DEFINE PLAYER_DIRECTION_LEFT 0;
+#DEFINE PLAYER_DIRECTION_RIGHT 1;
+#DEFINE PLAYER_DIRECTION_UP 2;
+#DEFINE PLAYER_DIRECTION_DOWN 3;
+
  StartProg
 
     ;// NOKEYCLICK+SCREEN no cursor
@@ -100,8 +109,29 @@ b_tmp1          .dsb 1
     jsr MazeRender // Working on this at the moment
     jsr PrintScrollInstructions
 
-    lda #0
+
+    //setup player 
+    lda #128
+    sta _player_x    
+    lda #34
+    sta _player_y
+    lda #PLAYER_DIRECTION_UP
+    sta _player_direction
+
+    // render player
+    ldy _player_y;
+    lda OffscreenLineLookupLo,Y
+    sta _maze_line_start_lo
+    lda OffscreenLineLookupHi,y
+    sta _maze_line_start_hi
+    lda #108 ; character code for segment of light trail
+    ldy _player_x
+    sta (_maze_line_start),y
+
+    // set initial maze position
+    lda #110;
     sta _maze_left
+    lda #21
     sta _maze_top
     jsr ScreenRender
     rts  

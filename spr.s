@@ -34,7 +34,7 @@
     .byt 03,00,00,00,00,00,00,00 ;y     
     .byt 01,00,00,00,00,00,00,00 ;z
 :_AltSpriteData
-    .byt 63,63,63,63,63,63,63,63 ;a
+    .byt 63,63,63,63,63,63,63,63 ;a ; wall block
 
         // 9 character of 'random' data to fill background (so that scrolling motion can be seen when screen is empty)
     .byt 00,08,00,00,00,00,00,00 ;b       
@@ -47,7 +47,10 @@
     .byt 00,00,00,04,00,00,00,00 ;i          
     .byt 00,00,00,00,04,00,00,00 ;j      
     .byt 00,00,00,04,00,00,16,00 ;k  
-    .byt 01,01,01,01,01,01,63,01 ;l      
+
+
+    .byt 63,33,33,33,33,33,33,63 ;l ;segment of light trail (ascii code 108)
+
     .byt 01,01,01,01,01,01,01,63 ;m      
     .byt 63,32,32,32,32,32,32,32 ;n      
     .byt 16,63,16,16,16,16,16,16 ;o      
