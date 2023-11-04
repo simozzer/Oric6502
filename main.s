@@ -113,19 +113,19 @@ b_tmp1          .dsb 1
 
 
 #DEFINE LEFT_SCREEN_TEXT_FIRST_COLUMN 2
-#DEFINE LEFT_SCREEN_TEXT_LAST_COLUMN 20
-#DEFINE LEFT_SCREEN_TEXT_MAZE_OFFSET_X 22 ; First 2 columns on screen are for text and paper attributes
+#DEFINE LEFT_SCREEN_TEXT_LAST_COLUMN 19
+#DEFINE LEFT_SCREEN_TEXT_MAZE_OFFSET_X 17 ; First 2 columns on screen are for text and paper attributes
 #DEFINE LEFT_SCREEN_TEXT_LAST_LINE 26
 #DEFINE LEFT_SCREEN_TEXT_X_WRAP 1
 #DEFINE LEFT_SCREEN_TEXT_Y_WRAP 0
 #DEFINE LEFT_SCREEN_MAZE_X 117
 #DEFINE LEFT_SCREEN_MAZE_Y 21
 
-#DEFINE RIGHT_SCREEN_TEXT_FIRST_COLUMN 24
+#DEFINE RIGHT_SCREEN_TEXT_FIRST_COLUMN 22
 #DEFINE RIGHT_SCREEN_TEXT_LAST_COLUMN 39
-#DEFINE RIGHT_SCREEN_TEXT_MAZE_OFFSET_X 39 ; First 2 columns on screen are for text and paper attributes
+#DEFINE RIGHT_SCREEN_TEXT_MAZE_OFFSET_X 18 ; First 2 columns on screen are for text and paper attributes
 #DEFINE RIGHT_SCREEN_TEXT_LAST_LINE 26
-#DEFINE RIGHT_SCREEN_TEXT_X_WRAP 19
+#DEFINE RIGHT_SCREEN_TEXT_X_WRAP 20
 #DEFINE RIGHT_SCREEN_TEXT_Y_WRAP 0
 #DEFINE RIGHT_SCREEN_MAZE_X 117
 #DEFINE RIGHT_SCREEN_MAZE_Y 21
@@ -192,7 +192,7 @@ b_tmp1          .dsb 1
     ldy _player1_x
     sta (_maze_line_start),y
 
-    lda #DISPLAY_MODE_FULLSCREEN
+    lda #DISPLAY_MODE_FULLSCREEN; // DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
 
     
@@ -243,7 +243,8 @@ runFullScreen
 
 
 
-    jsr processMovementPlayer1
+    jsr processKeyboardPlayer1
+    jsr updateMovementPlayer1FullScreen
 
     jsr smallDelay
     
@@ -305,7 +306,8 @@ runSideBySide
     
     jsr ScreenRender
 
-    jsr processMovementPlayer1
+    jsr processKeyboardPlayer1
+    jsr updateMovementPlayer1SideBySide
 
     jsr smallDelay
 
