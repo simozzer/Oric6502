@@ -122,13 +122,12 @@ ScreenRender
     // set the start position for grabbing data from offscreen
     lda _maze_left
     clc
-    adc #39
+    adc #37
     sta _maze_x_tmp
     sta _maze_right
 
     lda _maze_top
-    clc
-    adc #28
+    adc #26
     sta _maze_y_tmp
 
 .(
@@ -199,7 +198,7 @@ nextKey0
     cpx #KEY_RIGHT_ARROW
     bne nextKey1
     lda _maze_left
-    cmp #206
+    cmp #217
     beq nextKey1
     inc _maze_left
 

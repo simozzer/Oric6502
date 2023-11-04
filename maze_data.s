@@ -6,7 +6,7 @@
 
 ;// currently have 80 rows of data, (need to expand the lookup tables in further rows added)
 :MazeData1
-.byt $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$00
+.byt $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$fe ; last bit in last byte is not used
 .byt $80,$00,$00,$00,$00,$01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$00
 .byt $BF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$F8,$20,$00,$00,$00,$00,$04,$00,$00,$00,$00,$00,$1F,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FD,$00
 .byt $A0,$80,$00,$00,$00,$00,$00,$00,$00,$00,$10,$00,$00,$00,$00,$00,$00,$00,$08,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$05,$00
