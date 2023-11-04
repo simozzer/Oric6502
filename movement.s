@@ -8,24 +8,36 @@ processKeyboardPlayer1
     
     cpx #KEY_LEFT_ARROW
     bne nextKey0
+    lda _player1_direction
+    cmp #PLAYER_DIRECTION_RIGHT
+    beq nextKey0
     lda #PLAYER_DIRECTION_LEFT
     sta _player1_direction
 
 nextKey0
     cpx #KEY_RIGHT_ARROW
     bne nextKey1
+    lda _player1_direction
+    cmp #PLAYER_DIRECTION_LEFT
+    beq nextKey1
     lda #PLAYER_DIRECTION_RIGHT
     sta _player1_direction
 
 nextKey1
     cpx #KEY_DOWN_ARROW
     bne nextKey2
+    lda _player1_direction
+    cmp #PLAYER_DIRECTION_UP
+    beq nextKey2
     lda #PLAYER_DIRECTION_DOWN
     sta _player1_direction
 
 nextKey2
     cpx #KEY_UP_ARROW
     bne keyboardDone
+    lda _player1_direction
+    cmp #PLAYER_DIRECTION_DOWN
+    beq keyboardDone
     lda #PLAYER_DIRECTION_UP
     sta _player1_direction
 keyboardDone
