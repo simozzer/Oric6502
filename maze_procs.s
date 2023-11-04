@@ -206,8 +206,8 @@ nextKey1
     cpx #KEY_DOWN_ARROW
     bne nextKey2
     lda _maze_top
-    cmp #49
-    bpl nextKey2
+    cmp #53
+    beq nextKey2
     inc _maze_top
 
 nextKey2
