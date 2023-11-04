@@ -113,21 +113,21 @@ b_tmp1          .dsb 1
 
 
 #DEFINE LEFT_SCREEN_TEXT_FIRST_COLUMN 2
-#DEFINE LEFT_SCREEN_TEXT_LAST_COLUMN 18
-#DEFINE LEFT_SCREEN_TEXT_MAZE_OFFSET_X 20 ; First 2 columns on screen are for text and paper attributes
+#DEFINE LEFT_SCREEN_TEXT_LAST_COLUMN 20
+#DEFINE LEFT_SCREEN_TEXT_MAZE_OFFSET_X 22 ; First 2 columns on screen are for text and paper attributes
 #DEFINE LEFT_SCREEN_TEXT_LAST_LINE 26
 #DEFINE LEFT_SCREEN_TEXT_X_WRAP 1
 #DEFINE LEFT_SCREEN_TEXT_Y_WRAP 0
-#DEFINE LEFT_SCREEN_MAZE_X 119
+#DEFINE LEFT_SCREEN_MAZE_X 117
 #DEFINE LEFT_SCREEN_MAZE_Y 21
 
-#DEFINE RIGHT_SCREEN_TEXT_FIRST_COLUMN 20
+#DEFINE RIGHT_SCREEN_TEXT_FIRST_COLUMN 24
 #DEFINE RIGHT_SCREEN_TEXT_LAST_COLUMN 39
 #DEFINE RIGHT_SCREEN_TEXT_MAZE_OFFSET_X 39 ; First 2 columns on screen are for text and paper attributes
 #DEFINE RIGHT_SCREEN_TEXT_LAST_LINE 26
 #DEFINE RIGHT_SCREEN_TEXT_X_WRAP 19
 #DEFINE RIGHT_SCREEN_TEXT_Y_WRAP 0
-#DEFINE RIGHT_SCREEN_MAZE_X 119
+#DEFINE RIGHT_SCREEN_MAZE_X 117
 #DEFINE RIGHT_SCREEN_MAZE_Y 21
 
 
@@ -241,11 +241,12 @@ runFullScreen
 
     jsr ScreenRender
 
-    jsr processMovement
-    lda _maze_left
-    sta _player1_maze_x
-    lda _maze_top
-    sta _player1_maze_y
+
+
+    jsr processMovementPlayer1
+
+    jsr smallDelay
+    
     lda _player_status
     cmp #PLAYER_STATUS_DEAD
     bne fullScreenLoop
@@ -282,6 +283,8 @@ runSideBySide
 
     jsr ScreenRender
 
+
+
     
     // set up dimensions for screen to render    
     lda #RIGHT_SCREEN_TEXT_LAST_COLUMN
@@ -302,11 +305,11 @@ runSideBySide
     
     jsr ScreenRender
 
-    jsr processMovement
-    lda _player1_maze_x
-    sta _maze_left
-    lda _player1_maze_y
-    sta _maze_top
+    jsr processMovementPlayer1
+
+    jsr smallDelay
+
+
 
     lda _player_status
     cmp #PLAYER_STATUS_DEAD
@@ -325,6 +328,19 @@ runSideBySide
     ldy _plot_ch_x                 ; load column value                   
     sta (_line_start),Y             ; plot character on screen
     rts
+
+
+smallDelay
+.(
+    ; a small delay
+    ldy #255
+    loop
+    dey
+    nop
+    cpy #00
+    Bne loop
+    rts
+.)
 
 
 // Fill screen in turn with characters from a-z and repeat

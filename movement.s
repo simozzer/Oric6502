@@ -1,5 +1,5 @@
 
-processMovement
+processMovementPlayer1
     ldx KEY_PRESS_LOOKUP  
 
     cpx KEY_PRESS_NONE
@@ -37,10 +37,14 @@ updateMovement
     bne checkRight
 
     ;scroll if we can ((TODO don't scroll if scrolling up and haven't reached middle of screen))
-    lda _maze_left
+
+    LDA _player1_x
+    CMP #234
+    BCS movePlayerLeft
+    lda _player1_maze_x
     cmp #00
     beq movePlayerLeft
-    dec _maze_left
+    dec _player1_maze_x
 
     movePlayerLeft
     dec _player1_x
@@ -52,10 +56,15 @@ checkRight
     bne checkUp
 
     ;scroll if we can
-    lda _maze_left
+
+    LDA _player1_x
+    CMP #21
+    BCC movePlayerRight
+
+    lda _player1_maze_x
     cmp #217
     beq movePlayerRight
-    inc _maze_left
+    inc _player1_maze_x
 
     movePlayerRight
     inc _player1_x
@@ -66,11 +75,16 @@ checkUp
     cmp #PLAYER_DIRECTION_UP
     bne checkDown
 
-    ;scroll if we can (and if we need to)
-    lda _maze_top
+
+
+    lda _player1_y ;if player is neear the bottom of the screen then don't scroll
+    cmp #68
+    bpl movePlayerUp
+
+    lda _player1_maze_y ; don't allow scrolling up past the top of the maze
     cmp #00
     beq movePlayerUp
-    dec _maze_top
+    dec _player1_maze_y
 
     movePlayerUp
     dec _player1_y
@@ -82,11 +96,15 @@ checkDown
     cmp #PLAYER_DIRECTION_DOWN
     bne checkDone
 
+
+    lda _player1_y ;if player is neear the top of the screen then don't scroll
+    cmp #12
+    bmi movePlayerDown
     ;scroll if we can
-    lda _maze_top
+    lda _player1_maze_y
     cmp #53
     beq movePlayerDown
-    inc _maze_top
+    inc _player1_maze_y
 
     movePlayerDown
     inc _player1_y
