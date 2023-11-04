@@ -8,6 +8,13 @@
 ; >>>>> MazeRender
 ; Render entire maze(/game area) to an offscreen buffer
 :MazeRender
+
+// Initialise the random generator values (taken from kong, which was supplied with the OSDK)
+	lda #23
+	sta rand_low
+	lda #35
+	sta rand_high
+
 // set the position of the maze
 maze_start_left
     lda #00; left
@@ -60,12 +67,18 @@ maze_start_top
     beq nowall
     
     ; Plot a section of wall
-    lda #97
+    lda #97 + 128 ; +128 is plot as inverse
     
     jmp plot_offscreen
 :nowall
     ; plot some empty space
-    lda #32
+    ;lda #32
+
+    ; plot some random 'grains' to give a background texture to ensure a feeling of motion when scrolling through 'empty' space
+    jsr _GetRand
+    lda rand_low;
+    and #08
+    adc #98
 
 plot_offscreen
     ldy _plot_ch_x;
@@ -221,3 +234,35 @@ nextKey2
 nextKey3
     jmp ScreenRender
 .)
+
+; <<<<<< ScreenRender
+
+;// Taken from Kong source code 
+;// Calculate some RANDOM values
+;// Not accurate at all, but who cares ?
+;// For what I need it's enough.
+_GetRand
+	lda rand_high
+	sta b_tmp1
+	lda rand_low
+	asl 
+	rol b_tmp1
+	asl 
+	rol b_tmp1
+	asl
+	rol b_tmp1
+	asl
+	rol b_tmp1
+	clc
+	adc rand_low
+	pha
+	lda b_tmp1
+	adc rand_high
+	sta rand_high
+	pla
+	adc #$11
+	sta rand_low
+	lda rand_high
+	adc #$36
+	sta rand_high
+	rts

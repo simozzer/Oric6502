@@ -39,6 +39,11 @@ _maze_right .byt 1
 
 _zp_end_
 
+// Part of code copied from Kong, which was supplied with the OSDK
+rand_low		.dsb 1		;// Random number generator, low part
+rand_high		.dsb 1		;// Random number generator, high part
+b_tmp1          .dsb 1
+
 .text
 
 #DEFINE PAPER_BLACK 16
@@ -369,9 +374,9 @@ Loop
     jsr CopyMemory                                              
     rts    
 
-:SetPaper
+:SetInk
     ldy #TEXT_LAST_LINE
-    ldx #PAPER_YELLOW
+    ldx #INK_GREEN
 .(
     loop
     lda ScreenLineLookupLo,Y
@@ -385,7 +390,7 @@ Loop
     rts
 .)
 
-:SetInk
+:SetPaper
     ldy #TEXT_LAST_LINE
     ldx #01
 .(
@@ -394,7 +399,7 @@ Loop
     sta writeInk+1
     lda ScreenLineLookupHi,y
     sta writeInk+2
-    lda #INK_RED
+    lda #PAPER_BLACK
     :writeInk sta $ffff,x
     dey
     bpl loop

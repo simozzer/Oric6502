@@ -1,7 +1,7 @@
 ; // DATA FOR MAZE .. currently only an empty area with walls on each edge
 ; // (and some test data on row 1)
 ; // Each BIT which is set will be a block of the wall
-; // Each row is 31 bytes long - allowing for 255 sections of wall for each row (with 80 rows we will use 20400 bytes to store
+; // Each row is 32 bytes long - allowing for 255 sections of wall for each row (with 80 rows we will use 20400 bytes to store
 ; the expanded maze, 255 bytes per row)
 
 ;// currently have 80 rows of data, (need to expand the lookup tables in further rows added)
@@ -187,7 +187,7 @@
     .byt %00000010
     .byt %00000001
 
-#DEFINE OffscreenScrollArea $6000
+#DEFINE OffscreenScrollArea $6000 ; This will occupy the memory up to around $afb0
 
 :OffscreenLineLookupLo 
     .byt <OffscreenScrollArea+0,<OffscreenScrollArea+255,<OffscreenScrollArea+510,<OffscreenScrollArea+765,<OffscreenScrollArea+1020
