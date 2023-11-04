@@ -166,6 +166,7 @@ Loop
     ExitInstructions 
     lda #PLAYER_STATUS_DEAD
     sta _player_status
+    jsr bigDelay
     rts       
 .)
 .)
@@ -290,6 +291,7 @@ Loop
     ExitInstructions 
     lda #PLAYER_STATUS_DEAD
     sta _player_status
+    jsr bigDelay
     rts       
 .)
 .)

@@ -165,6 +165,7 @@ b_tmp1          .dsb 1
 	sta rand_low
 	lda #35
 	sta rand_high
+startagain
     jsr MazeRender
     jsr PrintScrollInstructions
     jsr _cls
@@ -210,7 +211,8 @@ b_tmp1          .dsb 1
 
 nextMode1
 end
-   // jsr CopyRamToChars    
+    jmp startagain
+   ;; jsr CopyRamToChars    
     rts  
 
 runFullScreen
@@ -334,6 +336,7 @@ runSideBySide
 
 smallDelay
 .(
+    rts; //no delay
     txa
     pha
     ldx #10
@@ -353,9 +356,32 @@ smallDelay
 
     pla
     tax
-    rts
+    rts    
+.)
 
+
+bigDelay
+.(
+    txa
+    pha
+    ldx #$ff
+
+    outer_loop
     
+    ; a small delay
+    ldy #255
+    loop
+    dey
+    nop
+    cpy #00
+    Bne loop
+    dex
+    cpx #00 
+    bne outer_loop
+
+    pla
+    tax
+    rts    
 .)
 
 
