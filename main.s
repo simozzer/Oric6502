@@ -37,9 +37,15 @@ _maze_line_start_hi .byt 1
 
 _maze_right .byt 1
 
-_player_x .byt 1
-_player_y .byt 1
-_player_direction .byt 1
+_player1_x .byt 1
+_player1_y .byt 1
+_player1_direction .byt 1
+
+_screen_render_right .byt 1
+_screen_render_bottom .byt 1
+_maze_render_offset_x .byt 1
+_screen_render_x_wrap .byt 1 ; the value x must hit to go to the previous line
+_screen_render_y_wrap .byt 1 ; the value y must be for render complete
 
 _zp_end_
 
@@ -77,9 +83,30 @@ b_tmp1          .dsb 1
 #DEFINE KEY_PRESS_NONE 56
 
 #DEFINE KEY_PRESS_LOOKUP $0208
-#DEFINE TEXT_FIRST_COLUMN 2
-#DEFINE TEXT_LAST_COLUMN 39
-#DEFINE TEXT_LAST_LINE 26
+
+#DEFINE DISPLAY_MODE_FULLSCREEN 0
+#DEFINE DISPLAY_MODE_SIDE_BY_SIDE 1
+#DEFINE DISPLAY_MODE_TOP_TO_BOTTOM 2
+
+#DEFINE FULLSCREEN_TEXT_FIRST_COLUMN 2
+#DEFINE FULLSCREEN_TEXT_LAST_COLUMN 39
+#DEFINE FULLSCREEN_TEXT_MAZE_OFFSET_X 37 ; First 2 columns on screen are for text and paper attributes
+#DEFINE FULLSCREEN_TEXT_LAST_LINE 26
+#DEFINE FULLSCREEN_TEXT_X_WRAP 1
+#DEFINE FULLSCREEN_TEXT_Y_WRAP 0
+#DEFINE FULLSCREEN_MAZE_X 110
+#DEFINE FULLSCREEN_MAZE_Y 21
+
+
+#DEFINE LEFT_SCREEN_TEXT_FIRST_COLUMN 2
+#DEFINE LEFT_SCREEN_TEXT_LAST_COLUMN 18
+#DEFINE LEFT_SCREEN_TEXT_MAZE_OFFSET_X 16 ; First 2 columns on screen are for text and paper attributes
+#DEFINE LEFT_SCREEN_TEXT_LAST_LINE 26
+#DEFINE LEFT_SCREEN_TEXT_X_WRAP 1
+#DEFINE LEFT_SCREEN_TEXT_Y_WRAP 0
+#DEFINE LEFT_SCREEN_MAZE_X 119
+#DEFINE LEFT_SCREEN_MAZE_Y 21
+
 
 #DEFINE OFFSCREEN_LAST_COLUMN 254
 #DEFINE OFFSCREEN_LAST_ROW 80
@@ -97,43 +124,65 @@ b_tmp1          .dsb 1
     
     ;jsr PrintAlphabet 
     jsr PrintInstructions       
-    ;jsr CopySetToRam                        
+    jsr CopySetToRam                        
     jsr MakeCharacters_0               
     jsr screen_filler                       
-    ;jsr CopyRamToChars     
+    jsr CopyRamToChars     
 
     jsr MakeCharacters_1
     jsr SetPaper
     jsr SetInk
     jsr PrintWaitMessage
-    jsr MazeRender // Working on this at the moment
+
+    // Initialise the random generator values (taken from kong, which was supplied with the OSDK)
+	lda #23
+	sta rand_low
+	lda #35
+	sta rand_high
+    jsr MazeRender
     jsr PrintScrollInstructions
 
 
     //setup player 
     lda #128
-    sta _player_x    
+    sta _player1_x    
     lda #34
-    sta _player_y
+    sta _player1_y
     lda #PLAYER_DIRECTION_UP
-    sta _player_direction
+    sta _player1_direction
 
     // render player
-    ldy _player_y;
+    ldy _player1_y
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
     lda #108 ; character code for segment of light trail
-    ldy _player_x
+    ldy _player1_x
     sta (_maze_line_start),y
 
     // set initial maze position
-    lda #110;
+    lda #FULLSCREEN_MAZE_X
     sta _maze_left
-    lda #21
+    lda #FULLSCREEN_MAZE_Y
     sta _maze_top
+    
+    // set up dimensions for screen to render
+    lda #FULLSCREEN_TEXT_LAST_COLUMN
+    sta _screen_render_right
+    lda #FULLSCREEN_TEXT_LAST_LINE
+    sta _screen_render_bottom
+    lda #FULLSCREEN_TEXT_MAZE_OFFSET_X
+    sta _maze_render_offset_x
+    lda #FULLSCREEN_TEXT_X_WRAP
+    sta _screen_render_x_wrap
+    lda #FULLSCREEN_TEXT_Y_WRAP 
+    sta _screen_render_y_wrap
+
+
     jsr ScreenRender
+    jsr CopyRamToChars
+    jmp PrintInstructions
     rts  
 
     
@@ -153,7 +202,7 @@ b_tmp1          .dsb 1
 // Fill screen in turn with characters from a-z and repeat
 // Exit if key pressed
 screen_filler
-    lda #TEXT_FIRST_COLUMN
+    lda #FULLSCREEN_TEXT_FIRST_COLUMN
     sta _plot_ch_x                          
     lda #0; Start ON ROW 0           
     sta _plot_ch_y                          
@@ -167,20 +216,20 @@ print_line ; get the line address once a line
     lda ScreenLineLookupHi,Y     ; lookup hi byte for row value and store
     sta _line_start_hi
 
-    ldy #TEXT_FIRST_COLUMN
+    ldy #FULLSCREEN_TEXT_FIRST_COLUMN
     lda _plot_ascii
 print_next_char
     sta (_line_start),Y                     
                            
-    cpy #TEXT_LAST_COLUMN ;CHECK FOR LAST COLUMN   
+    cpy #FULLSCREEN_TEXT_LAST_COLUMN ;CHECK FOR LAST COLUMN   
     beq next_line                                               
     iny
     jmp print_next_char                           
     
     next_line
-    ldy #TEXT_FIRST_COLUMN 
+    ldy #FULLSCREEN_TEXT_FIRST_COLUMN
     ldx _plot_ch_y                          
-    cpx #TEXT_LAST_LINE ;CHECK IF AT LAST LINE   
+    cpx #FULLSCREEN_TEXT_LAST_LINE ;CHECK IF AT LAST LINE   
     beq next_char                                              
     inc _plot_ch_y ;move to next line
     jmp print_line                           
@@ -190,7 +239,7 @@ print_next_char
     cpx #122; check if we've reached last char                        
     beq screen_filler                       
     inc _plot_ascii ; move to next char
-    lda #TEXT_FIRST_COLUMN; Set next character at start of screen                                  
+    lda #FULLSCREEN_TEXT_FIRST_COLUMN; Set next character at start of screen                                  
     sta _plot_ch_x                          
     lda #0                           
     sta _plot_ch_y                          
@@ -405,7 +454,7 @@ Loop
     rts    
 
 :SetInk
-    ldy #TEXT_LAST_LINE
+    ldy #FULLSCREEN_TEXT_LAST_LINE
     ldx #INK_GREEN
 .(
     loop
@@ -421,7 +470,7 @@ Loop
 .)
 
 :SetPaper
-    ldy #TEXT_LAST_LINE
+    ldy #FULLSCREEN_TEXT_LAST_LINE
     ldx #01
 .(
     loop

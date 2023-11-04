@@ -1,19 +1,14 @@
 
-; Display section of maze on screen
-; Whilst this is currently working on a very basic level
-; several changes must be made.
+; Render maze data into an offscreen area.
 ; - when processing a maze byte  process all BITs to prevent re-looking up the 
-; maze data
+; maze data (to optimise)
 
+
+
+;; -----------------------------------------------------------------
 ; >>>>> MazeRender
 ; Render entire maze(/game area) to an offscreen buffer
 :MazeRender
-
-// Initialise the random generator values (taken from kong, which was supplied with the OSDK)
-	lda #23
-	sta rand_low
-	lda #35
-	sta rand_high
 
 // set the position of the maze
 maze_start_left
@@ -121,212 +116,8 @@ screen_done
     rts
 
 ; <<<<< MazeRender
+; -----------------------------------------------------------------
 
-
-; >>>>> ScreenRender
-ScreenRender
-
-    // set the start position for plotting on screen.
-    lda #39
-    sta _plot_ch_x
-    lda #26
-    sta _plot_ch_y
-
-    // set the start position for grabbing data from offscreen
-    lda _maze_left
-    clc
-    adc #37
-    sta _maze_x_tmp
-    sta _maze_right
-
-    lda _maze_top
-    adc #26
-    sta _maze_y_tmp
-
-.(
-loop
-    // lookup start of line for plotting on screen
-    ldy _plot_ch_y
-    lda ScreenLineLookupLo,y
-    sta _line_start_lo
-    lda ScreenLineLookupHi,Y
-    sta _line_start_hi
-
-    // look up start of line for grabbing data from offscreen
-    ldy _maze_y_tmp
-    lda OffscreenLineLookupLo,Y
-    sta _maze_line_start_lo
-    lda OffscreenLineLookupHi,y
-    sta _maze_line_start_hi
-
-innerloop
-    // grab character from offscreen 
-    ldy _maze_x_tmp
-    lda (_maze_line_start),Y
-
-    // plot character onscreen
-    ldy _plot_ch_x
-    sta (_line_start),y
-
-    // move to previous character
-    ldx _plot_ch_x
-    dex
-    cpx #01
-    beq RenderNextLine
-    
-    stx _plot_ch_x
-    dec _maze_x_tmp
-    jmp innerloop
-
-    RenderNextLine
-    ldx _plot_ch_y
-    dex
-    cpx #00
-    bmi complete
-    
-    ; move maze data to previous line
-    stx _plot_ch_y
-    lda #39
-    sta _plot_ch_x
-    dec _maze_y_tmp
-    lda _maze_right
-    sta _maze_x_tmp
-    jmp loop
-
-complete
-
-    ldx KEY_PRESS_LOOKUP  
-
-    cpx KEY_PRESS_NONE
-    beq updateMovement
-    
-    cpx #KEY_LEFT_ARROW
-    bne nextKey0
-    lda #PLAYER_DIRECTION_LEFT
-    sta _player_direction
-
-nextKey0
-    cpx #KEY_RIGHT_ARROW
-    bne nextKey1
-    lda #PLAYER_DIRECTION_RIGHT
-    sta _player_direction
-
-nextKey1
-    cpx #KEY_DOWN_ARROW
-    bne nextKey2
-    lda #PLAYER_DIRECTION_DOWN
-    sta _player_direction
-
-nextKey2
-    cpx #KEY_UP_ARROW
-    bne updateMovement
-    lda #PLAYER_DIRECTION_UP
-    sta _player_direction
-    
-
-updateMovement
-    lda _player_direction
-    cmp #PLAYER_DIRECTION_LEFT
-    bne checkRight
-
-    ;scroll if we can
-    lda _maze_left
-    cmp #00
-    beq movePlayerLeft
-    dec _maze_left
-
-    movePlayerLeft
-    dec _player_x
-    jmp renderPlayer
-
-checkRight
-    lda _player_direction
-    cmp #PLAYER_DIRECTION_RIGHT
-    bne checkUp
-
-    ;scroll if we can
-    lda _maze_left
-    cmp #217
-    beq movePlayerRight
-    inc _maze_left
-
-    movePlayerRight
-    inc _player_x
-    jmp renderPlayer
-
-checkUp
-    lda _player_direction
-    cmp #PLAYER_DIRECTION_UP
-    bne checkDown
-
-    ;scroll if we can
-    lda _maze_top
-    cmp #00
-    beq movePlayerUp
-    dec _maze_top
-
-    movePlayerUp
-    dec _player_y
-    jmp renderPlayer
-
-
-checkDown
-    lda _player_direction
-    cmp #PLAYER_DIRECTION_DOWN
-    bne checkDone
-
-    ;scroll if we can
-    lda _maze_top
-    cmp #53
-    beq movePlayerDown
-    inc _maze_top
-
-    movePlayerDown
-    inc _player_y
-
-
-renderPlayer
-    ldy _player_y;
-    lda OffscreenLineLookupLo,Y
-    sta _maze_line_start_lo
-    lda OffscreenLineLookupHi,y
-    sta _maze_line_start_hi
-
-    ; check for collision
-    ldy _player_x
-    lda (_maze_line_start),Y
-    cmp #97
-    beq playerDead 
-    cmp #108
-    beq playerDead
-
-
-    lda #108 ; character code for segment of light trail
-    sta (_maze_line_start),y
-
-checkDone
-   jmp ScreenRender
-
-:DeadMessage .byt "YOU'RE DEAD"                                 
-:playerDead
-    jsr ClearStatus
-    ldy #0                      
-.(
-Loop
-    cpy #11               
-    beq ExitInstructions                        
-    lda DeadMessage,Y                      
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-    ExitInstructions 
-    rts       
-.)
-rts
-  
-.)
-
-; <<<<<< ScreenRender
 
 ;// Taken from Kong source code 
 ;// Calculate some RANDOM values
