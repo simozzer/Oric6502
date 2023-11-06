@@ -124,6 +124,7 @@ runSideBySide
     sta _player2_maze_x
     lda #RIGHT_SCREEN_MAZE_Y
     sta _player2_maze_y
+    jsr renderSideBySideSplitter
     
     // set up dimensions for screen to render    
     sideScreenLoop

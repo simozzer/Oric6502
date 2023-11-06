@@ -56,11 +56,14 @@
     .byt 00,16,00,00,00,00,00,00 ;r
 
 
-    .byt 63,33,33,33,33,33,33,63 ;s ;segment of light trail (ascii code 115)
+    .byt 63,33,33,33,33,33,33,63 ;s ;segment of player 1 light trail (ascii code 115)
 
-    .byt 01,01,01,01,01,01,63,01 ;t      
-    .byt 01,01,01,01,01,01,01,63 ;u      
-    .byt 63,02,02,02,02,02,02,02 ;v      
+    .byt 01,01,01,01,01,01,63,01 ;t ;segment of player 2 light trail (ascii code 116)    
+
+
+    .byt 01,01,01,01,01,01,01,01 ;side by side screen splitter (left side - ascii code 117)     
+    .byt 32,32,32,32,32,32,32,32 ;side by side screen splitter (right side - ascii code 118)
+
     .byt 63,04,04,04,04,04,04,04 ;w     
     .byt 63,08,08,08,08,08,08,08 ;x      
     .byt 63,16,16,16,16,16,16,16 ;y     

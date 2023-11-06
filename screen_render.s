@@ -1,5 +1,6 @@
-; -----------------------------------------------------------------
-; >>>>> ScreenRender
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Render a section of the maze to an area of the screen
+; ------------------------------------------------------------------------------
 ScreenRender
 
     // set the start position for plotting on screen.
@@ -70,9 +71,47 @@ innerloop
     jmp loop
 
 complete
-
- 
+    rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-; <<<<<< ScreenRender
-; -----------------------------------------------------------------
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Render a spliiter in the centre of the screen for side by side mode
+; ( This is a lazy implementation and could easily be improved,
+;   I haven't bothered because it's not time critical )
+; ------------------------------------------------------------------------------
+renderSideBySideSplitter
+    ldy #FULLSCREEN_TEXT_LAST_LINE
+.(
+    leftLoop
+    lda ScreenLineLookupLo,Y
+    sta writeLeftSplitter+1
+    lda ScreenLineLookupHi,y
+    sta writeLeftSplitter+2
+    
+    ldx #20;
+    lda #SIDE_BY_SIDE_SPLITTER_LEFT + 128
+    :writeLeftSplitter sta $ffff,X
+    dey
+    cpy #00 
+    bpl leftLoop
+
+    ldy #FULLSCREEN_TEXT_LAST_LINE
+    rightLoop
+    lda ScreenLineLookupLo,Y
+    sta writeRightSplitter+1
+    lda ScreenLineLookupHi,y
+    sta writeRightSplitter+2
+    
+    ldx #21;
+    lda #SIDE_BY_SIDE_SPLITTER_RIGHT + 128
+    :writeRightSplitter sta $ffff,X
+    dey
+    cpy #00
+    bpl rightLoop
+
+    rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
