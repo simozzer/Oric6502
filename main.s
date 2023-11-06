@@ -30,9 +30,9 @@ startagain
 
 
     //setup player 
-    lda #128
+    lda #PLAYER_1_START_X
     sta _player1_x    
-    lda #34
+    lda #PLAYER_1_START_Y
     sta _player1_y
     lda #PLAYER_DIRECTION_UP
     sta _player1_direction
@@ -49,7 +49,9 @@ startagain
     ldy _player1_x
     sta (_maze_line_start),y
 
-    lda #DISPLAY_MODE_FULLSCREEN ;#DISPLAY_MODE_SIDE_BY_SIDE
+    // The value here will set the rendering mode
+    lda #DISPLAY_MODE_FULLSCREEN 
+    ;lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
 
     
@@ -237,7 +239,7 @@ print_next_char
     sta _plot_ch_y                          
     ;TEST FOR KEY PRESS  (temporarily disabled)                                   
     ldx KEY_PRESS_LOOKUP
-    cpx #56 ;No key pressed                                         
+    cpx KEY_PRESS_NONE                                        
     bne ExitScreenFill    
 
     jmp print_line                          

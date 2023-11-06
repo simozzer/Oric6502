@@ -147,7 +147,7 @@ renderPlayer
 
 checkDone
    rts
-   
+
 :playerDead
     ; update the player position on screen
     jsr ScreenRender
@@ -200,7 +200,7 @@ checkRight
     BCC movePlayerRight
 
     lda _player1_maze_x
-    cmp #250
+    cmp #237 
     beq movePlayerRight
     inc _player1_maze_x
 
