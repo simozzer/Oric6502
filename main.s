@@ -1,155 +1,11 @@
-    
-#define _getKey		$EB78
-
-    .zero
-
-    *= $50
-
-_zp_start_
-
-_plot_ch_x .byt 1
-_plot_ch_y .byt 1
-_plot_ascii .byt 1
-_line_start
-_line_start_lo .byt 1
-_line_start_hi .byt 1
-
-_copy_mem_src
-_copy_mem_src_lo .byt 1
-_copy_mem_src_hi .byt 1
-_copy_mem_dest
-_copy_mem_dest_lo .byt 1
-_copy_mem_dest_hi .byt 1
-_copy_mem_count
-_copy_mem_count_lo .byt 1
-_copy_mem_count_hi .byt 1
-
-_maze_left .byt 1
-_maze_top .byt 1
-_maze_byte .byt 1
-_bits_to_process .byt 1
-_maze_bitmask .byt 1
-_maze_x_tmp .byt 1
-_maze_y_tmp .byt 1
-_maze_line_start
-_maze_line_start_lo .byt 1
-_maze_line_start_hi .byt 1
-
-_maze_right .byt 1
-
-_player1_x .byt 1
-_player1_y .byt 1
-_player1_direction .byt 1
-_player_status .byt 1
-_player1_maze_x .byt 1
-_player1_maze_y .byt 1
-
-_player2_x .byt 1
-_player2_y .byt 1
-_player2_direction .byt 1
-_player2_maze_x .byt 1
-_player2_maze_y .byt 1
-
-
-_screen_render_right .byt 1
-_screen_render_bottom .byt 1
-_maze_render_offset_x .byt 1
-_screen_render_x_wrap .byt 1 ; the value x must hit to go to the previous line
-_screen_render_y_wrap .byt 1 ; the value y must be for render complete
-
-_display_mode .byt 1
-
-_zp_end_
-
-// Part of code copied from Kong, which was supplied with the OSDK
-rand_low		.dsb 1		;// Random number generator, low part
-rand_high		.dsb 1		;// Random number generator, high part
-b_tmp1          .dsb 1
-
-
-.text
-#define _cls		$ccce
-
-#DEFINE PAPER_BLACK 16
-#DEFINE PAPER_RED 17
-#DEFINE PAPER_GREEN 18
-#DEFINE PAPER_YELLOW 19
-#DEFINE PAPER_BLUE 20
-#DEFINE PAPER_MAGENTA 21
-#DEFINE PAPER_CYAN 22
-#DEFINE PAPER_WHITE 23
-
-#DEFINE INK_BLACK 0
-#DEFINE INK_RED 1
-#DEFINE INK_GREEN 2
-#DEFINE INK_YELLOW 3
-#DEFINE INK_BLUE 4
-#DEFINE INK_MAGENTA 5
-#DEFINE INK_CYAN 6
-#DEFINE INK_WHITE 7
-
-#DEFINE KEY_UP_ARROW 156
-#DEFINE KEY_DOWN_ARROW 180
-#DEFINE KEY_LEFT_ARROW 172
-#DEFINE KEY_RIGHT_ARROW 188
-#DEFINE KEY_SPACE 132
-#DEFINE KEY_Q 177
-#DEFINE KEY_PRESS_NONE 56
-
-#DEFINE KEY_PRESS_LOOKUP $0208
-
-#DEFINE DISPLAY_MODE_FULLSCREEN 0
-#DEFINE DISPLAY_MODE_SIDE_BY_SIDE 1
-#DEFINE DISPLAY_MODE_TOP_TO_BOTTOM 2
-
-#DEFINE FULLSCREEN_TEXT_FIRST_COLUMN 2
-#DEFINE FULLSCREEN_TEXT_LAST_COLUMN 39
-#DEFINE FULLSCREEN_TEXT_MAZE_OFFSET_X 37 ; First 2 columns on screen are for text and paper attributes
-#DEFINE FULLSCREEN_TEXT_LAST_LINE 26
-#DEFINE FULLSCREEN_TEXT_X_WRAP 1
-#DEFINE FULLSCREEN_TEXT_Y_WRAP 0
-#DEFINE FULLSCREEN_MAZE_X 110
-#DEFINE FULLSCREEN_MAZE_Y 21
-
-
-#DEFINE LEFT_SCREEN_TEXT_FIRST_COLUMN 2
-#DEFINE LEFT_SCREEN_TEXT_LAST_COLUMN 19
-#DEFINE LEFT_SCREEN_TEXT_MAZE_OFFSET_X 17 ; First 2 columns on screen are for text and paper attributes
-#DEFINE LEFT_SCREEN_TEXT_LAST_LINE 26
-#DEFINE LEFT_SCREEN_TEXT_X_WRAP 1
-#DEFINE LEFT_SCREEN_TEXT_Y_WRAP 0
-#DEFINE LEFT_SCREEN_MAZE_X 117
-#DEFINE LEFT_SCREEN_MAZE_Y 21
-
-#DEFINE RIGHT_SCREEN_TEXT_FIRST_COLUMN 24
-#DEFINE RIGHT_SCREEN_TEXT_LAST_COLUMN 39
-#DEFINE RIGHT_SCREEN_TEXT_MAZE_OFFSET_X 17 ; First 2 columns on screen are for text and paper attributes
-#DEFINE RIGHT_SCREEN_TEXT_LAST_LINE 26
-#DEFINE RIGHT_SCREEN_TEXT_X_WRAP 20
-#DEFINE RIGHT_SCREEN_TEXT_Y_WRAP 0
-#DEFINE RIGHT_SCREEN_MAZE_X 117
-#DEFINE RIGHT_SCREEN_MAZE_Y 21
-
-
-#DEFINE OFFSCREEN_LAST_COLUMN 254
-#DEFINE OFFSCREEN_LAST_ROW 80
-
-#DEFINE PLAYER_DIRECTION_LEFT 0;
-#DEFINE PLAYER_DIRECTION_RIGHT 1;
-#DEFINE PLAYER_DIRECTION_UP 2;
-#DEFINE PLAYER_DIRECTION_DOWN 3;
-
-#DEFINE PLAYER_STATUS_ALIVE 0
-#DEFINE PLAYER_STATUS_DEAD 1
-
- StartProg
+StartProg
 
     ;// NOKEYCLICK+SCREEN no cursor
 	lda #8+2	
 	sta $26a
     
     ;jsr PrintAlphabet 
-    jsr PrintInstructions       
+    jsr printTestInstructions       
     jsr CopySetToRam                        
     jsr MakeCharacters_0               
     jsr screen_filler                       
@@ -158,7 +14,7 @@ b_tmp1          .dsb 1
     jsr MakeCharacters_1
     jsr SetPaper
     jsr SetInk
-    jsr PrintWaitMessage
+    jsr printWaitMessage
 
     // Initialise the random generator values (taken from kong, which was supplied with the OSDK)
 	lda #23
@@ -167,7 +23,7 @@ b_tmp1          .dsb 1
 	sta rand_high
 startagain
     jsr MazeRender
-    jsr PrintScrollInstructions
+    jsr printScrollInstructions
     jsr _cls
     jsr SetPaper
     jsr SetInk
@@ -334,56 +190,6 @@ runSideBySide
     rts
 
 
-smallDelay
-.(
-    rts; //no delay
-    txa
-    pha
-    ldx #10
-
-    outer_loop
-    
-    ; a small delay
-    ldy #255
-    loop
-    dey
-    nop
-    cpy #00
-    Bne loop
-    dex
-    cpx #00 
-    bne outer_loop
-
-    pla
-    tax
-    rts    
-.)
-
-
-bigDelay
-.(
-    txa
-    pha
-    ldx #$ff
-
-    outer_loop
-    
-    ; a small delay
-    ldy #255
-    loop
-    dey
-    nop
-    cpy #00
-    Bne loop
-    dex
-    cpx #00 
-    bne outer_loop
-
-    pla
-    tax
-    rts    
-.)
-
 
 // Fill screen in turn with characters from a-z and repeat
 // Exit if key pressed
@@ -438,92 +244,29 @@ print_next_char
     :ExitScreenFill 
     rts       
 
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; SHOW LOWER CASE CHARS ON staTUS LINE (just for info)
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  
-:Alphabet .byt "abcdefghijklmnopqrstuvwxyz"                                 
-:PrintAlphabet 
-    jsr ClearStatus
-    ldy #0                      
-.(
-Loop
-    cpy #26                       
-    beq ExitAlphabet                        
-    lda Alphabet,Y                      
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-.)
-    :ExitAlphabet 
-    rts      
-
-
-:Instructions .byt "TEST: PRESS ANY KEY TO EXIT"                                 
-:PrintInstructions
-    jsr ClearStatus
-    ldy #0                      
-.(
-Loop
-    cpy #27                   
-    beq ExitInstructions                        
-    lda Instructions,Y                      
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-    ExitInstructions 
-    rts       
-.)
-
-
-:ScrollInstructions .byt "PRESS ARROW KEYS TO SCROLL"                                 
-:PrintScrollInstructions
-    jsr ClearStatus
-    ldy #0                      
-.(
-Loop
-    cpy #26                  
-    beq ExitInstructions                        
-    lda ScrollInstructions,Y                      
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-    ExitInstructions 
-    rts       
-.)
-    
-
-
-:WaitMessage .byt "PLEASE WAIT..."                                 
-:PrintWaitMessage
-    jsr ClearStatus
-    ldy #0                      
-.(
-Loop
-    cpy #14;
-    beq ExitInstructions                        
-    lda WaitMessage,Y                      
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-    ExitInstructions 
+printTestInstructions
+    lda #<TestInstructions
+    sta loadMessageLoop+1
+    lda #>TestInstructions
+    sta loadMessageLoop+2
+    jsr printStatusMessage
     rts
-.)
 
-:ClearStatus
-    ldy #0                      
-    lda #32
-.(
-Loop
-    cpy #38 ;
-    beq ExitClear                        
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-    ExitClear 
+:printScrollInstructions                                 
+    lda #<ScrollInstructions
+    sta loadMessageLoop+1
+    lda #>ScrollInstructions
+    sta loadMessageLoop+2
+    jsr printStatusMessage
     rts
-.)
-  
     
+:printWaitMessage
+    lda #<WaitMessage
+    sta loadMessageLoop+1
+    lda #>WaitMessage
+    sta loadMessageLoop+2
+    jsr printStatusMessage
+    rts
                   
 ;>>>>> staRT OF COPY MEM ROUTINE
 :CopyMemory 

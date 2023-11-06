@@ -147,28 +147,24 @@ renderPlayer
 
 checkDone
    rts
-
-   :DeadMessage .byt "YOU'RE DEAD"                                 
+   
 :playerDead
+    ; update the player position on screen
     jsr ScreenRender
     lda #115 ; character code for segment of light trail
-    sta (_maze_line_start),y
-    jsr ClearStatus
-    ldy #0                      
-.(
-Loop
-    cpy #11               
-    beq ExitInstructions                        
-    lda DeadMessage,Y                      
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-    ExitInstructions 
+    
+    ; print message on status line
+    lda #<DeadMessage
+    sta loadMessageLoop+1
+    lda #>DeadMessage
+    sta loadMessageLoop+2
+    jsr printStatusMessage
+
+    ; set flag for player dead
     lda #PLAYER_STATUS_DEAD
     sta _player_status
     jsr bigDelay
-    rts       
-.)
+    rts
 .)
 
 
@@ -273,27 +269,23 @@ renderPlayer
 checkDone
    rts
 
-:DeadMessage .byt "YOU'RE DEAD"                                 
 :playerDead
+    ; update the player position on screen
     jsr ScreenRender
     lda #115 ; character code for segment of light trail
-    sta (_maze_line_start),y
-    jsr ClearStatus
-    ldy #0                      
-.(
-Loop
-    cpy #11               
-    beq ExitInstructions                        
-    lda DeadMessage,Y                      
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-    ExitInstructions 
+    
+    ; print message on status line
+    lda #<DeadMessage
+    sta loadMessageLoop+1
+    lda #>DeadMessage
+    sta loadMessageLoop+2
+    jsr printStatusMessage
+
+    ; set flag for player dead
     lda #PLAYER_STATUS_DEAD
     sta _player_status
     jsr bigDelay
-    rts       
-.)
+    rts
 .)
 
 
