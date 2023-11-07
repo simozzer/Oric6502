@@ -47,7 +47,7 @@ keyboardDone
 
 
 // TODO: need to change the constraints for when to scroll based on the screen sizes 
-updateMovementPlayer1FullScreen
+updateMovementPlayer1
 .(
     lda _player1_direction
     cmp #PLAYER_DIRECTION_LEFT
@@ -56,10 +56,11 @@ updateMovementPlayer1FullScreen
     ;scroll if we can ((TODO don't scroll if scrolling up and haven't reached middle of screen))
 
     LDA _player1_x
-    CMP #234
+    CMP _scroll_left_maze_x_threshold
     BCS movePlayerLeft
+
     lda _player1_maze_x
-    cmp #00
+    cmp #00 ; left column of maze data
     beq movePlayerLeft
     dec _player1_maze_x
 
@@ -73,13 +74,12 @@ checkRight
     bne checkUp
 
     ;scroll if we can
-
     LDA _player1_x
-    CMP #21
+    CMP _scroll_right_maze_x_threshold
     BCC movePlayerRight
 
     lda _player1_maze_x
-    cmp #217
+    cmp _scroll_right_max_maze_x
     beq movePlayerRight
     inc _player1_maze_x
 
@@ -95,7 +95,7 @@ checkUp
 
 
     lda _player1_y ;if player is neear the bottom of the screen then don't scroll
-    cmp #68
+    cmp _scroll_up_maze_y_threshold
     bpl movePlayerUp
 
     lda _player1_maze_y ; don't allow scrolling up past the top of the maze
@@ -115,11 +115,11 @@ checkDown
 
 
     lda _player1_y ;if player is neear the top of the screen then don't scroll
-    cmp #12
+    cmp _scroll_down_maze_y_threshold
     bmi movePlayerDown
     ;scroll if we can
     lda _player1_maze_y
-    cmp #53
+    cmp _scroll_down_max_maze_y
     beq movePlayerDown
     inc _player1_maze_y
 
@@ -150,128 +150,15 @@ checkDone
 
 :playerDead
     ; update the player position on screen
-    jsr ScreenRender
-    lda #115 ; character code for segment of light trail
-    
-    ; print message on status line
-    lda #<DeadMessage
-    sta loadMessageLoop+1
-    lda #>DeadMessage
-    sta loadMessageLoop+2
-    jsr printStatusMessage
-
-    ; set flag for player dead
-    lda #PLAYER_STATUS_DEAD
-    sta _player_status
-    jsr bigDelay
-    rts
-.)
-
-
-
-updateMovementPlayer1SideBySide
-.(
-    lda _player1_direction
-    cmp #PLAYER_DIRECTION_LEFT
-    bne checkRight
-
-    ;scroll if we can ((TODO don't scroll if scrolling up and haven't reached middle of screen))
-
-   ; LDA _player1_x
-   ; CMP #245
-   ; BCS movePlayerLeft
-    lda _player1_maze_x
-    cmp #00
-    beq movePlayerLeft
-    dec _player1_maze_x
-
-    movePlayerLeft
-    dec _player1_x
-    jmp renderPlayer
-
-checkRight
-    lda _player1_direction
-    cmp #PLAYER_DIRECTION_RIGHT
-    bne checkUp
-
-    ;scroll if we can
-
-    LDA _player1_x
-    CMP #9
-    BCC movePlayerRight
-
-    lda _player1_maze_x
-    cmp #237 
-    beq movePlayerRight
-    inc _player1_maze_x
-
-    movePlayerRight
-    inc _player1_x
-    jmp renderPlayer
-
-checkUp
-    lda _player1_direction
-    cmp #PLAYER_DIRECTION_UP
-    bne checkDown
-
-
-
-    lda _player1_y ;if player is neear the bottom of the screen then don't scroll
-    cmp #68
-    bpl movePlayerUp
-
-    lda _player1_maze_y ; don't allow scrolling up past the top of the maze
-    cmp #00
-    beq movePlayerUp
-    dec _player1_maze_y
-
-    movePlayerUp
-    dec _player1_y
-    jmp renderPlayer
-
-
-checkDown
-    lda _player1_direction
-    cmp #PLAYER_DIRECTION_DOWN
-    bne checkDone
-
-
-    lda _player1_y ;if player is neear the top of the screen then don't scroll
-    cmp #12
-    bmi movePlayerDown
-    ;scroll if we can
-    lda _player1_maze_y
-    cmp #53
-    beq movePlayerDown
-    inc _player1_maze_y
-
-    movePlayerDown
-    inc _player1_y
-
-renderPlayer
     ldy _player1_y;
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
-
-    ; check for collision
     ldy _player1_x
-    lda (_maze_line_start),Y
-    cmp #97 + 128
-    beq playerDead 
-    cmp #115
-    beq playerDead
-
-
     lda #115 ; character code for segment of light trail
     sta (_maze_line_start),y
 
-checkDone
-   rts
-
-:playerDead
-    ; update the player position on screen
     jsr ScreenRender
     lda #115 ; character code for segment of light trail
     
@@ -288,13 +175,3 @@ checkDone
     jsr bigDelay
     rts
 .)
-
-
-
-
-
-
-  
-
-; <<<<<< ScreenRender
-; -----------------------------------------------------------------

@@ -54,6 +54,13 @@ _maze_render_offset_x .byt 1
 _screen_render_x_wrap .byt 1 ; the value x must hit to go to the previous line
 _screen_render_y_wrap .byt 1 ; the value y must be for render complete
 
+_scroll_left_maze_x_threshold .byt 1
+_scroll_right_maze_x_threshold .byt 1
+_scroll_right_max_maze_x .byt 1
+_scroll_up_maze_y_threshold .byt 1
+_scroll_down_maze_y_threshold .byt 1
+_scroll_down_max_maze_y .byt 1
+
 _display_mode .byt 1
 
 _zp_end_

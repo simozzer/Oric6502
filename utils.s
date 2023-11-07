@@ -41,10 +41,9 @@ Loop
 ; ------------------------------------------------------------------------------
 smallDelay
 .(
-    rts; //no delay
     txa
     pha
-    ldx #10
+    ldx #$10
 
     outer_loop
     
@@ -57,7 +56,7 @@ smallDelay
     Bne loop
     dex
     cpx #00 
-    bne outer_loop
+    bpl outer_loop
 
     pla
     tax

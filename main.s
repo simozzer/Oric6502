@@ -21,6 +21,7 @@ StartProg
 	sta rand_low
 	lda #35
 	sta rand_high
+
 startagain
     jsr MazeRender
     jsr printScrollInstructions
@@ -94,6 +95,19 @@ runFullScreen
     sta _screen_render_x_wrap
     lda #FULLSCREEN_TEXT_Y_WRAP 
     sta _screen_render_y_wrap
+    lda #FULL_SCREEN_SCROLL_LEFT_MAZE_X_THRESHOLD
+    sta _scroll_left_maze_x_threshold
+    lda #FULL_SCREEN_SCROLL_RIGHT_MAZE_X_THRESHOLD
+    sta _scroll_right_maze_x_threshold
+    lda #FULL_SCREEN_SCROLL_RIGHT_MAX_MAZE_X
+    sta _scroll_right_max_maze_x  
+    lda #FULL_SCREEN_SCROLL_UP_MAZE_Y_THRESHOLD
+    sta _scroll_up_maze_y_threshold  
+    lda #FULL_SCREEN_SCROLL_DOWN_MAX_MAZE_Y
+    sta _scroll_down_maze_y_threshold 
+    lda #FULL_SCREEN_SCROLL_DOWN_MAZE_Y_THRESHOLD
+    sta _scroll_down_max_maze_y
+
     lda _player1_maze_x
     sta _maze_left
     lda _player1_maze_y
@@ -104,7 +118,7 @@ runFullScreen
 
 
     jsr processKeyboardPlayer1
-    jsr updateMovementPlayer1FullScreen
+    jsr updateMovementPlayer1
 
     jsr smallDelay
     
@@ -138,6 +152,19 @@ runSideBySide
     sta _screen_render_x_wrap
     lda #LEFT_SCREEN_TEXT_Y_WRAP 
     sta _screen_render_y_wrap
+    lda #LEFT_SCREEN_SCROLL_LEFT_MAZE_X_THRESHOLD
+    sta _scroll_left_maze_x_threshold
+    lda #LEFT_SCREEN_SCROLL_RIGHT_MAZE_X_THRESHOLD
+    sta _scroll_right_maze_x_threshold
+    lda #LEFT_SCREEN_SCROLL_RIGHT_MAX_MAZE_X
+    sta _scroll_right_max_maze_x
+    lda #LEFT_SCREEN_SCROLL_UP_MAZE_Y_THRESHOLD
+    sta _scroll_up_maze_y_threshold
+    lda #LEFT_SCREEN_SCROLL_DOWN_MAX_MAZE_Y
+    sta _scroll_down_maze_y_threshold 
+    lda #LEFT_SCREEN_SCROLL_DOWN_MAZE_Y_THRESHOLD
+    sta _scroll_down_max_maze_y
+
     lda _player1_maze_x
     sta _maze_left
     lda _player1_maze_y
@@ -159,6 +186,19 @@ runSideBySide
     sta _screen_render_x_wrap
     lda #RIGHT_SCREEN_TEXT_Y_WRAP 
     sta _screen_render_y_wrap
+    lda #RIGHT_SCREEN_SCROLL_LEFT_MAZE_X_THRESHOLD
+    sta _scroll_left_maze_x_threshold
+    lda #RIGHT_SCREEN_SCROLL_RIGHT_MAZE_X_THRESHOLD
+    sta _scroll_right_maze_x_threshold
+    lda #RIGHT_SCREEN_SCROLL_RIGHT_MAX_MAZE_X
+    sta _scroll_right_max_maze_x
+    lda #RIGHT_SCREEN_SCROLL_UP_MAZE_Y_THRESHOLD
+    sta _scroll_up_maze_y_threshold 
+    lda #RIGHT_SCREEN_SCROLL_DOWN_MAX_MAZE_Y
+    sta _scroll_down_maze_y_threshold 
+    lda #RIGHT_SCREEN_SCROLL_DOWN_MAZE_Y_THRESHOLD
+    sta _scroll_down_max_maze_y
+
     lda _player2_maze_x
     sta _maze_left
     lda _player2_maze_y
@@ -168,7 +208,7 @@ runSideBySide
     jsr ScreenRender
 
     jsr processKeyboardPlayer1
-    jsr updateMovementPlayer1SideBySide
+    jsr updateMovementPlayer1
 
     jsr smallDelay
 
@@ -177,19 +217,6 @@ runSideBySide
     lda _player_status
     cmp #PLAYER_STATUS_DEAD
     bne sideScreenLoop
-    rts
-
-    
- 
- ; ** PRINT CHAR AT X,Y           
- :plotchar ldy _plot_ch_y                 ; Load row value                     
-    lda ScreenLineLookupLo,Y    ; lookup low byte for row value and store
-    sta _line_start_lo                
-    lda ScreenLineLookupHi,Y     ; lookup hi byte for row value and store
-    sta _line_start_hi
-    lda _plot_ascii                 ; load ascii code
-    ldy _plot_ch_x                 ; load column value                   
-    sta (_line_start),Y             ; plot character on screen
     rts
 
 

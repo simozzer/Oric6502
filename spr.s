@@ -56,7 +56,8 @@
     .byt 00,16,00,00,00,00,00,00 ;r
 
 
-    .byt 63,33,33,33,33,33,33,63 ;s ;segment of player 1 light trail (ascii code 115)
+    ;.byt 63,33,33,33,33,33,33,63 ;s ;segment of player 1 light trail (ascii code 115)
+    .byt 0,30,30,30,30,30,30,0
 
     .byt 01,01,01,01,01,01,63,01 ;t ;segment of player 2 light trail (ascii code 116)    
 

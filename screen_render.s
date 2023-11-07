@@ -92,7 +92,7 @@ renderSideBySideSplitter
     sta writeLeftSplitter+2
     
     ldx #20;
-    lda #SIDE_BY_SIDE_SPLITTER_LEFT + 128
+    lda #SIDE_BY_SIDE_SPLITTER_LEFT_CHAR_CODE + 128
     :writeLeftSplitter sta $ffff,X
     dey
     cpy #00 
@@ -106,7 +106,7 @@ renderSideBySideSplitter
     sta writeRightSplitter+2
     
     ldx #21;
-    lda #SIDE_BY_SIDE_SPLITTER_RIGHT + 128
+    lda #SIDE_BY_SIDE_SPLITTER_RIGHT_CHAR_CODE + 128
     :writeRightSplitter sta $ffff,X
     dey
     cpy #00
