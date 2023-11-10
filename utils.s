@@ -35,6 +35,51 @@ Loop
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Clear the screen in text mode (without changing status line, or paper and ink)
+; ------------------------------------------------------------------------------
+clearScreen
+    lda #FULLSCREEN_TEXT_FIRST_COLUMN
+    sta _plot_ch_x                          
+    lda #0; Start ON ROW 0           
+    sta _plot_ch_y       
+
+.(                       
+clear_line ; get the line address once a line
+
+    ldy _plot_ch_y        ; Load row value                     
+    lda ScreenLineLookupLo,Y    ; lookup low byte for row value and store
+    sta _line_start_lo                
+    lda ScreenLineLookupHi,Y     ; lookup hi byte for row value and store
+    sta _line_start_hi
+
+    ldy #FULLSCREEN_TEXT_FIRST_COLUMN
+    lda #20 ; space character
+clear_next_char
+    sta (_line_start),Y                     
+                           
+    cpy #FULLSCREEN_TEXT_LAST_COLUMN ;CHECK FOR LAST COLUMN   
+    beq clear_next_line                                               
+    iny
+    jmp clear_next_char
+    
+clear_next_line
+    ldy #FULLSCREEN_TEXT_FIRST_COLUMN
+    ldx _plot_ch_y                          
+    cpx #FULLSCREEN_TEXT_LAST_LINE ;CHECK IF AT LAST LINE   
+    beq screen_cleared                                              
+    inc _plot_ch_y ;move to next line
+    jmp clear_line                         
+    
+    screen_cleared
+    rts     
+.)  
+
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Perform a short delay (currently used to slow to down the game a bit)
@@ -128,6 +173,55 @@ _GetRand
 	adc #$36
 	sta rand_high
 	rts
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;// Copy memory (could be further opitimised using comments from dhbug)
+; ------------------------------------------------------------------------------
+CopyMemory 
+    ldx _copy_mem_src_lo          
+    stx LoadSourceByte+1                      
+    ldx _copy_mem_src_hi                        
+    stx LoadSourceByte+2                      
+    ldx _copy_mem_dest_lo                      
+    stx SaveDestByte+1                     
+    ldx _copy_mem_dest_hi           
+    stx SaveDestByte+2                     
+CopyLoop 
+    lda _copy_mem_count_lo; LO BYTE OF COUNT 
+    bne DecLo                        
+    dec _copy_mem_count_hi                         
+    :DecLo 
+    dec _copy_mem_count_lo                   
+    ; CHECK IF ALL BYTES COPIED     
+    lda _copy_mem_count_lo                         
+    bne LoadSourceByte                        
+    lda _copy_mem_count_hi                        
+    bne LoadSourceByte                        
+    rts ; ZERO BYTES REMAIN          
+    
+    ; Copy source byte to destination              
+:LoadSourceByte 
+    lda $FFFF                  
+:SaveDestByte 
+    sta $FFFF                 
+    
+    ; Increment Source pointer
+    inc LoadSourceByte+1                      
+    bne IncDestAddress                       
+    inc LoadSourceByte+2                      
+    
+    ; Increment Destination pointer      
+:IncDestAddress 
+    inc SaveDestByte+1               
+    bne IncrementDone                       
+    inc SaveDestByte+2                     
+
+:IncrementDone 
+    jmp CopyLoop 
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 
     

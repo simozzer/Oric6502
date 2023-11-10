@@ -56,7 +56,7 @@ maze_start_top
     beq nowall
     
     ; Plot a section of wall
-    lda #97 + 128 ; +128 is plot as inverse
+    lda #(BRICK_WALL_CHAR_CODE + 128) ; +128 is plot as inverse
     
     jmp plot_offscreen
 :nowall

@@ -34,7 +34,7 @@
     .byt 03,00,00,00,00,00,00,00 ;y     
     .byt 01,00,00,00,00,00,00,00 ;z
 :_AltSpriteData
-    .byt 63,63,63,63,63,63,63,63 ;a ; wall block
+    .byt 63,63,63,63,63,63,63,63 ;a ; brick (ascii code 97)
 
     // 17 character of 'random' data to fill background (so that scrolling motion can be seen when screen is empty)
     .byt 00,08,00,00,00,00,00,00 ;b       
@@ -59,7 +59,7 @@
     ;.byt 63,33,33,33,33,33,33,63 ;s ;segment of player 1 light trail (ascii code 115)
     .byt 0,30,30,30,30,30,30,0
 
-    .byt 01,01,01,01,01,01,63,01 ;t ;segment of player 2 light trail (ascii code 116)    
+    .byt 00,20,10,20,10,20,10,00 ;t ;segment of player 2 light trail (ascii code 116)    
 
 
     .byt 01,01,01,01,01,01,01,01 ;side by side screen splitter (left side - ascii code 117)     

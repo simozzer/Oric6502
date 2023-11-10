@@ -25,19 +25,19 @@ StartProg
 startagain
     jsr MazeRender
     jsr printScrollInstructions
-    jsr _cls
+    jsr clearScreen
     jsr SetPaper
     jsr SetInk
 
 
-    //setup player 
+    //setup player 1
     lda #PLAYER_1_START_X
     sta _player1_x    
     lda #PLAYER_1_START_Y
     sta _player1_y
     lda #PLAYER_DIRECTION_UP
     sta _player1_direction
-    lda #PLAYER_STATUS_ALIVE
+    lda #PLAYER_STATUS_BOTH_ALIVE
     sta _player_status
 
     // render player
@@ -50,9 +50,20 @@ startagain
     ldy _player1_x
     sta (_maze_line_start),y
 
+
+    
+    //setup player 2
+    lda #PLAYER_2_START_X
+    sta _player2_x    
+    lda #PLAYER_2_START_Y
+    sta _player2_y
+    lda #PLAYER_DIRECTION_UP
+    sta _player2_direction
+
+
     // The value here will set the rendering mode
-    lda #DISPLAY_MODE_FULLSCREEN 
-    ;lda #DISPLAY_MODE_SIDE_BY_SIDE
+    ;lda #DISPLAY_MODE_FULLSCREEN 
+    lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
 
     
@@ -115,16 +126,14 @@ runFullScreen
 
     jsr ScreenRender
 
-
-
     jsr processKeyboardPlayer1
     jsr updateMovementPlayer1
 
     jsr smallDelay
     
     lda _player_status
-    cmp #PLAYER_STATUS_DEAD
-    bne fullScreenLoop
+    cmp #PLAYER_STATUS_BOTH_ALIVE
+    beq fullScreenLoop
     rts
 
 runSideBySide
@@ -169,8 +178,10 @@ runSideBySide
     sta _maze_left
     lda _player1_maze_y
     sta _maze_top
+    jsr processKeyboardPlayer1
+    jsr updateMovementPlayer1
 
-    jsr ScreenRender
+    jsr ScreenRender ; render left screen
 
 
 
@@ -204,19 +215,19 @@ runSideBySide
     lda _player2_maze_y
     sta _maze_top
 
+    jsr updateMovementPlayer2
+
     
     jsr ScreenRender
 
-    jsr processKeyboardPlayer1
-    jsr updateMovementPlayer1
+
+ 
 
     jsr smallDelay
 
-
-
     lda _player_status
-    cmp #PLAYER_STATUS_DEAD
-    bne sideScreenLoop
+    cmp #PLAYER_STATUS_BOTH_ALIVE
+    beq sideScreenLoop
     rts
 
 
@@ -298,51 +309,7 @@ printTestInstructions
     jsr printStatusMessage
     rts
                   
-;>>>>> staRT OF COPY MEM ROUTINE
-:CopyMemory 
-    ldx _copy_mem_src_lo          
-    stx LoadSourceByte+1                      
-    ldx _copy_mem_src_hi                        
-    stx LoadSourceByte+2                      
-    ldx _copy_mem_dest_lo                      
-    stx SaveDestByte+1                     
-    ldx _copy_mem_dest_hi           
-    stx SaveDestByte+2                     
-    :CopyLoop 
-    lda _copy_mem_count_lo; LO BYTE OF COUNT 
-    bne DecLo                        
-    dec _copy_mem_count_hi                         
-    :DecLo 
-    dec _copy_mem_count_lo                   
-    ; CHECK IF ALL BYTES COPIED     
-    lda _copy_mem_count_lo                         
-    bne LoadSourceByte                        
-    lda _copy_mem_count_hi                        
-    bne LoadSourceByte                        
-    rts ; ZERO BYTES REMAIN          
-    
-    ; Copy source byte to destination              
-:LoadSourceByte 
-    lda $FFFF                  
-:SaveDestByte 
-    sta $FFFF                 
-    
-    ; Increment Source pointer
-    inc LoadSourceByte+1                      
-    bne IncDestAddress                       
-    inc LoadSourceByte+2                      
-    
-    ; Increment Destination pointer      
-:IncDestAddress 
-    inc SaveDestByte+1               
-    bne IncrementDone                       
-    inc SaveDestByte+2                     
 
-:IncrementDone 
-    jmp CopyLoop 
-
-
-                    
 ; Copy initial data for characters a-z into a buffer so we can restore them later
 :CopySetToRam 
     lda #$08 ;lo byte of src                  

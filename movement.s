@@ -43,18 +43,15 @@ nextKey2
 keyboardDone
   rts
 .)
-    
+   
 
-
-// TODO: need to change the constraints for when to scroll based on the screen sizes 
-updateMovementPlayer1
+updateMovementPlayer1 
 .(
     lda _player1_direction
     cmp #PLAYER_DIRECTION_LEFT
     bne checkRight
 
-    ;scroll if we can ((TODO don't scroll if scrolling up and haven't reached middle of screen))
-
+    ;scroll if we can
     LDA _player1_x
     CMP _scroll_left_maze_x_threshold
     BCS movePlayerLeft
@@ -138,11 +135,11 @@ renderPlayer
     lda (_maze_line_start),Y
     cmp #97 + 128
     beq playerDead 
-    cmp #115
+    cmp #PLAYER1_SEGEMENT_CHAR_CODE
     beq playerDead
 
 
-    lda #115 ; character code for segment of light trail
+    lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
 checkDone
@@ -160,7 +157,6 @@ checkDone
     sta (_maze_line_start),y
 
     jsr ScreenRender
-    lda #115 ; character code for segment of light trail
     
     ; print message on status line
     lda #<DeadMessage
@@ -170,8 +166,9 @@ checkDone
     jsr printStatusMessage
 
     ; set flag for player dead
-    lda #PLAYER_STATUS_DEAD
+    lda #PLAYER_STATUS_DEAD_PLAYER_1
     sta _player_status
     jsr bigDelay
     rts
 .)
+
