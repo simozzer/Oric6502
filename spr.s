@@ -62,8 +62,8 @@
     .byt 00,20,10,20,10,20,10,00 ;t ;segment of player 2 light trail (ascii code 116)    
 
 
-    .byt 01,01,01,01,01,01,01,01 ;side by side screen splitter (left side - ascii code 117)     
-    .byt 32,32,32,32,32,32,32,32 ;side by side screen splitter (right side - ascii code 118)
+    .byt 01,01,01,01,01,01,01,01 ;u side by side screen splitter (left side - ascii code 117)     
+    .byt 32,32,32,32,32,32,32,32 ;v side by side screen splitter (right side - ascii code 118)
 
     .byt 63,04,04,04,04,04,04,04 ;w     
     .byt 63,08,08,08,08,08,08,08 ;x      

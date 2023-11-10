@@ -28,19 +28,21 @@ updateMovementPlayer2
     ldy _player2_x
     lda (_maze_line_start),y
     cmp #(BRICK_WALL_CHAR_CODE + 128);
-    bne continueLeft
-    ;cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    ;bne continueLeft
-    ;cmp #PLAYER2_SEGEMENT_CHAR_CODE
-    ;bne continueLeft
+    beq hitWallWhilstMovingLeft
+    cmp #PLAYER1_SEGEMENT_CHAR_CODE
+    beq hitWallWhilstMovingLeft
+    cmp #PLAYER2_SEGEMENT_CHAR_CODE
+    beq hitWallWhilstMovingLeft
+    jmp continueLeft
 
     // TODO Choose random up/down (for now we'll just go down)
+    hitWallWhilstMovingLeft
     inc _player2_x;
     lda #PLAYER_DIRECTION_DOWN
     sta _player2_direction
     inc _player2_y;
 
-    continueLeft
+    :continueLeft
     jmp renderPlayer
 
 checkRight
@@ -71,17 +73,19 @@ checkRight
     ldy _player2_x
     lda (_maze_line_start),y
     cmp #(BRICK_WALL_CHAR_CODE + 128);
-    bne continueRight
-    ;cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    ;bne continueRight
-    ;cmp #PLAYER2_SEGEMENT_CHAR_CODE
-    ;bne continueRight
+    beq hitWallWhilstMovingRight
+    cmp #PLAYER1_SEGEMENT_CHAR_CODE
+    beq hitWallWhilstMovingRight
+    cmp #PLAYER2_SEGEMENT_CHAR_CODE
+    beq hitWallWhilstMovingRight
+    jmp continueRight
 
 
     // TODO -- choose direction up/down..If we can't do either then die!
     // if we can do both then use random.
 
     // for testing we'll just go up ;)
+    hitWallWhilstMovingRight
     dec _player2_x
     lda #PLAYER_DIRECTION_UP
     sta _player2_direction
@@ -89,7 +93,7 @@ checkRight
 
 
 
-    continueRight
+    :continueRight
     jmp renderPlayer
 
 checkUp
@@ -119,11 +123,12 @@ checkUp
     ldy _player2_x
     lda (_maze_line_start),y
     cmp #(BRICK_WALL_CHAR_CODE + 128);
-    bne continueUp
-    ;cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    ;bne continueUp
-    ;cmp #PLAYER2_SEGEMENT_CHAR_CODE
-    ;bne continueUp
+    beq hitWallWhilstMovingUp
+    cmp #PLAYER1_SEGEMENT_CHAR_CODE
+    beq hitWallWhilstMovingUp
+    cmp #PLAYER2_SEGEMENT_CHAR_CODE
+    beq hitWallWhilstMovingUp
+    jmp continueUp
     
 
 
@@ -131,13 +136,14 @@ checkUp
     // if we can do both then use random.
 
     // for testing we'll just go left ;)
+    hitWallWhilstMovingUp
     inc _player2_y;
     lda #PLAYER_DIRECTION_LEFT
     sta _player2_direction
     dec _player2_x;
 
 
-    continueUp
+    :continueUp
     jmp renderPlayer
 
 
@@ -168,16 +174,18 @@ checkDown
     ldy _player2_x
     lda (_maze_line_start),y
     cmp #(BRICK_WALL_CHAR_CODE + 128);    
-    bne renderPlayer
-    ;cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    ;bne renderPlayer
-    ;cmp #PLAYER2_SEGEMENT_CHAR_CODE
-    ;bne renderPlayer
+    beq hitWallWhilstMovingDown
+    cmp #PLAYER1_SEGEMENT_CHAR_CODE
+    beq hitWallWhilstMovingDown
+    cmp #PLAYER2_SEGEMENT_CHAR_CODE
+    beq hitWallWhilstMovingDown
+    jmp renderPlayer
 
     // TODO -- choose direction left/right..If we can't do either then die!
     // if we can do both then use random.
 
     // for testing we'll just go right ;)
+    hitWallWhilstMovingDown
     dec _player2_y;
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
