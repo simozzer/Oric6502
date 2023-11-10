@@ -62,8 +62,8 @@ startagain
 
 
     // The value here will set the rendering mode
-    ;lda #DISPLAY_MODE_FULLSCREEN 
-    lda #DISPLAY_MODE_SIDE_BY_SIDE
+    lda #DISPLAY_MODE_FULLSCREEN 
+    ;lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
 
     
@@ -128,6 +128,13 @@ runFullScreen
 
     jsr processKeyboardPlayer1
     jsr updateMovementPlayer1
+
+    lda _player2_maze_x
+    sta _maze_left
+    lda _player2_maze_y
+    sta _maze_top
+
+    jsr updateMovementPlayer2
 
     jsr smallDelay
     
