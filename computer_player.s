@@ -27,16 +27,11 @@ updateMovementPlayer2
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
-    cmp #(BRICK_WALL_CHAR_CODE + 128);
-    beq hitWallWhilstMovingLeft
-    cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    beq hitWallWhilstMovingLeft
-    cmp #PLAYER2_SEGEMENT_CHAR_CODE
-    beq hitWallWhilstMovingLeft
-    jmp continueLeft
+    clc
+    sbc #(MAX_NON_FATAL_CHAR_CODE+1)
+    bmi continueLeft
 
     // TODO Choose random up/down (for now we'll just go down)
-    hitWallWhilstMovingLeft
     inc _player2_x;
     lda #PLAYER_DIRECTION_DOWN
     sta _player2_direction
@@ -72,20 +67,15 @@ checkRight
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
-    cmp #(BRICK_WALL_CHAR_CODE + 128);
-    beq hitWallWhilstMovingRight
-    cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    beq hitWallWhilstMovingRight
-    cmp #PLAYER2_SEGEMENT_CHAR_CODE
-    beq hitWallWhilstMovingRight
-    jmp continueRight
+    clc
+    sbc #(MAX_NON_FATAL_CHAR_CODE+1)
+    bmi continueUp
 
 
     // TODO -- choose direction up/down..If we can't do either then die!
     // if we can do both then use random.
 
     // for testing we'll just go up ;)
-    hitWallWhilstMovingRight
     dec _player2_x
     lda #PLAYER_DIRECTION_UP
     sta _player2_direction
@@ -122,21 +112,14 @@ checkUp
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
-    cmp #(BRICK_WALL_CHAR_CODE + 128);
-    beq hitWallWhilstMovingUp
-    cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    beq hitWallWhilstMovingUp
-    cmp #PLAYER2_SEGEMENT_CHAR_CODE
-    beq hitWallWhilstMovingUp
-    jmp continueUp
-    
-
+    clc
+    sbc #(MAX_NON_FATAL_CHAR_CODE+1)
+    bmi continueUp
 
     // TODO -- choose direction left/right..If we can't do either then die!
     // if we can do both then use random.
 
     // for testing we'll just go left ;)
-    hitWallWhilstMovingUp
     inc _player2_y;
     lda #PLAYER_DIRECTION_LEFT
     sta _player2_direction
@@ -173,19 +156,14 @@ checkDown
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
-    cmp #(BRICK_WALL_CHAR_CODE + 128);    
-    beq hitWallWhilstMovingDown
-    cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    beq hitWallWhilstMovingDown
-    cmp #PLAYER2_SEGEMENT_CHAR_CODE
-    beq hitWallWhilstMovingDown
-    jmp renderPlayer
+    clc
+    sbc #(MAX_NON_FATAL_CHAR_CODE+1)
+    bmi renderPlayer
 
     // TODO -- choose direction left/right..If we can't do either then die!
     // if we can do both then use random.
 
     // for testing we'll just go right ;)
-    hitWallWhilstMovingDown
     dec _player2_y;
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
@@ -201,11 +179,10 @@ renderPlayer
     ; check for collision
     ldy _player2_x
     lda (_maze_line_start),Y
-    cmp #(BRICK_WALL_CHAR_CODE + 128)
-    beq playerDead 
-    cmp #PLAYER1_SEGEMENT_CHAR_CODE
-    beq playerDead
-
+    clc
+    sbc #(MAX_NON_FATAL_CHAR_CODE+1)
+    bpl playerDead 
+    
 
     lda #PLAYER2_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y

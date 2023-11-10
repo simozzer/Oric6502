@@ -67,7 +67,7 @@ maze_start_top
     jsr _GetRand
     lda rand_low;
     and #15
-    adc #98
+    adc #97
 
 plot_offscreen
     ldy _plot_ch_x;
