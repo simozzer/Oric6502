@@ -20,12 +20,12 @@ I'll repeat - this is very much a work in progress.
 
 TODO (in approximate order):
 - ~~fix routines in maze_procs for finding which bits represent a wall.~~
-- Optimise the above routine
+- ~~Optimise the above routine~~ This currently works fast enough for my purposes, whilst some loops could be unrolled a little this is not an area on which I will dedidicate any further time. This routine is used in plotting the maze offscreen before any real gameplay starts, so speed is not so essential.
 - ~~create routine to plot maze on screen for top-left coordinates.~~
 - ~~Use the above routine to parse maze bitmasks into an off screen buffer and create a new routine to render from that (should be faster)~~
 - ~~When scrolling move the existing data on screen, and just add in the new column or row~~ (I've decided not to do this, as any moving items will be plotted directly to the offscreen buffer - will make the code easier)
-- test.
-- adjust routines to handle split screen (both vertical and horizontal).
+- ~~test.~~ I'm happy with the performance of things higher up this list but will continue to test as I add more code and features.
+- ~~adjust routines to handle split screen (both vertical and horizontal)~~ For now I've just gone with side-by-side mode (/vertical). Due to a lack of screen real estate in text mode the use of top to bottom splitting does not seem valid/useable for the current game I'm building.
 - implement fast keyboard handling to scroll each view of the maze (and disable ROM interupt for these).
 - test again.
 - create 'tracker' for creating music.
