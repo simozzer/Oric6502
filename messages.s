@@ -4,4 +4,6 @@
 
 :WaitMessage .byt "PLEASE WAIT...",0
 
-:DeadMessage .byt "YOU'RE DEAD",0
+:DeadMessage .byt "YOU'RE DEAD!",0
+
+:ComputerDeadMessage .byt "YOU KILLED THE COMPUTER!", 0

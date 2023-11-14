@@ -63,6 +63,10 @@ _scroll_down_max_maze_y .byt 1
 
 _display_mode .byt 1
 
+_possible_directions .byt 1
+
+_player_animation_index .byt 1
+
 _zp_end_
 
 // Part of code copied from Kong, which was supplied with the OSDK

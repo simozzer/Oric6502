@@ -152,7 +152,7 @@ checkDone
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
     ldy _player1_x
-    lda #115 ; character code for segment of light trail
+    lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
     jsr ScreenRender

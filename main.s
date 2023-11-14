@@ -1,10 +1,13 @@
 StartProg
-
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Main program
+; ------------------------------------------------------------------------------
+    
     ;// NOKEYCLICK+SCREEN no cursor
 	lda #8+2	
 	sta $26a
     
-    ;jsr PrintAlphabet 
+
     jsr printTestInstructions       
     jsr CopySetToRam                        
     jsr MakeCharacters_0               
@@ -12,6 +15,7 @@ StartProg
     jsr CopyRamToChars     
 
     jsr MakeCharacters_1
+    jsr BackupCharacters
     jsr SetPaper
     jsr SetInk
     jsr printWaitMessage
@@ -28,7 +32,9 @@ startagain
     jsr clearScreen
     jsr SetPaper
     jsr SetInk
-
+    
+    lda #0
+    sta _player_animation_index
 
     //setup player 1
     lda #PLAYER_1_START_X
@@ -46,7 +52,7 @@ startagain
     sta _maze_line_start_lo
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
-    lda #115 ; character code for segment of light trail
+    lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     ldy _player1_x
     sta (_maze_line_start),y
 
@@ -62,8 +68,8 @@ startagain
 
 
     // The value here will set the rendering mode
-    lda #DISPLAY_MODE_FULLSCREEN 
-    ;lda #DISPLAY_MODE_SIDE_BY_SIDE
+    ;lda #DISPLAY_MODE_FULLSCREEN 
+    lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
 
     
@@ -236,11 +242,15 @@ runSideBySide
     cmp #PLAYER_STATUS_BOTH_ALIVE
     beq sideScreenLoop
     rts
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 
-// Fill screen in turn with characters from a-z and repeat
-// Exit if key pressed
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Screen filler: 
+;   Fill screen in turn with characters from a-z and repeat
+;    Exit if key pressed
+; ------------------------------------------------------------------------------
 screen_filler
     lda #FULLSCREEN_TEXT_FIRST_COLUMN
     sta _plot_ch_x                          
@@ -290,8 +300,15 @@ print_next_char
 
     jmp print_line                          
     :ExitScreenFill 
-    rts       
+    rts
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<    
 
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; printTestInstructions: 
+;   Print some instructions in the status line at the top of the screen
+; ------------------------------------------------------------------------------
 printTestInstructions
     lda #<TestInstructions
     sta loadMessageLoop+1
@@ -299,7 +316,14 @@ printTestInstructions
     sta loadMessageLoop+2
     jsr printStatusMessage
     rts
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<    
 
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; printScrollInstructions: 
+;   Print some instructions in the status line at the top of the screen
+; ------------------------------------------------------------------------------    
 :printScrollInstructions                                 
     lda #<ScrollInstructions
     sta loadMessageLoop+1
@@ -307,7 +331,15 @@ printTestInstructions
     sta loadMessageLoop+2
     jsr printStatusMessage
     rts
-    
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; printWaitMessage: 
+;   Print some instructions in the status line at the top of the screen
+;   while we're waiting for the offscreen 'maze' to be built
+; ------------------------------------------------------------------------------      
 :printWaitMessage
     lda #<WaitMessage
     sta loadMessageLoop+1
@@ -315,9 +347,15 @@ printTestInstructions
     sta loadMessageLoop+2
     jsr printStatusMessage
     rts
-                  
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
-; Copy initial data for characters a-z into a buffer so we can restore them later
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; CopySetToRam: 
+;   Copy initial data for characters a-z into a buffer so we can restore them 
+;   later
+; ------------------------------------------------------------------------------   
 :CopySetToRam 
     lda #$08 ;lo byte of src                  
     sta _copy_mem_src_lo                         
@@ -332,10 +370,16 @@ printTestInstructions
     lda #>_SpriteBackup_ ; hi byte of dest
     sta _copy_mem_dest_hi                        
     jsr CopyMemory                       
-    rts                             
+    rts 
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
 
-; Copy initial character defintions back to restore a-z   
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; CopyRamToChars: 
+;   Copy initial data for characters a-z back from buffer so that we can use
+;   the entire initial character set outside of 'game mode'.
+; ------------------------------------------------------------------------------                                  
 :CopyRamToChars 
     lda #<_SpriteBackup_; lo byte of source                 
     sta _copy_mem_src_lo                        
@@ -351,9 +395,15 @@ printTestInstructions
     sta _copy_mem_dest_hi                         
     jsr CopyMemory                       
     rts                             
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
 
-; Create characters a-z from data                  
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; MakeCharacters_0: 
+;   reconfigure the character set so that we have some sprites/alternative 
+;   characters to use in 'intro' mode.
+; ------------------------------------------------------------------------------                
 :MakeCharacters_0
     lda #<_SpriteData_                   
     sta _copy_mem_src_lo                         
@@ -368,8 +418,16 @@ printTestInstructions
     lda #$B7                        
     sta _copy_mem_dest_hi                        
     jsr CopyMemory                                              
-    rts          
+    rts
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; MakeCharacters_1: 
+;   reconfigure the character set so that we have some sprites/alternative 
+;   characters to use in 'game' mode.
+; ------------------------------------------------------------------------------            
 :MakeCharacters_1
     lda #<_AltSpriteData                   
     sta _copy_mem_src_lo                         

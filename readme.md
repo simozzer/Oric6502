@@ -1,4 +1,4 @@
-This is very much a work in progress!! (currently features a single player in full screen mode. Working on getting side by side split screen working but this will take another day or so)
+This is very much a work in progress!! 
 
 The basic idea is to create a split screen scrolling maze game 
 using 6502 Assembly code on for the Oric 1 and Oric Atmos.

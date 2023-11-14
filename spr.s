@@ -3,9 +3,11 @@
 ;        All sprites of the game
 ; #######################################
 ; #######################################
-; =======================================
-; Letters a-z redefined			
-; =======================================
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Letters a-z redefined	for intro mode		
+; ---------------------------------------
 :_SpriteData_
     .byt 63,33,33,33,33,33,33,63 ;a
     .byt 00,30,18,18,18,18,30,00 ;b       
@@ -33,9 +35,14 @@
     .byt 05,00,00,00,00,00,00,00 ;x      
     .byt 03,00,00,00,00,00,00,00 ;y     
     .byt 01,00,00,00,00,00,00,00 ;z
-:_AltSpriteData
-    
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   
 
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Letters a-z redefined	for game mode		
+; ---------------------------------------    
+:_AltSpriteData
     // 17 character of 'random' data to fill background (so that scrolling motion can be seen when screen is empty)
     .byt 00,08,00,00,00,00,00,00 ;a ;ascii code 97   
     .byt 00,00,04,00,00,00,00,00 ;b       
@@ -54,27 +61,54 @@
     .byt 00,00,00,02,00,00,00,00 ;o
     .byt 00,00,00,00,00,00,00,08 ;p
     .byt 00,16,00,00,00,00,00,00 ;q ;ascii code 113
-
     .byt 63,63,63,63,63,63,63,63 ;r ; brick (ascii code 114)
-
-
-    ;.byt 63,33,33,33,33,33,33,63 ;s ;segment of player 1 light trail (ascii code 115)
-    .byt 0,30,30,30,30,30,30,0
-
-    .byt 00,20,10,20,10,20,10,00 ;t ;segment of player 2 light trail (ascii code 116)    
-
-
-    .byt 01,01,01,01,01,01,01,01 ;u side by side screen splitter (left side - ascii code 117)     
-    .byt 32,32,32,32,32,32,32,32 ;v side by side screen splitter (right side - ascii code 118)
-
-    .byt 63,04,04,04,04,04,04,04 ;w     
-    .byt 63,08,08,08,08,08,08,08 ;x      
-    .byt 63,16,16,16,16,16,16,16 ;y     
-    .byt 63,32,32,32,32,32,32,32 ;z
+ :_Player1_Game_Sprite_Start
+    .byt 0,30,30,30,30,30,30,0 ;s  ;segment of player 1 light trail (ascii code 115)
+    .byt 0,30,18,18,18,18,30,0 ;t  ; another player 1 segment (116)
+    .byt 0,30,18,12,12,18,30,0 ;u  ; another player 2 segment (117)
+:_Player2_Game_Sprite_Start
+    .byt 00,20,10,20,10,20,10,00 ;v ;segment of player 2 light trail (ascii code 118)   
+    .byt 63,04,04,04,04,04,04,04 ;w ; another player 1 segment (119)      
+    .byt 63,08,08,08,08,08,08,08 ;x ; another player 1 segment (120)  
+    .byt 01,01,01,01,01,01,01,01 ;y side by side screen splitter (left side - ascii code 121)         
+    .byt 32,32,32,32,32,32,32,32 ;z side by side screen splitter (right side - ascii code 122)
 :_SpriteBackup_
-    .dsb 255,1
+    .dsb 255,1 ;208 would work for 26 characters
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   
 
-.byt 00
 
 
-    
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Letters a-z redefined	backup of 
+; characters in 'game' mode		
+; --------------------------------------- 
+:_animationBackup 
+    .byt 00,08,00,00,00,00,00,00 ;a ;ascii code 97   
+    .byt 00,00,04,00,00,00,00,00 ;b       
+    .byt 00,00,00,01,00,00,00,00 ;c    
+    .byt 00,00,00,00,16,00,00,00 ;d
+    .byt 00,00,00,00,00,02,00,00 ;e 
+    .byt 00,00,00,00,00,00,01,00 ;f           
+    .byt 00,01,00,00,00,00,00,00 ;g   
+    .byt 00,00,00,04,00,00,00,00 ;h          
+    .byt 00,00,00,00,04,00,00,00 ;i      
+    .byt 00,00,00,04,00,00,16,00 ;j  
+    .byt 00,02,00,00,00,00,00,00 ;k
+    .byt 00,00,02,00,00,00,00,00 ;l
+    .byt 01,00,00,00,00,00,00,00 ;m
+    .byt 00,00,00,16,00,00,00,00 ;n
+    .byt 00,00,00,02,00,00,00,00 ;o
+    .byt 00,00,00,00,00,00,00,08 ;p
+    .byt 00,16,00,00,00,00,00,00 ;q ;ascii code 113
+    .byt 63,63,63,63,63,63,63,63 ;r ; brick (ascii code 114)
+ :_Player1_Game_Sprite_Backup_Start
+    .byt 0,30,30,30,30,30,30,0 ;s  ;segment of player 1 light trail (ascii code 115)
+    .byt 0,30,18,18,18,18,30,0 ;t  ; another player 1 segment (116)
+    .byt 0,30,18,12,12,18,30,0 ;u  ; another player 2 segment (117)
+ :_Player2_Game_Sprite_Backup_Start
+    .byt 00,20,10,20,10,20,10,00 ;v ;segment of player 2 light trail (ascii code 118)   
+    .byt 63,04,04,04,04,04,04,04 ;w ; another player 1 segment (119)      
+    .byt 63,08,08,08,08,08,08,08 ;x ; another player 1 segment (120)  
+    .byt 01,01,01,01,01,01,01,01 ;y side by side screen splitter (left side - ascii code 121)         
+    .byt 32,32,32,32,32,32,32,32 ;z side by side screen splitter (right side - ascii code 122)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
