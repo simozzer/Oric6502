@@ -122,8 +122,6 @@ checkUp
 
     // Cannot continue up
 
-
-
     ; check if can move left
     ldy _player2_y;
     iny 
@@ -135,35 +133,33 @@ checkUp
     dey
     lda (_maze_line_start),y
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
-    bcc canMoveLeft
-    jmp checkCanMoveRight
+    bcc canMoveLeftFromUp
+    jmp checkCanMoveRightFromUp
 
 
-    canMoveLeft
+    canMoveLeftFromUp
     lda #POSSIBLE_DIRECTION_UP_OR_LEFT
     sta _possible_directions
 
-    :checkCanMoveRight
+    :checkCanMoveRightFromUp
     ldy _player2_x;
     iny
     lda (_maze_line_start),y
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
-    bcc canMoveRight
+    bcc canMoveRightFromUp
     jmp processUpwardDirectionChange
 
-    canMoveRight
+    canMoveRightFromUp
     lda _possible_directions
     adc #POSSIBLE_DIRECTION_DOWN_OR_RIGHT
     sta _possible_directions
 
-    // for testing we'll just go left ;)
     :processUpwardDirectionChange
     lda _possible_directions
-    clc
     cmp #POSSIBLE_DIRECTION_NONE
     beq continueUp
     cmp #POSSIBLE_DIRECTION_BOTH
-    beq chooseADirection
+    beq chooseADirectionFromUp
     cmp #POSSIBLE_DIRECTION_UP_OR_LEFT
     beq changeFromUpToLeft
 
@@ -182,33 +178,28 @@ checkUp
     dec _player2_x;
     jmp renderPlayer
 
-    :chooseADirection
+    ; choose right or left at random
+    :chooseADirectionFromUp
     lda _possible_directions
     jsr _GetRand
     lda rand_low
     and #POSSIBLE_DIRECTION_UP_OR_LEFT
     cmp #POSSIBLE_DIRECTION_UP_OR_LEFT
-    beq chooseLeft
+    beq chooseLeftFromUp
 
-    ; otherwise choose right
+    ; choose right
     inc _player2_x
     inc _player2_y
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
     jmp renderPlayer
 
-    chooseLeft
+    chooseLeftFromUp
     dec _player2_x
     inc _player2_y
     lda #PLAYER_DIRECTION_LEFT
     sta _player2_direction
     jmp renderPlayer
-
-
-
-
-
-
 .)
     :continueUp
     jmp renderPlayer
