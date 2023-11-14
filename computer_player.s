@@ -8,22 +8,27 @@ updateMovementPlayer2
 .(
     lda _player2_direction
     cmp #PLAYER_DIRECTION_LEFT
-    bne checkRight
+    beq processCheckLeft
+    jmp checkRight
 
-    ;scroll if we can
-    LDA _player2_x
+    :processCheckLeft
+    lda #POSSIBLE_DIRECTION_NONE
+    sta _possible_directions
+
+    ; // Keep the maze in view, and dont allow display of elements outside of the maze!!
+    LDA _player2_x; if player is neear the right of the screen then don't scroll
     CMP _scroll_left_maze_x_threshold
     BCS movePlayerLeftOrTurn
 
-    lda _player2_maze_x
+    lda _player2_maze_x ; don't allow scrolling up past the left of the maze
     cmp #00 ; left column of maze data
     beq movePlayerLeftOrTurn
     dec _player2_maze_x
 
     movePlayerLeftOrTurn
-    // TODO - if can't move left try up or down
     dec _player2_x
 
+    ; check that the move is valid, and that we don't have any signicant collisions
     ldy _player2_y;
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
@@ -31,15 +36,95 @@ updateMovementPlayer2
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
-    clc
-    sbc #(MAX_NON_FATAL_CHAR_CODE+1)
-    bmi continueLeft
+    cmp #(MAX_NON_FATAL_CHAR_CODE+1)
+    bcs cannotContinueLeft
+    jmp renderPlayer
 
-    // TODO Choose random up/down (for now we'll just go down)
-    inc _player2_x;
+    ;cannot continue left
+    cannotContinueLeft
+    ldy _player2_y;    
+    dey ; decrement player y to see if we can move up
+    lda OffscreenLineLookupLo,Y
+    sta _maze_line_start_lo
+    lda OffscreenLineLookupHi,y
+    sta _maze_line_start_hi
+    ldy _player2_x;
+    iny ;increment the x position, which we've previously decremented to check up is valid
+    lda (_maze_line_start),y
+    cmp #(MAX_NON_FATAL_CHAR_CODE+1)
+    bcc canMoveUpFromLeft
+    jmp checkCanMoveDownFromLeft
+
+    canMoveUpFromLeft
+    lda #POSSIBLE_DIRECTION_UP
+    sta _possible_directions
+
+    :checkCanMoveDownFromLeft
+    ldy _player2_y;    
+    iny ; increment player y to see if we can move down
+    lda OffscreenLineLookupLo,Y
+    sta _maze_line_start_lo
+    lda OffscreenLineLookupHi,y
+    sta _maze_line_start_hi
+    ldy _player2_x;
+    iny ;increment the x position, which we've previously decremented to check down is valid
+    lda (_maze_line_start),y
+    cmp #(MAX_NON_FATAL_CHAR_CODE+1)
+    bcc canMoveDownFromLeft
+    jmp processLeftwardDirectionChange
+
+    canMoveDownFromLeft
+    lda _possible_directions
+    adc #POSSIBLE_DIRECTION_DOWN
+    sta _possible_directions
+
+    :processLeftwardDirectionChange
+    lda _possible_directions
+    cmp #POSSIBLE_DIRECTION_NONE
+    beq continueLeft
+    cmp #POSSIBLE_DIRECTION_BOTH
+    beq chooseADirectionFromLeft
+    cmp #POSSIBLE_DIRECTION_UP
+    beq changeFromLeftToUp
+
+    ; can only move down
+    inc _player2_x; we couldn't move left... so increment the x position before moving down
     lda #PLAYER_DIRECTION_DOWN
     sta _player2_direction
     inc _player2_y;
+    jmp continueLeft
+
+    ; can only move left
+    changeFromLeftToUp
+    inc _player2_x; we couldn't move left... so increment the x position before moving up
+    lda #PLAYER_DIRECTION_UP
+    sta _player2_direction
+    dec _player2_y;
+    jmp continueLeft
+
+    :chooseADirectionFromLeft
+    lda _possible_directions
+    jsr _GetRand
+    lda rand_low
+    and #POSSIBLE_DIRECTION_UP
+    cmp #POSSIBLE_DIRECTION_UP
+    beq chooseUpFromLeft
+    
+    ; choose down
+    inc _player2_y
+    inc _player2_x ;  we couldn't move left... so increment the x position before moving right
+    lda #PLAYER_DIRECTION_DOWN
+    sta _player2_direction
+    jmp renderPlayer
+
+
+    chooseUpFromLeft
+    dec _player2_y
+    inc _player2_x ;  we couldn't move left... so increment the x position before moving down
+    lda #PLAYER_DIRECTION_UP
+    sta _player2_direction
+    jmp renderPlayer
+
 
     :continueLeft
     jmp renderPlayer
@@ -287,7 +372,7 @@ checkDown
     beq changeFromDownToLeft
 
     ; can only move right
-    dec _player2_y; we couldn't move up... so increment the y position before moving right
+    dec _player2_y; we couldn't move down... so increment the y position before moving right
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
     inc _player2_x;
@@ -295,7 +380,7 @@ checkDown
 
     ; can only move left
     changeFromDownToLeft
-    dec _player2_y; we couldn't move up... so increment the y position before moving left
+    dec _player2_y; we couldn't move down... so increment the y position before moving left
     lda #PLAYER_DIRECTION_LEFT
     sta _player2_direction
     dec _player2_x;
@@ -312,7 +397,7 @@ checkDown
 
     ; choose right
     inc _player2_x
-    dec _player2_y ;  we couldn't move up... so increment the y position before moving right
+    dec _player2_y ;  we couldn't move down... so increment the y position before moving right
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
     jmp renderPlayer
