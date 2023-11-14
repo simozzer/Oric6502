@@ -1,4 +1,8 @@
 
+;/ THIS COULD BE SIMPLIFIED with getCharAbove, getCharBelow, getCharToLeft, getCharToRight
+; or GetCanMoveUp, GetCanMoveDown, GetCanMoveLeft, GetCanMoveRight
+;/ WHICH MIGHT BE EASIER TO READ AND MAINTAIN (but would probably be less performant)
+
 ;// THIS IS FOR THE PLAYER CONTROLLED BY THE COMPUTER
 updateMovementPlayer2 
 .(
@@ -97,7 +101,8 @@ checkUp
     lda #POSSIBLE_DIRECTION_NONE
     sta _possible_directions
 
-    lda _player2_y ;if player is neear the bottom of the screen then don't scroll
+    ; // Keep the maze in view, and dont allow display of elements outside of the maze!!
+    lda _player2_y ;if player is near the bottom of the screen then don't scroll
     cmp _scroll_up_maze_y_threshold
     bpl movePlayerUpOrTurn
 
@@ -107,9 +112,9 @@ checkUp
     dec _player2_maze_y
 
     movePlayerUpOrTurn
-    // TODO - if can't move up try left or right
-    dec _player2_y
+    dec _player2_y ;move the player upwards, (we will need to correct this when checking left/right possibilties)
 
+    ; check that the move is valid, and that we don't have any signicant collisions
     ldy _player2_y;
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
@@ -124,13 +129,13 @@ checkUp
 
     ; check if can move left
     ldy _player2_y;
-    iny 
+    iny ; re-increment the y position, as we had a collision at that point
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
     ldy _player2_x;
-    dey
+    dey ;decrement the x position to check that the position to the left is valid
     lda (_maze_line_start),y
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveLeftFromUp
@@ -138,12 +143,12 @@ checkUp
 
 
     canMoveLeftFromUp
-    lda #POSSIBLE_DIRECTION_UP_OR_LEFT
+    lda #POSSIBLE_DIRECTION_LEFT
     sta _possible_directions
 
     :checkCanMoveRightFromUp
     ldy _player2_x;
-    iny
+    iny ; increment the x position to check that the position to the right is valid
     lda (_maze_line_start),y
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveRightFromUp
@@ -151,20 +156,21 @@ checkUp
 
     canMoveRightFromUp
     lda _possible_directions
-    adc #POSSIBLE_DIRECTION_DOWN_OR_RIGHT
+    adc #POSSIBLE_DIRECTION_RIGHT
     sta _possible_directions
 
+    ; Check the possible directions to see where we can move next
     :processUpwardDirectionChange
     lda _possible_directions
     cmp #POSSIBLE_DIRECTION_NONE
     beq continueUp
     cmp #POSSIBLE_DIRECTION_BOTH
     beq chooseADirectionFromUp
-    cmp #POSSIBLE_DIRECTION_UP_OR_LEFT
+    cmp #POSSIBLE_DIRECTION_LEFT
     beq changeFromUpToLeft
 
     ; can only move right
-    inc _player2_y;
+    inc _player2_y; we couldn't move up... so increment the y position before moving right
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
     inc _player2_x;
@@ -172,7 +178,7 @@ checkUp
 
     ; can only move left
     changeFromUpToLeft
-    inc _player2_y;
+    inc _player2_y; we couldn't move up... so increment the y position before moving left
     lda #PLAYER_DIRECTION_LEFT
     sta _player2_direction
     dec _player2_x;
@@ -183,12 +189,12 @@ checkUp
     lda _possible_directions
     jsr _GetRand
     lda rand_low
-    and #POSSIBLE_DIRECTION_UP_OR_LEFT
-    cmp #POSSIBLE_DIRECTION_UP_OR_LEFT
+    and #POSSIBLE_DIRECTION_LEFT
+    cmp #POSSIBLE_DIRECTION_LEFT
     beq chooseLeftFromUp
 
     ; choose right
-    inc _player2_x
+    inc _player2_x ;  we couldn't move up... so increment the y position before moving right
     inc _player2_y
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
@@ -196,7 +202,7 @@ checkUp
 
     chooseLeftFromUp
     dec _player2_x
-    inc _player2_y
+    inc _player2_y ;  we couldn't move up... so increment the y position before moving left
     lda #PLAYER_DIRECTION_LEFT
     sta _player2_direction
     jmp renderPlayer
