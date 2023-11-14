@@ -63,7 +63,7 @@ startagain
     sta _player2_x    
     lda #PLAYER_2_START_Y
     sta _player2_y
-    lda #PLAYER_DIRECTION_UP
+    lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
 
 
@@ -132,6 +132,8 @@ runFullScreen
 
     jsr ScreenRender
 
+    jsr AnimateCharacters
+
     jsr processKeyboardPlayer1
     jsr updateMovementPlayer1
 
@@ -163,7 +165,7 @@ runSideBySide
     jsr renderSideBySideSplitter
     
     // set up dimensions for screen to render    
-    sideScreenLoop
+    :sideScreenLoop
     lda #LEFT_SCREEN_TEXT_LAST_COLUMN
     sta _screen_render_right
     lda #LEFT_SCREEN_TEXT_LAST_LINE
@@ -195,6 +197,7 @@ runSideBySide
     jsr updateMovementPlayer1
 
     jsr ScreenRender ; render left screen
+    jsr AnimateCharacters
 
 
 
@@ -232,15 +235,13 @@ runSideBySide
 
     
     jsr ScreenRender
-
-
- 
-
     jsr smallDelay
 
     lda _player_status
     cmp #PLAYER_STATUS_BOTH_ALIVE
-    beq sideScreenLoop
+    bne someoneDied
+    jmp sideScreenLoop
+    someoneDied
     rts
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

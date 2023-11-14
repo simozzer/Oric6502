@@ -68,8 +68,8 @@
     .byt 0,30,18,12,12,18,30,0 ;u  ; another player 2 segment (117)
 :_Player2_Game_Sprite_Start
     .byt 00,20,10,20,10,20,10,00 ;v ;segment of player 2 light trail (ascii code 118)   
-    .byt 63,04,04,04,04,04,04,04 ;w ; another player 1 segment (119)      
-    .byt 63,08,08,08,08,08,08,08 ;x ; another player 1 segment (120)  
+    .byt 00,30,00,30,30,00,30,00 ;w ; another player 1 segment (119)      
+    .byt 00,20,30,10,10,30,20,00 ;x ; another player 1 segment (120)  
     .byt 01,01,01,01,01,01,01,01 ;y side by side screen splitter (left side - ascii code 121)         
     .byt 32,32,32,32,32,32,32,32 ;z side by side screen splitter (right side - ascii code 122)
 :_SpriteBackup_
