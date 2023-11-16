@@ -502,6 +502,7 @@ renderPlayer
     
 
     lda #PLAYER2_SEGEMENT_CHAR_CODE ; character code for segment of light trail
+    adc #128
     sta (_maze_line_start),y
 
 checkDone
@@ -516,14 +517,15 @@ checkDone
     sta _maze_line_start_hi
     ldy _player2_x
     lda #PLAYER2_SEGEMENT_CHAR_CODE ; character code for segment of light trail (player 2)
+    adc #128
     sta (_maze_line_start),y
 
     jsr ScreenRender
     
     ; print message on status line
-    lda #<DeadMessage
+    lda #<ComputerDeadMessage
     sta loadMessageLoop+1
-    lda #>DeadMessage
+    lda #>ComputerDeadMessage
     sta loadMessageLoop+2
     jsr printStatusMessage
 
