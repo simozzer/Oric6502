@@ -6,7 +6,6 @@ StartProg
     ;// NOKEYCLICK+SCREEN no cursor
 	lda #8+2	
 	sta $26a
-    
 
     jsr printTestInstructions       
     jsr CopySetToRam                        
@@ -80,7 +79,7 @@ startagain
     jmp end
      
     nextMode0
-    cmp #DISPLAY_MODE_SIDE_BY_SIDE // SIDE BY SIDE IS A WORK IN PROGRESS AND DOES NOT YET FUNCTION CORRECTLY!!!!
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE
     bne nextMode1
     jsr runSideBySide  
     jmp end

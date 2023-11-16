@@ -1,11 +1,10 @@
 ; // DATA FOR MAZE .. currently only an empty area with walls on each edge
-; // (and some test data on row 1)
 ; // Each BIT which is set will be a block of the wall
 ; // Each row is 32 bytes long - allowing for 255 sections of wall for each row (with 80 rows we will use 20400 bytes to store
 ; the expanded maze, 255 bytes per row)
 
-;// currently have 80 rows of data, (need to expand the lookup tables in further rows added)
-:MazeData1 ;(This should just be a big empty recentangle)
+;// currently have 80 rows of data.
+:MazeData1 ;(This should just be a big empty rectangle)
 .byt $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$fe ; last bit in last byte is not used
 .byt $80,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$02
 .byt $80,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$02
