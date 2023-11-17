@@ -67,6 +67,8 @@ _possible_directions .dsb 1
 
 _player_animation_index .dsb 1
 
+_gKey .dsb 1
+
 _zp_end_
 
 // Part of code copied from Kong, which was supplied with the OSDK

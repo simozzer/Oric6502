@@ -7,3 +7,5 @@
 :DeadMessage .byt "YOU'RE DEAD!",0
 
 :ComputerDeadMessage .byt "YOU KILLED THE COMPUTER!", 0
+
+:TrackerInstructions .byt "LET'S MAKE MUSIC",0

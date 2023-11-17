@@ -107,9 +107,9 @@ beq loadThirdFrame
     sta _copy_mem_dest_hi                        
     jsr CopyMemory  
 
-    lda #<(_animationBackup + 22*8)
+    lda #<(_animationBackup + 23*8)
     sta _copy_mem_src_lo                         
-    lda #>(_animationBackup + 22*8)
+    lda #>(_animationBackup + 23*8)
     sta _copy_mem_src_hi                         
     lda #$08 ; BYTE COUNT           
     sta _copy_mem_count_lo                         
