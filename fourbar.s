@@ -68,31 +68,84 @@ printTrackerInstructions
     rts
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  
 
+
+printTrackerScreen
+.(
+ldy #0
+sty _line_no
+loopy
+lda ScreenLineLookupLo,Y
+sta _copy_mem_dest_lo
+lda ScreenLineLookupHi,y
+sta _copy_mem_dest_hi
+lda trackerScreenDataLo,y
+sta _copy_mem_src_lo
+lda trackerScreenDataHi,Y
+sta _copy_mem_src_hi
+
+ldy #0
+loopx
+lda (_copy_mem_src),y
+sta (_copy_mem_dest),y
+iny
+cpy #39
+bne loopx
+ldy _line_no
+
+iny
+sty _line_no
+cpy #27
+bne loopy
+rts
+.)
+
+
 trackerScreenData
-.byt "    CHANNEL 1          CHANNEL 2",0
-.byt " NOTE OCT LEN VOL   NOTE OCT LEN VOL",0
-.byt "-------------------------------------",0
-.byt ">----|---|---|---| |----|---|---|---<",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt ">----|---|---|---| |----|---|---|---<",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt ">----|---|---|---| |----|---|---|---<",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt ">----|---|---|---| |----|---|---|---<",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "|----|---|---|---| |----|---|---|---|",0
-.byt "-------------------------------------",0
-.byt "Arrows to navigate.",0
-.byt "1+/- to change value.",0
-.byt "</> to change bar.",0
-*/
+.byt PAPER_WHITE, INK_GREEN,  "    CHANNEL 1           CHANNEL 2     "
+.byt PAPER_WHITE, INK_GREEN,  " NOTE OCT LEN VOL    NOTE OCT LEN VOL "
+.byt PAPER_WHITE, INK_BLACK,  "--------------------------------------"
+.byt PAPER_BLACK, INK_BLACK,  "                                      "
+.byt PAPER_BLACK, INK_GREEN,  ">  --|  -| --| --|  |  --|  -| --| --<"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_GREEN,  ">  --|  -| --| --|  |  --|  -| --| --<"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_GREEN,  ">  --|  -| --| --|  |  --|  -| --| --<"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_GREEN,  ">  --|  -| --| --|  |  --|  -| --| --<"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_BLACK,  "                                      "
+.byt PAPER_WHITE, INK_BLACK,  "--------------------------------------"
+.byt PAPER_WHITE, INK_BLUE,   "  Press arrows to navigate, please.   "
+.byt PAPER_WHITE, INK_BLUE,   "  Kindly use +/- to change a value.   "
+.byt PAPER_WHITE, INK_BLUE,   " Respectfully click 'del' to delete.  "
+.byt PAPER_WHITE, INK_BLUE,   "    Click on </> to change bar.       "
+.byt PAPER_WHITE, INK_BLACK,  "--------------------------------------"
+
+trackerScreenDataLo
+    .byt <trackerScreenData + 0,<trackerScreenData + 40,<trackerScreenData + 80,<trackerScreenData + 120,<trackerScreenData + 160
+    .byt <trackerScreenData + 200,<trackerScreenData + 240,<trackerScreenData + 280,<trackerScreenData + 320,<trackerScreenData + 360
+    .byt <trackerScreenData + 400,<trackerScreenData + 440,<trackerScreenData + 480,<trackerScreenData + 520,<trackerScreenData + 560
+    .byt <trackerScreenData + 600,<trackerScreenData + 640,<trackerScreenData + 680,<trackerScreenData + 720,<trackerScreenData + 760
+    .byt <trackerScreenData + 800,<trackerScreenData + 840,<trackerScreenData + 880,<trackerScreenData + 920,<trackerScreenData + 960
+    .byt <trackerScreenData + 1000,<trackerScreenData + 1040,<trackerScreenData + 1080
+
+
+trackerScreenDataHi
+    .byt >trackerScreenData + 0,>trackerScreenData + 40,>trackerScreenData + 80,>trackerScreenData + 120,>trackerScreenData + 160
+    .byt >trackerScreenData + 200,>trackerScreenData + 240,>trackerScreenData + 280,>trackerScreenData + 320,>trackerScreenData + 360
+    .byt >trackerScreenData + 400,>trackerScreenData + 440,>trackerScreenData + 480,>trackerScreenData + 520,>trackerScreenData + 560
+    .byt >trackerScreenData + 600,>trackerScreenData + 640,>trackerScreenData + 680,>trackerScreenData + 720,>trackerScreenData + 760
+    .byt >trackerScreenData + 800,>trackerScreenData + 840,>trackerScreenData + 880,>trackerScreenData + 920,>trackerScreenData + 960
+    .byt >trackerScreenData + 1000,>trackerScreenData + 1040,>trackerScreenData + 1080
+
 
 // 4 bars of music data (for 2 channels, each word uses the format described above)
 trackerMusicData

@@ -55,7 +55,7 @@ _screen_render_x_wrap .dsb 1 ; the value x must hit to go to the previous line
 _screen_render_y_wrap .dsb 1 ; the value y must be for render complete
 
 _scroll_left_maze_x_threshold .dsb 1
-_scroll_right_maze_x_threshold .dsb 1
+_scroll_right_maze_x_threshold .dsb 1   
 _scroll_right_max_maze_x .dsb 1
 _scroll_up_maze_y_threshold .dsb 1
 _scroll_down_maze_y_threshold .dsb 1
@@ -66,6 +66,8 @@ _display_mode .dsb 1
 _possible_directions .dsb 1
 
 _player_animation_index .dsb 1
+
+_line_no .dsb 1
 
 _gKey .dsb 1
 
