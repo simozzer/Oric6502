@@ -88,7 +88,7 @@ loopx
 lda (_copy_mem_src),y
 sta (_copy_mem_dest),y
 iny
-cpy #39
+cpy #40
 bne loopx
 ldy _line_no
 
@@ -96,33 +96,34 @@ iny
 sty _line_no
 cpy #27
 bne loopy
-rts
+;rts
 .)
+jmp printTrackerScreen
 
 
 trackerScreenData
-.byt PAPER_WHITE, INK_GREEN,  "    CHANNEL 1           CHANNEL 2     "
-.byt PAPER_WHITE, INK_GREEN,  " NOTE OCT LEN VOL    NOTE OCT LEN VOL "
-.byt PAPER_WHITE, INK_BLACK,  "--------------------------------------"
+.byt PAPER_WHITE, INK_BLACK,  "    CHANNEL 1           CHANNEL 2     "
+.byt PAPER_WHITE, INK_BLACK,  " NOTE OCT LEN VOL    NOTE OCT LEN VOL "
+.byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
 .byt PAPER_BLACK, INK_BLACK,  "                                      "
-.byt PAPER_BLACK, INK_GREEN,  ">  --|  -| --| --|  |  --|  -| --| --<"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_GREEN,  ">  --|  -| --| --|  |  --|  -| --| --<"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_GREEN,  ">  --|  -| --| --|  |  --|  -| --| --<"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_GREEN,  ">  --|  -| --| --|  |  --|  -| --| --<"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
-.byt PAPER_BLACK, INK_BLUE,   "|  --|  -| --| --|  |  --|  -| --| --|"
+.byt PAPER_BLACK, INK_GREEN,  ">  --   -  --  --      --   -  --  --<"
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_GREEN,  ">  --   -  --  --      --   -  --  --<"
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_GREEN,  ">  --   -  --  --      --   -  --  --<"
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_GREEN,  ">  --   -  --  --      --   -  --  --<"
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
 .byt PAPER_BLACK, INK_BLACK,  "                                      "
-.byt PAPER_WHITE, INK_BLACK,  "--------------------------------------"
+.byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
 .byt PAPER_WHITE, INK_BLUE,   "  Press arrows to navigate, please.   "
 .byt PAPER_WHITE, INK_BLUE,   "  Kindly use +/- to change a value.   "
 .byt PAPER_WHITE, INK_BLUE,   " Respectfully click 'del' to delete.  "
