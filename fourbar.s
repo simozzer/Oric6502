@@ -22,7 +22,7 @@
 // sound chip).
 
 // The data will be stored using this format
-// OCTAVE 0-7 (3 bits, but will use 4),
+// OCTAVE 0-7 (3 bits, but will use 4. The hi bit will be used for 'no note')
 // NOTE (1-12/ can be stores as 0-11) (4 bits)
 // VOL (1-15 - volume level, 0 = use envelope from play) (4 bits)
 // LENGTH (1-15) ( 4 bits)
@@ -96,9 +96,109 @@ iny
 sty _line_no
 cpy #27
 bne loopy
-;rts
+jsr printLineData
+rts
+
 .)
-jmp printTrackerScreen
+
+printLineData
+.( 
+    ldy #4 ; plotting of bar data starts at line 4
+    lda ScreenLineLookupLo,Y
+    sta _copy_mem_dest_lo
+    lda ScreenLineLookupHi,y
+    sta _copy_mem_dest_hi
+
+
+    ldy #0 ; plotting of data for bar 1 starts at zer0
+    lda trackerMusicDataLo,Y
+    sta _music_info_byte_lo
+    lda trackerMusicDataHi,y
+    sta _music_info_byte_hi
+
+    ;getMusicInfoBytePart1
+    ldy #0
+    lda (_music_info_byte_addr),y
+    tax ; make a copy of the value (the lower 4 bits will be used for note)
+    txa
+
+    ; getPart1Octave
+    and #$F0
+    lsr
+    lsr
+    lsr 
+    lsr
+    and #$0F
+    sta _music_octave
+    ;convert octave to digit and print on screen
+    adc #48
+    ldy #10
+    sta (_copy_mem_dest),y
+
+    
+
+    ; getPart1Note
+    txa
+    and #$0F
+    sta _music_note
+    adc _music_note ;double the value to lookup string
+    tax
+    ; lookup string for note and display on screen
+    lda notesToDisplay,x
+    ldy #5
+    sta (_copy_mem_dest),Y
+    inx
+    lda notesToDisplay,x
+    iny
+    sta (_copy_mem_dest),Y
+
+
+    
+    ldy #01
+    ;getSecondMusicInfoBytePart1
+    lda (_music_info_byte_addr),y ; 
+    sta _music_data_temp ; make a copy of the value (the lower 4 bits will be used for volume)
+
+    ;getPart1Vol
+    and #$F0
+    lsr
+    lsr
+    lsr 
+    lsr
+    and #$0f
+    sta _music_vol
+    adc _music_vol
+    tax
+    lda numbersToDisplay,x
+    ldy #17
+    sta (_copy_mem_dest),Y
+    inx
+    lda numbersToDisplay,x
+    iny
+    sta (_copy_mem_dest),Y
+
+
+    ;getPart1len
+    lda _music_data_temp
+    and #$0F
+    sta _music_len
+    adc _music_len
+    tax
+    lda numbersToDisplay,x
+    ldy #13
+    sta (_copy_mem_dest),Y
+    inx
+    lda numbersToDisplay,x
+    iny
+    sta (_copy_mem_dest),Y
+    rts
+.)
+
+notesToDisplay
+.byt "   CC# DD# E FF# GG# AA# B"
+
+numbersToDisplay
+.byt "   1 2 3 4 5 6 7 8 910111213141516"
 
 
 trackerScreenData
@@ -106,29 +206,29 @@ trackerScreenData
 .byt PAPER_WHITE, INK_BLACK,  " NOTE OCT LEN VOL    NOTE OCT LEN VOL "
 .byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
 .byt PAPER_BLACK, INK_BLACK,  "                                      "
-.byt PAPER_BLACK, INK_GREEN,  ">  --   -  --  --      --   -  --  --<"
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_GREEN,  ">  --   -  --  --      --   -  --  --<"
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_GREEN,  ">  --   -  --  --      --   -  --  --<"
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_GREEN,  ">  --   -  --  --      --   -  --  --<"
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
-.byt PAPER_BLACK, INK_BLUE,   "|  --   -  --  --      --   -  --  -- "
+.byt PAPER_BLACK, INK_GREEN,  ">                                    <"
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_GREEN,  ">                                    <"
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_GREEN,  ">                                    <"
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_GREEN,  ">                                    <"
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
+.byt PAPER_BLACK, INK_BLUE,   "|                                     "
 .byt PAPER_BLACK, INK_BLACK,  "                                      "
 .byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
 .byt PAPER_WHITE, INK_BLUE,   "  Press arrows to navigate, please.   "
-.byt PAPER_WHITE, INK_BLUE,   "  Kindly use +/- to change a value.   "
+.byt PAPER_WHITE, INK_BLUE,   "  Kindly use +/  to change a value.   "
 .byt PAPER_WHITE, INK_BLUE,   " Respectfully click 'del' to delete.  "
 .byt PAPER_WHITE, INK_BLUE,   "    Click on </> to change bar.       "
-.byt PAPER_WHITE, INK_BLACK,  "--------------------------------------"
+.byt PAPER_WHITE, INK_BLACK,  "                                      "
 
 trackerScreenDataLo
     .byt <trackerScreenData + 0,<trackerScreenData + 40,<trackerScreenData + 80,<trackerScreenData + 120,<trackerScreenData + 160
@@ -150,8 +250,9 @@ trackerScreenDataHi
 
 // 4 bars of music data (for 2 channels, each word uses the format described above)
 trackerMusicData
+;(oct/note)(vol/len)
 // bar 0
-.byt $11,$15,$33,$15 // position 0
+.byt $11,$51,$33,$15 // position 0
 .byt $00,$00,$00,$00 // position 1
 .byt $00,$00,$00,$00 // position 2
 .byt $00,$00,$00,$00 // position 3
@@ -218,4 +319,48 @@ trackerMusicData
 .byt $00,$00,$00,$00 // position 13
 .byt $00,$00,$00,$00 // position 14
 .byt $00,$00,$00,$00 // position 15
+
+trackerMusicDataLo
+    ;bar 0
+    .byt <trackerMusicData + 0,<trackerMusicData + 4,<trackerMusicData + 8,<trackerMusicData + 12,
+    .byt <trackerMusicData + 16,<trackerMusicData + 20,<trackerMusicData + 24,<trackerMusicData + 28
+    .byt <trackerMusicData + 32,<trackerMusicData + 36,<trackerMusicData + 40,<trackerMusicData + 44
+    .byt <trackerMusicData + 48,<trackerMusicData + 52,<trackerMusicData + 56,<trackerMusicData + 60
+    ;bar 1    
+    .byt <trackerMusicData + 64,<trackerMusicData + 68,<trackerMusicData + 72,<trackerMusicData + 76
+    .byt <trackerMusicData + 80,<trackerMusicData + 84,<trackerMusicData + 88,<trackerMusicData + 92
+    .byt <trackerMusicData + 96,<trackerMusicData + 100,<trackerMusicData + 104,<trackerMusicData + 108
+    .byt <trackerMusicData + 112,<trackerMusicData + 116,<trackerMusicData + 120,<trackerMusicData + 124
+    ;bar 2    
+    .byt <trackerMusicData + 128,<trackerMusicData + 132,<trackerMusicData + 136,<trackerMusicData + 140
+    .byt <trackerMusicData + 144,<trackerMusicData + 148,<trackerMusicData + 152,<trackerMusicData + 156
+    .byt <trackerMusicData + 160,<trackerMusicData + 164,<trackerMusicData + 168,<trackerMusicData + 172
+    .byt <trackerMusicData + 176,<trackerMusicData + 180,<trackerMusicData + 184,<trackerMusicData + 188    
+    ;bar 3
+    .byt <trackerMusicData + 192,<trackerMusicData + 196,<trackerMusicData + 200,<trackerMusicData + 204
+    .byt <trackerMusicData + 208,<trackerMusicData + 212,<trackerMusicData + 216,<trackerMusicData + 220
+    .byt <trackerMusicData + 224,<trackerMusicData + 228,<trackerMusicData + 232,<trackerMusicData + 236
+    .byt <trackerMusicData + 240,<trackerMusicData + 244,<trackerMusicData + 248,<trackerMusicData + 252
+
+trackerMusicDataHi
+    ;bar 0
+    .byt >trackerMusicData + 0,>trackerMusicData + 4,>trackerMusicData + 8,>trackerMusicData + 12,
+    .byt >trackerMusicData + 16,>trackerMusicData + 20,>trackerMusicData + 24,>trackerMusicData + 28
+    .byt >trackerMusicData + 32,>trackerMusicData + 36,>trackerMusicData + 40,>trackerMusicData + 44
+    .byt >trackerMusicData + 48,>trackerMusicData + 52,>trackerMusicData + 56,>trackerMusicData + 60
+    ;bar 1    
+    .byt >trackerMusicData + 64,>trackerMusicData + 68,>trackerMusicData + 72,>trackerMusicData + 76
+    .byt >trackerMusicData + 80,>trackerMusicData + 84,>trackerMusicData + 88,>trackerMusicData + 92
+    .byt >trackerMusicData + 96,>trackerMusicData + 100,>trackerMusicData + 104,>trackerMusicData + 108
+    .byt >trackerMusicData + 112,>trackerMusicData + 116,>trackerMusicData + 120,>trackerMusicData + 124
+    ;bar 2    
+    .byt >trackerMusicData + 128,>trackerMusicData + 132,>trackerMusicData + 136,>trackerMusicData + 140
+    .byt >trackerMusicData + 144,>trackerMusicData + 148,>trackerMusicData + 152,>trackerMusicData + 156
+    .byt >trackerMusicData + 160,>trackerMusicData + 164,>trackerMusicData + 168,>trackerMusicData + 172
+    .byt >trackerMusicData + 176,>trackerMusicData + 180,>trackerMusicData + 184,>trackerMusicData + 188    
+    ;bar 3
+    .byt >trackerMusicData + 192,>trackerMusicData + 196,>trackerMusicData + 200,>trackerMusicData + 204
+    .byt >trackerMusicData + 208,>trackerMusicData + 212,>trackerMusicData + 216,>trackerMusicData + 220
+    .byt >trackerMusicData + 224,>trackerMusicData + 228,>trackerMusicData + 232,>trackerMusicData + 236
+    .byt >trackerMusicData + 240,>trackerMusicData + 244,>trackerMusicData + 248,>trackerMusicData + 252
 

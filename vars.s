@@ -71,6 +71,15 @@ _line_no .dsb 1
 
 _gKey .dsb 1
 
+_music_octave .dsb 1
+_music_note .dsb 1
+_music_len .dsb 1
+_music_vol .dsb 1
+_music_data_temp .dsb 1
+_music_info_byte_addr
+_music_info_byte_lo .dsb 1
+_music_info_byte_hi .dsb 1
+
 _zp_end_
 
 // Part of code copied from Kong, which was supplied with the OSDK
