@@ -79,6 +79,8 @@ _music_data_temp .dsb 1
 _music_info_byte_addr
 _music_info_byte_lo .dsb 1
 _music_info_byte_hi .dsb 1
+_tracker_screen_line .dsb 1
+_tracker_step_line .dsb 1
 
 _zp_end_
 

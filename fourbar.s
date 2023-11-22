@@ -71,57 +71,87 @@ printTrackerInstructions
 
 printTrackerScreen
 .(
-ldy #0
-sty _line_no
-loopy
-lda ScreenLineLookupLo,Y
-sta _copy_mem_dest_lo
-lda ScreenLineLookupHi,y
-sta _copy_mem_dest_hi
-lda trackerScreenDataLo,y
-sta _copy_mem_src_lo
-lda trackerScreenDataHi,Y
-sta _copy_mem_src_hi
+    ldy #0
+    sty _line_no
+    loopy
+    lda ScreenLineLookupLo,Y
+    sta _copy_mem_dest_lo
+    lda ScreenLineLookupHi,y
+    sta _copy_mem_dest_hi
+    lda trackerScreenDataLo,y
+    sta _copy_mem_src_lo
+    lda trackerScreenDataHi,Y
+    sta _copy_mem_src_hi
 
-ldy #0
-loopx
-lda (_copy_mem_src),y
-sta (_copy_mem_dest),y
-iny
-cpy #40
-bne loopx
-ldy _line_no
+    ldy #0
+    loopx
+    lda (_copy_mem_src),y
+    sta (_copy_mem_dest),y
+    iny
+    cpy #40
+    bne loopx
+    ldy _line_no
 
-iny
-sty _line_no
-cpy #27
-bne loopy
-jsr printLineData
-rts
+    iny
+    sty _line_no
+    cpy #27
+    bne loopy
 
+    lda #04
+    sta _tracker_screen_line
+    lda #00
+    sta _tracker_step_line
+    
+    :printMusicLoop
+    jsr printLineData
+
+    ldy _tracker_screen_line
+    iny
+    cpy #20
+    beq screenPlotted
+    inc _tracker_screen_line
+    inc _tracker_step_line
+    jmp printMusicLoop
+
+
+    screenPlotted 
+    rts
 .)
 
 printLineData
 .( 
-    ldy #4 ; plotting of bar data starts at line 4
+    ldy _tracker_screen_line; plotting of bar data starts at line 4
     lda ScreenLineLookupLo,Y
     sta _copy_mem_dest_lo
     lda ScreenLineLookupHi,y
     sta _copy_mem_dest_hi
 
 
-    ldy #0 ; plotting of data for bar 1 starts at zer0
+    ldy _tracker_step_line ; plotting of data for bar 1 starts at zero
     lda trackerMusicDataLo,Y
     sta _music_info_byte_lo
     lda trackerMusicDataHi,y
     sta _music_info_byte_hi
 
     // PRINT PART 1 INFO
-    ldy #0
+    ldy #0 ; Load 1st byte of line
     lda (_music_info_byte_addr),y
-    tax ; make a copy of the value (the lower 4 bits will be used for note)
-    txa
+    cmp #00
+    bne printNote1Data
 
+    // printEmptyNote1
+    ldy #TRACKER_COL_NOTE_CH_1
+    lda #ASCII_SPACE
+    clearNoteLoop1
+    sta (_copy_mem_dest),Y
+    iny
+    cpy #19
+    bne clearNoteLoop1
+    jmp processNote2Data
+
+
+    printNote1Data
+    tax ; make a copy of the value (the lower 4 bits will be used for note)
     ; get Part 1 Octave
     and #$F0
     lsr
@@ -132,7 +162,7 @@ printLineData
     sta _music_octave
     ;convert octave to digit and print on screen
     adc #48
-    ldy #10
+    ldy #TRACKER_COL_OCT_CH_1
     sta (_copy_mem_dest),y
 
     ; get Part 1 Note
@@ -143,15 +173,16 @@ printLineData
     tax
     ; lookup string for note and display on screen
     lda notesToDisplay,x
-    ldy #5
+    ldy #TRACKER_COL_NOTE_CH_1
     sta (_copy_mem_dest),Y
     inx
     lda notesToDisplay,x
     iny
     sta (_copy_mem_dest),Y
     
-    ldy #01
+    
     ;get Second Music Info Byte
+    ldy #01
     lda (_music_info_byte_addr),y ; 
     sta _music_data_temp ; make a copy of the value (the lower 4 bits will be used for volume)
 
@@ -166,7 +197,7 @@ printLineData
     adc _music_vol
     tax
     lda numbersToDisplay,x
-    ldy #17
+    ldy #TRACKER_COL_VOL_CH_1
     sta (_copy_mem_dest),Y
     inx
     lda numbersToDisplay,x
@@ -180,7 +211,7 @@ printLineData
     adc _music_len
     tax
     lda numbersToDisplay,x
-    ldy #13
+    ldy #TRACKER_COL_LEN_CH_1
     sta (_copy_mem_dest),Y
     inx
     lda numbersToDisplay,x
@@ -188,9 +219,23 @@ printLineData
     sta (_copy_mem_dest),Y
 
 
+    :processNote2Data
     // PRINT PART 2 INFO
-    ldy #2
+    ldy #02 
     lda (_music_info_byte_addr),y
+    cmp #00
+    bne printNote2Data
+    
+    ldy #TRACKER_COL_NOTE_CH_2
+    lda #ASCII_SPACE
+    clearNoteLoop2
+    sta (_copy_mem_dest),Y
+    iny
+    cpy #38
+    bne clearNoteLoop2
+    rts
+
+    printNote2Data
     tax ; make a copy of the value (the lower 4 bits will be used for note)
     txa
 
@@ -204,7 +249,7 @@ printLineData
     sta _music_octave
     ;convert octave to digit and print on screen
     adc #48
-    ldy #30
+    ldy #TRACKER_COL_OCT_CH_2
     sta (_copy_mem_dest),y
 
     ; get Part 2 Note
@@ -215,7 +260,7 @@ printLineData
     tax
     ; lookup string for note and display on screen
     lda notesToDisplay,x
-    ldy #25
+    ldy #TRACKER_COL_NOTE_CH_2
     sta (_copy_mem_dest),Y
     inx
     lda notesToDisplay,x
@@ -238,7 +283,7 @@ printLineData
     adc _music_vol
     tax
     lda numbersToDisplay,x
-    ldy #33
+    ldy #TRACKER_COL_VOL_CH_2
     sta (_copy_mem_dest),Y
     inx
     lda numbersToDisplay,x
@@ -252,7 +297,7 @@ printLineData
     adc _music_len
     tax
     lda numbersToDisplay,x
-    ldy #37
+    ldy #TRACKER_COL_LEN_CH_2
     sta (_copy_mem_dest),Y
     inx
     lda numbersToDisplay,x
@@ -321,19 +366,19 @@ trackerScreenDataHi
 trackerMusicData
 ;(oct/note)(vol/len)
 // bar 0
-.byt $11,$51,$33,$15 // position 0
+.byt $11,$54,$23,$15 // position 0
 .byt $00,$00,$00,$00 // position 1
 .byt $00,$00,$00,$00 // position 2
 .byt $00,$00,$00,$00 // position 3
-.byt $11,$15,$33,$15 // position 4
+.byt $22,$63,$34,$24 // position 4
 .byt $00,$00,$00,$00 // position 5
 .byt $00,$00,$00,$00 // position 6
 .byt $00,$00,$00,$00 // position 7
-.byt $11,$15,$33,$15 // position 8
+.byt $33,$72,$45,$33 // position 8
 .byt $00,$00,$00,$00 // position 9
 .byt $00,$00,$00,$00 // position 10
 .byt $00,$00,$00,$00 // position 11
-.byt $11,$15,$33,$15 // position 12
+.byt $44,$81,$56,$42 // position 12
 .byt $00,$00,$00,$00 // position 13
 .byt $00,$00,$00,$00 // position 14
 .byt $00,$00,$00,$00 // position 15
@@ -391,7 +436,7 @@ trackerMusicData
 
 trackerMusicDataLo
     ;bar 0
-    .byt <trackerMusicData + 0,<trackerMusicData + 4,<trackerMusicData + 8,<trackerMusicData + 12,
+    .byt <trackerMusicData + 0,<trackerMusicData + 4,<trackerMusicData + 8,<trackerMusicData + 12
     .byt <trackerMusicData + 16,<trackerMusicData + 20,<trackerMusicData + 24,<trackerMusicData + 28
     .byt <trackerMusicData + 32,<trackerMusicData + 36,<trackerMusicData + 40,<trackerMusicData + 44
     .byt <trackerMusicData + 48,<trackerMusicData + 52,<trackerMusicData + 56,<trackerMusicData + 60
@@ -413,7 +458,7 @@ trackerMusicDataLo
 
 trackerMusicDataHi
     ;bar 0
-    .byt >trackerMusicData + 0,>trackerMusicData + 4,>trackerMusicData + 8,>trackerMusicData + 12,
+    .byt >trackerMusicData + 0,>trackerMusicData + 4,>trackerMusicData + 8,>trackerMusicData + 12
     .byt >trackerMusicData + 16,>trackerMusicData + 20,>trackerMusicData + 24,>trackerMusicData + 28
     .byt >trackerMusicData + 32,>trackerMusicData + 36,>trackerMusicData + 40,>trackerMusicData + 44
     .byt >trackerMusicData + 48,>trackerMusicData + 52,>trackerMusicData + 56,>trackerMusicData + 60
