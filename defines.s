@@ -144,3 +144,16 @@
 
 
 #DEFINE ASCII_SPACE 32
+
+#DEFINE PARAMS_0 $02E0
+#DEFINE PARAMS_1 $02E1
+#DEFINE PARAMS_2 $02E2
+#DEFINE PARAMS_3 $02E3
+#DEFINE PARAMS_4 $02E4
+#DEFINE PARAMS_5 $02E5
+#DEFINE PARAMS_6 $02E6
+#DEFINE PARAMS_7 $02E7
+
+#DEFINE INTSL $024A ; Retrun from interupt handler (normally RTI)
+
+#DEFINE TRACKER_STEP_LENGTH 10 ;// number of times interrupts handler should be called before advancing to the next step

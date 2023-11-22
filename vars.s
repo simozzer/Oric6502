@@ -90,6 +90,11 @@ _lo_nibble .dsb 1
 
 _last_key .dsb 1
 
+_tracker_step_index .dsb 1
+_tracker_step_cycles_remaining .dsb 1
+_tracker_step_length .dsb 1
+
+
 _zp_end_
 
 // Part of code copied from Kong, which was supplied with the OSDK
