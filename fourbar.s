@@ -24,8 +24,9 @@
 // The data will be stored using this format
 // OCTAVE 0-7 (3 bits, but will use 4. The hi bit will be used for 'no note')
 // NOTE (1-12/ can be stores as 0-11) (4 bits)
-// VOL (1-15 - volume level, 0 = use envelope from play) (4 bits)
 // LENGTH (1-15) ( 4 bits)
+// VOL (1-15 - volume level, 0 = use envelope from play) (4 bits)
+
 
 // example screen layout for 1 bar
 /*
@@ -162,7 +163,6 @@ nextCheck0
     cmp #TRACKER_COL_INDEX_OCT_CH1
     bne nextCheck1
 
-    
     ldy #0
     lda (_copy_mem_src),y
     tax
@@ -197,9 +197,33 @@ nextCheck1
     cmp #TRACKER_COL_INDEX_LEN_CH1
     bne nextCheck2
 
+    ldy #1
+    lda (_copy_mem_src),y
+    tax
+    and #$F0
+    sta _hi_nibble
+    txa
+    and #$0f
+    sta _lo_nibble
+    cmp #15
+    bmi incrementLenChannel1
+    jmp done
+
+    incrementLenChannel1 // Add to length value channel 1
+    tax
+    inx
+    txa
+    sta _lo_nibble
+    adc _hi_nibble
+    ldy #1
+    sta (_copy_mem_src),y
+    rts
+
 nextCheck2
     cmp #TRACKER_COL_INDEX_VOL_CH1
     bne nextCheck3
+
+
 
 nextCheck3
     cmp #TRACKER_COL_INDEX_NOTE_CH2
@@ -264,6 +288,29 @@ nextCheck4
 nextCheck5
     cmp #TRACKER_COL_INDEX_LEN_CH2
     bne nextCheck6
+
+    ldy #3
+    lda (_copy_mem_src),y
+    tax
+    and #$F0
+    sta _hi_nibble
+    txa
+    and #$0f
+    sta _lo_nibble
+    cmp #15
+    bmi incrementLenChannel2
+    jmp done
+
+    incrementLenChannel2 // Add to length value channel 2
+    tax
+    inx
+    txa
+    clc
+    sta _lo_nibble
+    adc _hi_nibble
+    ldy #3
+    sta (_copy_mem_src),y
+    rts
 
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
@@ -353,6 +400,31 @@ nextCheck1
     cmp #TRACKER_COL_INDEX_LEN_CH1
     bne nextCheck2
 
+    
+    ldy #1
+    lda (_copy_mem_src),y
+    tax
+    and #$F0
+    sta _hi_nibble
+    txa
+    and #$0f
+    sta _lo_nibble
+    clc
+    cmp #01
+    bne decrementLenChannel1
+    jmp done
+
+    decrementLenChannel1 // subtract from length value channel 1
+    tax
+    dex
+    txa
+    clc
+    sta _lo_nibble
+    adc _hi_nibble
+    ldy #1
+    sta (_copy_mem_src),y
+    rts
+
 nextCheck2
     cmp #TRACKER_COL_INDEX_VOL_CH1
     bne nextCheck3
@@ -424,6 +496,30 @@ nextCheck4
 nextCheck5
     cmp #TRACKER_COL_INDEX_LEN_CH2
     bne nextCheck6
+    ldy #3
+    lda (_copy_mem_src),y
+    tax
+    and #$F0
+    sta _hi_nibble
+    txa
+    and #$0f
+    sta _lo_nibble
+    clc
+    cmp #01
+    bne decrementLenChannel2
+    jmp done
+
+    decrementLenChannel2 // subtract from length value channel 1
+    tax
+    dex
+    txa
+    clc
+    sta _lo_nibble
+    adc _hi_nibble
+    ldy #3
+    sta (_copy_mem_src),y
+    rts
+
 
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
@@ -878,7 +974,7 @@ trackerMusicDataHi
 
 
 trackerAttributeColumns
-.byt 4,9,12,16,23,28,32,35
+.byt 4,8,12,16,23,27,31,35
 
 
 
