@@ -85,6 +85,9 @@ _tracker_step_line .dsb 1
 _tracker_selected_col_index .dsb 1
 _tracker_selected_row_index .dsb 1
 
+_hi_nibble .dsb 1
+_lo_nibble .dsb 1
+
 _last_key .dsb 1
 
 _zp_end_
