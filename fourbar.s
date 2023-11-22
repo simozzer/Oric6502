@@ -116,13 +116,13 @@ printLineData
     lda trackerMusicDataHi,y
     sta _music_info_byte_hi
 
-    ;getMusicInfoBytePart1
+    // PRINT PART 1 INFO
     ldy #0
     lda (_music_info_byte_addr),y
     tax ; make a copy of the value (the lower 4 bits will be used for note)
     txa
 
-    ; getPart1Octave
+    ; get Part 1 Octave
     and #$F0
     lsr
     lsr
@@ -135,9 +135,7 @@ printLineData
     ldy #10
     sta (_copy_mem_dest),y
 
-    
-
-    ; getPart1Note
+    ; get Part 1 Note
     txa
     and #$0F
     sta _music_note
@@ -151,15 +149,13 @@ printLineData
     lda notesToDisplay,x
     iny
     sta (_copy_mem_dest),Y
-
-
     
     ldy #01
-    ;getSecondMusicInfoBytePart1
+    ;get Second Music Info Byte
     lda (_music_info_byte_addr),y ; 
     sta _music_data_temp ; make a copy of the value (the lower 4 bits will be used for volume)
 
-    ;getPart1Vol
+    ;get Part 1 Vol
     and #$F0
     lsr
     lsr
@@ -177,8 +173,7 @@ printLineData
     iny
     sta (_copy_mem_dest),Y
 
-
-    ;getPart1len
+    ;get Part 1 Len
     lda _music_data_temp
     and #$0F
     sta _music_len
@@ -191,8 +186,82 @@ printLineData
     lda numbersToDisplay,x
     iny
     sta (_copy_mem_dest),Y
+
+
+    // PRINT PART 2 INFO
+    ldy #2
+    lda (_music_info_byte_addr),y
+    tax ; make a copy of the value (the lower 4 bits will be used for note)
+    txa
+
+    ; get Part 2 Octave
+    and #$F0
+    lsr
+    lsr
+    lsr 
+    lsr
+    and #$0F
+    sta _music_octave
+    ;convert octave to digit and print on screen
+    adc #48
+    ldy #30
+    sta (_copy_mem_dest),y
+
+    ; get Part 2 Note
+    txa
+    and #$0F
+    sta _music_note
+    adc _music_note ;double the value to lookup string
+    tax
+    ; lookup string for note and display on screen
+    lda notesToDisplay,x
+    ldy #25
+    sta (_copy_mem_dest),Y
+    inx
+    lda notesToDisplay,x
+    iny
+    sta (_copy_mem_dest),Y
+
+    ldy #03
+    ;get Second Music Info Byte
+    lda (_music_info_byte_addr),y ; 
+    sta _music_data_temp ; make a copy of the value (the lower 4 bits will be used for volume)
+
+    ;get Part 2 Vol
+    and #$F0
+    lsr
+    lsr
+    lsr 
+    lsr
+    and #$0f
+    sta _music_vol
+    adc _music_vol
+    tax
+    lda numbersToDisplay,x
+    ldy #33
+    sta (_copy_mem_dest),Y
+    inx
+    lda numbersToDisplay,x
+    iny
+    sta (_copy_mem_dest),Y
+
+    ;get Part 2 Len
+    lda _music_data_temp
+    and #$0F
+    sta _music_len
+    adc _music_len
+    tax
+    lda numbersToDisplay,x
+    ldy #37
+    sta (_copy_mem_dest),Y
+    inx
+    lda numbersToDisplay,x
+    iny
+    sta (_copy_mem_dest),Y
+
     rts
 .)
+
 
 notesToDisplay
 .byt "   CC# DD# E FF# GG# AA# B"
