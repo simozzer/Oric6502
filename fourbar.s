@@ -223,6 +223,37 @@ nextCheck2
     cmp #TRACKER_COL_INDEX_VOL_CH1
     bne nextCheck3
 
+    
+    ldy #1
+    lda (_copy_mem_src),y
+    tax
+    and #$0f
+    sta _lo_nibble
+    txa
+    and #$f0
+    lsr
+    lsr 
+    lsr
+    lsr
+    sta _hi_nibble
+    clc
+    cmp #15
+    bcc incrementVolChannel1
+    jmp done
+
+    incrementVolChannel1 // Add to oct value channel 1
+    clc
+    adc #$01
+    asl
+    asl
+    asl
+    asl
+
+    adc _lo_nibble
+    ldy #1
+    sta (_copy_mem_src),y
+    rts
+
 
 
 nextCheck3
@@ -315,6 +346,36 @@ nextCheck5
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
     bne done
+
+    ldy #3
+    lda (_copy_mem_src),y
+    tax
+    and #$0f
+    sta _lo_nibble
+    txa
+    and #$f0
+    lsr
+    lsr 
+    lsr
+    lsr
+    sta _hi_nibble
+    clc
+    cmp #15
+    bcc incrementVolChannel2
+    jmp done
+
+    incrementVolChannel2 // Add to oct value channel 2
+    clc
+    adc #$01
+    asl
+    asl
+    asl
+    asl
+
+    adc _lo_nibble
+    ldy #3
+    sta (_copy_mem_src),y
+    rts
 
 done
     rts
@@ -429,6 +490,38 @@ nextCheck2
     cmp #TRACKER_COL_INDEX_VOL_CH1
     bne nextCheck3
 
+    
+    ldy #1
+    lda (_copy_mem_src),y
+    tax
+    and #$0f
+    sta _lo_nibble
+    txa
+    and #$f0
+    lsr
+    lsr 
+    lsr
+    lsr
+    sta _hi_nibble
+    clc
+    cmp #0
+    bne decrementVolChannel1
+    jmp done
+
+    decrementVolChannel1 // Add to oct value channel 1
+    tax
+    dex
+    txa
+    asl
+    asl
+    asl
+    asl
+
+    adc _lo_nibble
+    ldy #1
+    sta (_copy_mem_src),y
+    rts
+
 nextCheck3
     cmp #TRACKER_COL_INDEX_NOTE_CH2
     bne nextCheck4
@@ -524,6 +617,38 @@ nextCheck5
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
     bne done
+
+    ldy #3
+    lda (_copy_mem_src),y
+    tax
+    and #$0f
+    sta _lo_nibble
+    txa
+    and #$f0
+    lsr
+    lsr 
+    lsr
+    lsr
+    sta _hi_nibble
+    clc
+    cmp #0
+    bne decrementVolChannel2
+    jmp done
+
+    decrementVolChannel2 // Add to oct value channel 1
+    tax
+    dex
+    txa
+    asl
+    asl
+    asl
+    asl
+
+    adc _lo_nibble
+    ldy #3
+    sta (_copy_mem_src),y
+    rts
+
 
 done
     rts
@@ -806,7 +931,7 @@ notesToDisplay
 .byt "   CC# DD# E FF# GG# AA# B"
 
 numbersToDisplay
-.byt "   1 2 3 4 5 6 7 8 910111213141516"
+.byt " 0 1 2 3 4 5 6 7 8 910111213141516"
 
 
 trackerScreenData
