@@ -55,6 +55,64 @@
 2</> to change bar.
 */
 
+// temporary code to test tracker screen
+runTracker
+.(
+    lda #0
+    sta _tracker_selected_col_index
+    sta _tracker_selected_row_index
+    :refreshTrackerScreen
+    jsr printTrackerScreen
+
+    :readAgain
+    jsr _getKey
+    ldx KEY_PRESS_LOOKUP
+    cpx _last_key
+    beq readAgain
+    stx _last_key
+    
+
+    cpx #KEY_DOWN_ARROW
+    bne checkUp
+    lda _tracker_selected_row_index
+    cmp #15
+    bpl checkUp
+    inc _tracker_selected_row_index
+    jmp refreshTrackerScreen
+
+    checkUp
+    cpx #KEY_UP_ARROW
+    bne checkRight
+    lda _tracker_selected_row_index
+    cmp #01
+    bmi checkRight
+    dec _tracker_selected_row_index
+    jmp refreshTrackerScreen
+
+
+    checkRight
+    cpx #KEY_RIGHT_ARROW
+    bne checkLeft
+    lda _tracker_selected_col_index
+    cmp #07
+    bpl checkLeft
+    inc _tracker_selected_col_index
+    jmp refreshTrackerScreen
+
+    checkLeft
+    cpx #KEY_LEFT_ARROW
+    bne readAgain
+    lda _tracker_selected_col_index
+    cmp #01
+    bmi readAgain
+    dec _tracker_selected_col_index
+    jmp refreshTrackerScreen
+
+
+
+    rts
+.)
+
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; printTrackerInstructions: 
 ;   Print some instructions in the status line at the top of the screen
@@ -70,7 +128,7 @@ printTrackerInstructions
 
 
 printTrackerScreen
-.(
+.(    
     ldy #0
     sty _line_no
     loopy
@@ -115,6 +173,26 @@ printTrackerScreen
 
 
     screenPlotted 
+
+    // Highlight selected cell
+    lda _tracker_selected_row_index
+    adc #3
+    tay 
+    lda ScreenLineLookupLo,Y
+    sta _copy_mem_dest_lo
+    lda ScreenLineLookupHi,y
+    sta _copy_mem_dest_hi
+    ldy _tracker_selected_col_index
+    lda trackerAttributeColumns,y
+    tay
+    lda #PAPER_WHITE
+    sta (_copy_mem_dest),Y
+    lda #PAPER_BLACK
+    iny 
+    iny 
+    iny
+    sta (_copy_mem_dest),Y
+    
     rts
 .)
 
@@ -477,4 +555,10 @@ trackerMusicDataHi
     .byt >trackerMusicData + 208,>trackerMusicData + 212,>trackerMusicData + 216,>trackerMusicData + 220
     .byt >trackerMusicData + 224,>trackerMusicData + 228,>trackerMusicData + 232,>trackerMusicData + 236
     .byt >trackerMusicData + 240,>trackerMusicData + 244,>trackerMusicData + 248,>trackerMusicData + 252
+
+
+trackerAttributeColumns
+.byt 4,9,12,16,23,28,32,35
+
+
 

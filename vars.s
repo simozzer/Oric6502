@@ -82,6 +82,11 @@ _music_info_byte_hi .dsb 1
 _tracker_screen_line .dsb 1
 _tracker_step_line .dsb 1
 
+_tracker_selected_col_index .dsb 1
+_tracker_selected_row_index .dsb 1
+
+_last_key .dsb 1
+
 _zp_end_
 
 // Part of code copied from Kong, which was supplied with the OSDK

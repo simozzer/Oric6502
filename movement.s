@@ -3,7 +3,7 @@ processKeyboardPlayer1
 .(
     ldx KEY_PRESS_LOOKUP  
 
-    cpx KEY_PRESS_NONE
+    cpx #KEY_PRESS_NONE
     beq keyboardDone
     
     cpx #KEY_LEFT_ARROW
