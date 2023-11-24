@@ -7,6 +7,13 @@ StartProg
 	lda #8+2	
 	sta $26a
 
+
+    ;// TEST SOUND
+    ;jsr clearSound
+    ;jsr setupTrackerInterrupt
+    ;jsr runTracker; //TODO REMOVE!
+    ;// END TEST SOUND
+
     jsr printTestInstructions       
     jsr CopySetToRam                        
     jsr MakeCharacters_0               
@@ -443,6 +450,10 @@ printTestInstructions
     sta _copy_mem_dest_hi                        
     jsr CopyMemory                                              
     rts    
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+
+
+
 
 :SetInk
     ldy #FULLSCREEN_TEXT_LAST_LINE

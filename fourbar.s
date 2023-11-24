@@ -119,9 +119,14 @@ runTracker
 
     checkMinus
     cpx #KEY_MINUS
-    bne loopAgain
+    bne checkQuit
     jsr processMinus
     jmp refreshTrackerScreen
+
+    checkQuit
+    cpx #KEY_Q
+    bne loopAgain
+    rts
     
     loopAgain
     jmp readAgain

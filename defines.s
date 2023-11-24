@@ -154,6 +154,8 @@
 #DEFINE PARAMS_6 $02E6
 #DEFINE PARAMS_7 $02E7
 
+#DEFINE MUSIC_ATMOS $fc18
+
 #DEFINE INTSL $024A ; Retrun from interupt handler (normally RTI)
 
 #DEFINE TRACKER_STEP_LENGTH 10 ;// number of times interrupts handler should be called before advancing to the next step

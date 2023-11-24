@@ -38,11 +38,109 @@ trackerInterrupt
     jmp countDown
 
     playNextStep
-        lda _tracker_step_index;
-        adc #32
-        sta $bbac
 
+
+        jsr WipeParams;
+
+        ldy _tracker_step_index;
+
+        lda trackerMusicDataLo,Y
+        sta _music_info_byte_lo
+        lda trackerMusicDataHi,Y
+        sta _music_info_byte_hi
+
+        ; TEST - print something to represent step index
+        lda _tracker_step_index
+        adc #32
+        sta $bbaa
+        ; end test
+
+        // extract notes from both channels and send the appopriate music instructions
+
+        // --- start channel 1 ---
+        ; fixed channel
+        lda #01
+        sta PARAMS_1
+
+        ldy #0 ; Load 1st byte of line
+        lda (_music_info_byte_addr),y
+        tax ; store value to later extract octave
+
+        ; extract note
+        and #$0f
+        sta PARAMS_5 ; store note param
+
+        ; extract octave
+        txa
+        and #$f0        
+        lsr
+        lsr
+        lsr
+        lsr
+        sta PARAMS_3
+
+        ;extract volume
+        ldy #1 ;; load 2nd byte of line
+        lda (_music_info_byte_addr),y
+        tax ; store value to later extract length
+        and #$f0
+        lsr
+        lsr
+        lsr
+        lsr
+        sta PARAMS_7
+
+        ; extract length
+        ;tax
+       ; and #$f0
+        ; TODO -- store length
         
+        jsr MUSIC_ATMOS ; call MUSIC
+
+
+        // --- start channel 2 ---
+        ; fixed channel
+        jsr WipeParams
+        lda #01
+        sta PARAMS_1
+
+        ldy #2 ; Load 1st byte of line
+        lda (_music_info_byte_addr),y
+        tax ; store value to later extract octave
+
+        ; extract note
+        clc
+        and #$0f
+        sta PARAMS_5 ; store note param
+
+        ; extract octave
+        txa
+        and #$f0        
+        lsr
+        lsr
+        lsr
+        lsr
+        sta PARAMS_3
+
+        ;extract volume
+        ldy #3 ;; load 2nd byte of line
+        lda (_music_info_byte_addr),y
+        tax ; store value to later extract length
+        and #$f0
+        lsr
+        lsr
+        lsr
+        lsr
+        sta PARAMS_7
+
+        ; extract length
+        ;tax
+        ;and #$f0
+
+        jsr MUSIC_ATMOS
+
+
+
     :countDown
         dec _tracker_step_cycles_remaining
         lda _tracker_step_cycles_remaining
@@ -55,7 +153,7 @@ trackerInterrupt
         sta _tracker_step_cycles_remaining
         inc _tracker_step_index;
         lda _tracker_step_index;
-        cmp #64
+        cmp #16
         beq resetSequence
         jmp continue
 
@@ -73,4 +171,51 @@ continue
     pla
 
     rti
+.)
+
+
+clearSound
+.(
+    jsr WipeParams
+    lda #01
+    sta PARAMS_1
+    sta PARAMS_3
+    sta PARAMS_5
+    lda #00
+    lda PARAMS_7
+    JSR MUSIC_ATMOS
+
+jsr WipeParams
+    lda #02
+    sta PARAMS_1
+    lda #01
+    sta PARAMS_3
+    sta PARAMS_5
+    lda #00
+    lda PARAMS_7
+    JSR MUSIC_ATMOS
+
+jsr WipeParams
+    lda #03
+    sta PARAMS_1
+    lda #01
+    sta PARAMS_3
+    sta PARAMS_5
+    lda #00
+    lda PARAMS_7
+    JSR MUSIC_ATMOS
+
+jsr WipeParams
+    lda #07
+    sta PARAMS_1
+    lda #00
+    sta PARAMS_3
+    lda #01
+    sta PARAMS_5
+    lda #100
+    sta PARAMS_7
+    ; call play
+    JSR $FBd0
+
+    rts
 .)
