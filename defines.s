@@ -155,6 +155,7 @@
 #DEFINE PARAMS_7 $02E7
 
 #DEFINE MUSIC_ATMOS $fc18
+#DEFINE PLAY_ATMOS $FBd0
 
 #DEFINE INTSL $024A ; Retrun from interupt handler (normally RTI)
 

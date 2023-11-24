@@ -24,7 +24,7 @@ setupTrackerInterrupt
 trackerInterrupt
 .(
 
-    ; store registers
+    ; store registers (push a, x, y)
     pha
     txa
     pha
@@ -45,9 +45,9 @@ trackerInterrupt
         ldy _tracker_step_index;
 
         lda trackerMusicDataLo,Y
-        sta _music_info_byte_lo
+        sta _playback_music_info_byte_lo
         lda trackerMusicDataHi,Y
-        sta _music_info_byte_hi
+        sta _playback_music_info_byte_hi
 
         ; TEST - print something to represent step index
         lda _tracker_step_index
@@ -63,7 +63,7 @@ trackerInterrupt
         sta PARAMS_1
 
         ldy #0 ; Load 1st byte of line
-        lda (_music_info_byte_addr),y
+        lda (_playback_music_info_byte_addr),y
         tax ; store value to later extract octave
 
         ; extract note
@@ -72,7 +72,8 @@ trackerInterrupt
 
         ; extract octave
         txa
-        and #$f0        
+        and #$f0  
+        clc      
         lsr
         lsr
         lsr
@@ -81,7 +82,7 @@ trackerInterrupt
 
         ;extract volume
         ldy #1 ;; load 2nd byte of line
-        lda (_music_info_byte_addr),y
+        lda (_playback_music_info_byte_addr),y
         tax ; store value to later extract length
         and #$f0
         lsr
@@ -97,15 +98,14 @@ trackerInterrupt
         
         jsr MUSIC_ATMOS ; call MUSIC
 
-
         // --- start channel 2 ---
         ; fixed channel
         jsr WipeParams
-        lda #01
+        lda #02
         sta PARAMS_1
 
         ldy #2 ; Load 1st byte of line
-        lda (_music_info_byte_addr),y
+        lda (_playback_music_info_byte_addr),y
         tax ; store value to later extract octave
 
         ; extract note
@@ -124,7 +124,7 @@ trackerInterrupt
 
         ;extract volume
         ldy #3 ;; load 2nd byte of line
-        lda (_music_info_byte_addr),y
+        lda (_playback_music_info_byte_addr),y
         tax ; store value to later extract length
         and #$f0
         lsr
@@ -163,7 +163,7 @@ trackerInterrupt
         lda _tracker_step_length
         sta _tracker_step_cycles_remaining
 continue
-    ;restore reg
+    ;restore reg (pull y,x,a)
     pla
     tay
     pla

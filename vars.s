@@ -100,6 +100,10 @@ _tracker_playback_addr_hi .dsb 1
 
 _tracker_temp_byte .dsb 1
 
+_playback_music_info_byte_addr
+_playback_music_info_byte_lo .dsb 1
+_playback_music_info_byte_hi .dsb 1
+
 
 
 _zp_end_

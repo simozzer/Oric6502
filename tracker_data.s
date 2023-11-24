@@ -57,22 +57,22 @@ trackerScreenDataHi
 trackerMusicData
 ;(oct/note)(vol/len)
 // bar 0
-.byt $11,$54,$23,$15 // position 0
-.byt $00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00 // position 2
-.byt $00,$00,$00,$00 // position 3
-.byt $22,$63,$34,$24 // position 4
-.byt $00,$00,$00,$00 // position 5
-.byt $00,$00,$00,$00 // position 6
-.byt $00,$00,$00,$00 // position 7
-.byt $33,$72,$45,$33 // position 8
-.byt $00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00 // position 11
-.byt $44,$81,$56,$42 // position 12
-.byt $00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00 // position 15
+.byt $21,$54,$23,$55 // position 0
+.byt $01,$00,$01,$00 // position 1
+.byt $21,$50,$35,$50 // position 2
+.byt $01,$01,$01,$01 // position 3
+.byt $21,$54,$23,$55 // position 4
+.byt $01,$00,$01,$00 // position 5
+.byt $21,$50,$35,$50 // position 6
+.byt $01,$01,$01,$01 // position 7
+.byt $21,$54,$23,$55 // position 8
+.byt $01,$00,$01,$00 // position 9
+.byt $21,$50,$35,$50 // position 10
+.byt $01,$01,$01,$01 // position 11
+.byt $21,$54,$23,$55 // position 12
+.byt $01,$00,$01,$00 // position 13
+.byt $21,$50,$35,$50 // position 14
+.byt $01,$01,$01,$01 // position 15
 // bar 1
 .byt $11,$15,$33,$15 // position 0
 .byt $00,$00,$00,$00 // position 1
