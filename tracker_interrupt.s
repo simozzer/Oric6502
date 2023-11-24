@@ -49,12 +49,6 @@ trackerInterrupt
         lda trackerMusicDataHi,Y
         sta _playback_music_info_byte_hi
 
-        ; TEST - print something to represent step index
-        lda _tracker_step_index
-        adc #32
-        sta $bbaa
-        ; end test
-
         // extract notes from both channels and send the appopriate music instructions
 
         // --- start channel 1 ---

@@ -57,10 +57,10 @@ trackerScreenDataHi
 trackerMusicData
 ;(oct/note)(vol/len)
 // bar 0
-.byt $21,$54,$23,$55 // position 0
+.byt $21,$54,$28,$55 // position 0
 .byt $01,$00,$01,$00 // position 1
 .byt $21,$50,$35,$50 // position 2
-.byt $01,$01,$01,$01 // position 3
+.byt $48,$31,$01,$01 // position 3
 .byt $21,$54,$23,$55 // position 4
 .byt $01,$00,$01,$00 // position 5
 .byt $21,$50,$35,$50 // position 6
