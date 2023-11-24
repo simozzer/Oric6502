@@ -24,8 +24,7 @@
 // The data will be stored using this format
 // OCTAVE 0-7 (3 bits, but will use 4. The hi bit will be used for 'no note')
 // NOTE (1-12/ can be stores as 0-11) (4 bits)
-// LENGTH (1-15) ( 4 bits)
-// VOL (1-15 - volume level, 0 = use envelope from play) (4 bits)
+// VOL (1-15 - volume level, 0 = use envelope from play) (lo 4 bits)
 
 
 // example screen layout for 1 bar
@@ -97,7 +96,7 @@ runTracker
     cpx #KEY_RIGHT_ARROW
     bne checkLeft
     lda _tracker_selected_col_index
-    cmp #07
+    cmp #05
     bpl checkLeft
     inc _tracker_selected_col_index
     jmp refreshTrackerScreen
@@ -125,8 +124,14 @@ runTracker
 
     checkQuit
     cpx #KEY_Q
-    bne loopAgain
+    bne checkDelete
     rts
+
+    checkDelete
+    cpx #KEY_DELETE
+    bne loopAgain
+    jsr processDelete
+    jmp refreshTrackerScreen
     
     loopAgain
     jmp readAgain
@@ -175,7 +180,7 @@ processPlus
 
 nextCheck0
     cmp #TRACKER_COL_INDEX_OCT_CH1
-    bne nextCheck1
+    bne nextCheck2
 
     ldy #0
     lda (_copy_mem_src),y
@@ -207,31 +212,7 @@ nextCheck0
     sta (_copy_mem_src),y
     rts
 
-nextCheck1
-    cmp #TRACKER_COL_INDEX_LEN_CH1
-    bne nextCheck2
 
-    ldy #1
-    lda (_copy_mem_src),y
-    tax
-    and #$F0
-    sta _hi_nibble
-    txa
-    and #$0f
-    sta _lo_nibble
-    cmp #15
-    bmi incrementLenChannel1
-    jmp done
-
-    incrementLenChannel1 // Add to length value channel 1
-    tax
-    inx
-    txa
-    sta _lo_nibble
-    adc _hi_nibble
-    ldy #1
-    sta (_copy_mem_src),y
-    rts
 
 nextCheck2
     cmp #TRACKER_COL_INDEX_VOL_CH1
@@ -240,31 +221,14 @@ nextCheck2
     
     ldy #1
     lda (_copy_mem_src),y
-    tax
     and #$0f
-    sta _lo_nibble
-    txa
-    and #$f0
-    lsr
-    lsr 
-    lsr
-    lsr
-    sta _hi_nibble
     clc
     cmp #15
     bcc incrementVolChannel1
     jmp done
 
     incrementVolChannel1 // Add to oct value channel 1
-    clc
     adc #$01
-    asl
-    asl
-    asl
-    asl
-
-    adc _lo_nibble
-    ldy #1
     sta (_copy_mem_src),y
     rts
 
@@ -298,7 +262,7 @@ nextCheck3
 
 nextCheck4    
     cmp #TRACKER_COL_INDEX_OCT_CH2
-    bne nextCheck5
+    bne nextCheck6
 
     ldy #2
     lda (_copy_mem_src),y
@@ -330,32 +294,7 @@ nextCheck4
     sta (_copy_mem_src),y
     rts
 
-nextCheck5
-    cmp #TRACKER_COL_INDEX_LEN_CH2
-    bne nextCheck6
 
-    ldy #3
-    lda (_copy_mem_src),y
-    tax
-    and #$F0
-    sta _hi_nibble
-    txa
-    and #$0f
-    sta _lo_nibble
-    cmp #15
-    bmi incrementLenChannel2
-    jmp done
-
-    incrementLenChannel2 // Add to length value channel 2
-    tax
-    inx
-    txa
-    clc
-    sta _lo_nibble
-    adc _hi_nibble
-    ldy #3
-    sta (_copy_mem_src),y
-    rts
 
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
@@ -363,16 +302,7 @@ nextCheck6
 
     ldy #3
     lda (_copy_mem_src),y
-    tax
     and #$0f
-    sta _lo_nibble
-    txa
-    and #$f0
-    lsr
-    lsr 
-    lsr
-    lsr
-    sta _hi_nibble
     clc
     cmp #15
     bcc incrementVolChannel2
@@ -381,13 +311,6 @@ nextCheck6
     incrementVolChannel2 // Add to oct value channel 2
     clc
     adc #$01
-    asl
-    asl
-    asl
-    asl
-
-    adc _lo_nibble
-    ldy #3
     sta (_copy_mem_src),y
     rts
 
@@ -442,7 +365,7 @@ processMinus
 
 nextCheck0
     cmp #TRACKER_COL_INDEX_OCT_CH1
-    bne nextCheck1
+    bne nextCheck2
     ldy #0
     lda (_copy_mem_src),y
     tax
@@ -473,37 +396,6 @@ nextCheck0
     sta (_copy_mem_src),y
     rts
 
-
-
-nextCheck1
-    cmp #TRACKER_COL_INDEX_LEN_CH1
-    bne nextCheck2
-
-    
-    ldy #1
-    lda (_copy_mem_src),y
-    tax
-    and #$F0
-    sta _hi_nibble
-    txa
-    and #$0f
-    sta _lo_nibble
-    clc
-    cmp #01
-    bne decrementLenChannel1
-    jmp done
-
-    decrementLenChannel1 // subtract from length value channel 1
-    tax
-    dex
-    txa
-    clc
-    sta _lo_nibble
-    adc _hi_nibble
-    ldy #1
-    sta (_copy_mem_src),y
-    rts
-
 nextCheck2
     cmp #TRACKER_COL_INDEX_VOL_CH1
     bne nextCheck3
@@ -511,32 +403,14 @@ nextCheck2
     
     ldy #1
     lda (_copy_mem_src),y
-    tax
     and #$0f
-    sta _lo_nibble
-    txa
-    and #$f0
-    lsr
-    lsr 
-    lsr
-    lsr
-    sta _hi_nibble
     clc
     cmp #0
     bne decrementVolChannel1
     jmp done
 
     decrementVolChannel1 // Add to oct value channel 1
-    tax
-    dex
-    txa
-    asl
-    asl
-    asl
-    asl
-
-    adc _lo_nibble
-    ldy #1
+    sbc #01
     sta (_copy_mem_src),y
     rts
 
@@ -571,7 +445,7 @@ nextCheck3
 
 nextCheck4    
     cmp #TRACKER_COL_INDEX_OCT_CH2
-    bne nextCheck5
+    bne nextCheck6
 
     ldy #2
     lda (_copy_mem_src),y
@@ -603,66 +477,20 @@ nextCheck4
     ldy #2
     sta (_copy_mem_src),y
     rts
-
-nextCheck5
-    cmp #TRACKER_COL_INDEX_LEN_CH2
-    bne nextCheck6
-    ldy #3
-    lda (_copy_mem_src),y
-    tax
-    and #$F0
-    sta _hi_nibble
-    txa
-    and #$0f
-    sta _lo_nibble
-    clc
-    cmp #01
-    bne decrementLenChannel2
-    jmp done
-
-    decrementLenChannel2 // subtract from length value channel 1
-    tax
-    dex
-    txa
-    clc
-    sta _lo_nibble
-    adc _hi_nibble
-    ldy #3
-    sta (_copy_mem_src),y
-    rts
-
-
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
     bne done
 
     ldy #3
     lda (_copy_mem_src),y
-    tax
     and #$0f
-    sta _lo_nibble
-    txa
-    and #$f0
-    lsr
-    lsr 
-    lsr
-    lsr
-    sta _hi_nibble
     clc
     cmp #0
     bne decrementVolChannel2
     jmp done
 
     decrementVolChannel2 // Add to oct value channel 1
-    tax
-    dex
-    txa
-    asl
-    asl
-    asl
-    asl
-    adc _lo_nibble
-    ldy #3
+    sbc #01
     sta (_copy_mem_src),y
     rts
 
@@ -673,6 +501,76 @@ done
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
 
+
+processDelete
+.(
+    ldy _tracker_selected_row_index
+    lda trackerMusicDataLo,Y
+    sta _copy_mem_src_lo
+    lda trackerMusicDataHi,y
+    sta _copy_mem_src_hi
+
+    lda _tracker_selected_col_index
+    cmp #TRACKER_COL_INDEX_NOTE_CH1
+    bne nextCheck0
+
+    ldy #0
+    lda #0
+    sta (_copy_mem_src),y
+    rts
+
+nextCheck0
+    cmp #TRACKER_COL_INDEX_OCT_CH1
+    bne nextCheck2
+
+    ldy #0
+    lda #0
+    sta (_copy_mem_src),y
+    rts
+
+nextCheck2
+    cmp #TRACKER_COL_INDEX_VOL_CH1
+    bne nextCheck3
+
+    
+    ldy #1
+    lda #0
+    sta (_copy_mem_src),y
+    rts
+
+
+
+nextCheck3
+    cmp #TRACKER_COL_INDEX_NOTE_CH2
+    bne nextCheck4
+
+    ldy #2
+    lda #0
+    sta (_copy_mem_src),y
+    rts
+
+
+nextCheck4    
+    cmp #TRACKER_COL_INDEX_OCT_CH2
+    bne nextCheck6
+
+    ldy #2
+    lda #0
+    sta (_copy_mem_src),y
+    rts
+
+nextCheck6
+    cmp #TRACKER_COL_INDEX_VOL_CH2
+    bne done
+
+    ldy #2
+    lda #0
+    sta (_copy_mem_src),y
+    rts
+
+done
+    rts
+.)
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -837,31 +735,11 @@ printTrackerLineData
     sta _music_data_temp ; make a copy of the value (the lower 4 bits will be used for volume)
 
     ;get Part 1 Vol
-    and #$F0
-    lsr
-    lsr
-    lsr 
-    lsr
     and #$0f
-    sta _music_vol
-    adc _music_vol
+    adc _music_data_temp
     tax
     lda numbersToDisplay,x
     ldy #TRACKER_COL_VOL_CH_1
-    sta (_copy_mem_dest),Y
-    inx
-    lda numbersToDisplay,x
-    iny
-    sta (_copy_mem_dest),Y
-
-    ;get Part 1 Len
-    lda _music_data_temp
-    and #$0F
-    sta _music_len
-    adc _music_len
-    tax
-    lda numbersToDisplay,x
-    ldy #TRACKER_COL_LEN_CH_1
     sta (_copy_mem_dest),Y
     inx
     lda numbersToDisplay,x
@@ -923,31 +801,11 @@ printTrackerLineData
     sta _music_data_temp ; make a copy of the value (the lower 4 bits will be used for volume)
 
     ;get Part 2 Vol
-    and #$F0
-    lsr
-    lsr
-    lsr 
-    lsr
-    and #$0f
-    sta _music_vol
-    adc _music_vol
+    and #$0f  
+    adc _music_data_temp
     tax
     lda numbersToDisplay,x
     ldy #TRACKER_COL_VOL_CH_2
-    sta (_copy_mem_dest),Y
-    inx
-    lda numbersToDisplay,x
-    iny
-    sta (_copy_mem_dest),Y
-
-    ;get Part 2 Len
-    lda _music_data_temp
-    and #$0F
-    sta _music_len
-    adc _music_len
-    tax
-    lda numbersToDisplay,x
-    ldy #TRACKER_COL_LEN_CH_2
     sta (_copy_mem_dest),Y
     inx
     lda numbersToDisplay,x
