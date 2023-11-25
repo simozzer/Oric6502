@@ -172,7 +172,7 @@ trackerMusicDataHi
 
 
 trackerAttributeColumns
-.byt 3,7,10,14,18,21
+.byt 3,7,10,15,19,22,27,31,34
 
 trackerAttributeColWidth
 .byt 3,2,3,3,2,3

@@ -115,7 +115,7 @@ trackerInterrupt
         lda #01
         sta PARAMS_5
         jsr MUSIC_ATMOS
-        jmp countDown
+        jmp channel3
 
         playNote2
         tax ; store value to later extract octave
@@ -141,6 +141,56 @@ trackerInterrupt
         sta PARAMS_7
 
         jsr MUSIC_ATMOS
+
+
+
+         // --- start channel 3 ---
+        :channel3
+        ; fixed channel
+        jsr WipeParams
+        lda #03
+        sta PARAMS_1
+
+        ldy #4 ; Load 1st byte of line
+        lda (_playback_music_info_byte_addr),y
+        cmp #00
+        bne playNote3
+
+        
+        ; no note play silence
+        lda #00
+        sta PARAMS_3
+        sta PARAMS_7
+        lda #01
+        sta PARAMS_5
+        jsr MUSIC_ATMOS
+        jmp countDown
+
+        playNote3
+        tax ; store value to later extract octave
+
+        ; extract note
+        clc
+        and #$0f
+        sta PARAMS_5 ; store note param
+
+        ; extract octave
+        txa
+        and #$f0        
+        lsr
+        lsr
+        lsr
+        lsr
+        sta PARAMS_3
+
+        ;extract volume
+        ldy #5 ;; load 2nd byte of line
+        lda (_playback_music_info_byte_addr),y    
+        and #$0f
+        sta PARAMS_7
+        
+        jsr MUSIC_ATMOS
+
 
 
 

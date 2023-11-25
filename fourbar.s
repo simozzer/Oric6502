@@ -96,7 +96,7 @@ runTracker
     cpx #KEY_RIGHT_ARROW
     bne checkLeft
     lda _tracker_selected_col_index
-    cmp #05
+    cmp #08
     bpl checkLeft
     inc _tracker_selected_col_index
     jmp refreshTrackerScreen
@@ -298,7 +298,7 @@ nextCheck4
 
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
-    bne done
+    bne nextCheck7
 
     ldy #3
     lda (_copy_mem_src),y
@@ -310,6 +310,82 @@ nextCheck6
 
     incrementVolChannel2 // Add to oct value channel 2
     clc
+    adc #$01
+    sta (_copy_mem_src),y
+    rts
+
+nextCheck7
+    cmp  #TRACKER_COL_INDEX_NOTE_CH3
+    bne nextCheck8
+
+    ldy #4
+    lda (_copy_mem_src),y
+    tax
+    and #$F0
+    sta _hi_nibble
+    txa
+    and #$0f
+    sta _lo_nibble
+    cmp #12
+    bmi incrementNoteChannel3
+    jmp done
+
+    incrementNoteChannel3 // Add to note value channel 2
+    tax
+    inx
+    txa
+    sta _lo_nibble
+    adc _hi_nibble
+    ldy #4
+    sta (_copy_mem_src),y
+    rts
+
+nextCheck8
+    cmp #TRACKER_COL_INDEX_OCT_CH3
+    bne nextCheck9
+
+    ldy #4
+    lda (_copy_mem_src),y
+    tax
+    and #$0f
+    sta _lo_nibble
+    txa
+    and #$f0
+    lsr
+    lsr 
+    lsr
+    lsr
+    sta _hi_nibble
+    clc
+    cmp #07
+    bcc incrementOctChannel3
+    jmp done
+
+    incrementOctChannel3 // Add to oct value channel 1
+    clc
+    adc #$01
+    asl
+    asl
+    asl
+    asl
+
+    adc _lo_nibble
+    ldy #4
+    sta (_copy_mem_src),y
+    rts
+
+nextCheck9  
+    cmp #TRACKER_COL_INDEX_VOL_CH3
+    bne done
+    ldy #5
+    lda (_copy_mem_src),y
+    and #$0f
+    clc
+    cmp #15
+    bcc incrementVolChannel3
+    jmp done
+
+    incrementVolChannel3 // Add to oct value channel 1
     adc #$01
     sta (_copy_mem_src),y
     rts
@@ -479,7 +555,7 @@ nextCheck4
     rts
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
-    bne done
+    bne nextCheck7
 
     ldy #3
     lda (_copy_mem_src),y
@@ -494,6 +570,83 @@ nextCheck6
     sta (_copy_mem_src),y
     rts
 
+nextCheck7
+    cmp  #TRACKER_COL_INDEX_NOTE_CH3
+    bne nextCheck8
+
+    ldy #4
+    lda (_copy_mem_src),y
+    tax
+    and #$F0
+    sta _hi_nibble
+    txa
+    and #$0f
+    sta _lo_nibble
+    clc
+    cmp #02
+    bcs decrementNoteChanel3
+    jmp done
+
+    decrementNoteChanel3 // subtract from note value channel 1
+    tax
+    dex
+    txa
+    clc
+    sta _lo_nibble
+    adc _hi_nibble
+    ldy #4
+    sta (_copy_mem_src),y
+    rts
+
+nextCheck8
+    cmp #TRACKER_COL_INDEX_OCT_CH3
+    bne nextCheck9
+    ldy #4
+    lda (_copy_mem_src),y
+    tax
+    and #$0f
+    sta _lo_nibble
+    txa
+    and #$f0
+    lsr
+    lsr 
+    lsr
+    lsr
+    sta _hi_nibble
+    clc
+    cmp #0
+    bne decrementOctChannel3
+    jmp done
+
+    decrementOctChannel3 // Add to oct value channel 1
+    tax
+    dex
+    txa
+    asl
+    asl
+    asl
+    asl
+    adc _lo_nibble
+    ldy #4
+    sta (_copy_mem_src),y
+    rts
+    
+nextCheck9
+    cmp #TRACKER_COL_INDEX_VOL_CH3
+    bne done
+
+    ldy #5
+    lda (_copy_mem_src),y
+    and #$0f
+    clc
+    cmp #0
+    bne decrementVolChannel3
+    jmp done
+
+    decrementVolChannel3 // Add to oct value channel 1
+    sbc #01
+    sta (_copy_mem_src),y
+    rts
 
 done
     rts
@@ -561,12 +714,36 @@ nextCheck4
 
 nextCheck6
     cmp #TRACKER_COL_INDEX_VOL_CH2
-    bne done
+    bne nextCheck7
 
     ldy #2
     lda #0
     sta (_copy_mem_src),y
     rts
+nextCheck7
+    cmp #TRACKER_COL_INDEX_NOTE_CH3
+    bne nextCheck8
+
+    ldy #4
+    lda #0
+    sta (_copy_mem_src),y
+    rts    
+nextCheck8
+    cmp #TRACKER_COL_INDEX_OCT_CH3
+    bne nextCheck9
+
+    ldy #4
+    lda #0
+    sta (_copy_mem_src),y
+    rts     
+nextCheck9
+    cmp #TRACKER_COL_INDEX_VOL_CH3
+    bne done
+
+    ldy #4
+    lda #0
+    sta (_copy_mem_src),y
+    rts     
 
 done
     rts
@@ -761,7 +938,7 @@ printTrackerLineData
     iny
     cpy #38
     bne clearNoteLoop2
-    rts
+    jmp processNote3Data
 
     printNote2Data
     tax ; make a copy of the value (the lower 4 bits will be used for note)
@@ -811,6 +988,74 @@ printTrackerLineData
     lda numbersToDisplay,x
     iny
     sta (_copy_mem_dest),Y
+
+
+    :processNote3Data
+    // PRINT PART 3 INFO
+    ldy #04 
+    lda (_music_info_byte_addr),y
+    cmp #00
+    bne printNote3Data
+    
+    ldy #TRACKER_COL_NOTE_CH_3
+    lda #ASCII_SPACE
+    clearNoteLoop3
+    sta (_copy_mem_dest),Y
+    iny
+    cpy #38
+    bne clearNoteLoop3
+    rts
+
+    printNote3Data
+    tax ; make a copy of the value (the lower 4 bits will be used for note)
+    txa
+
+    ; get Part 3 Octave
+    and #$F0
+    lsr
+    lsr
+    lsr 
+    lsr
+    and #$0F
+    sta _music_octave
+    ;convert octave to digit and print on screen
+    adc #48
+    ldy #TRACKER_COL_OCT_CH_3
+    sta (_copy_mem_dest),y
+
+    ; get Part 2 Note
+    txa
+    and #$0F
+    sta _music_note
+    adc _music_note ;double the value to lookup string
+    tax
+    ; lookup string for note and display on screen
+    lda notesToDisplay,x
+    ldy #TRACKER_COL_NOTE_CH_3
+    sta (_copy_mem_dest),Y
+    inx
+    lda notesToDisplay,x
+    iny
+    sta (_copy_mem_dest),Y
+
+    ldy #05
+    ;get Second Music Info Byte
+    lda (_music_info_byte_addr),y ; 
+    sta _music_data_temp ; make a copy of the value (the lower 4 bits will be used for volume)
+
+    ;get Part 3 Vol
+    and #$0f  
+    adc _music_data_temp
+    tax
+    lda numbersToDisplay,x
+    ldy #TRACKER_COL_VOL_CH_3
+    sta (_copy_mem_dest),Y
+    inx
+    lda numbersToDisplay,x
+    iny
+    sta (_copy_mem_dest),Y
+
+
 
     rts
 .)
