@@ -7,7 +7,7 @@ numbersToDisplay
 
 
 trackerScreenData
-.byt PAPER_WHITE, INK_BLACK,  "  CHANNEL 1   CHANNEL 2   CHANNEL 3   "
+.byt PAPER_WHITE, INK_BLACK,  "     CH1         CH2         CH3      "
 .byt PAPER_WHITE, INK_BLACK,  " NOT OCT VOL NOT OCT VOL NOT OCT VOL  "
 .byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
 .byt PAPER_BLACK, INK_BLACK,  "                                      "
@@ -30,9 +30,9 @@ trackerScreenData
 .byt PAPER_BLACK, INK_BLACK,  "                                      "
 .byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
 .byt PAPER_WHITE, INK_BLUE,   " Arrows to navigate. +/- Change value."
-.byt PAPER_WHITE, INK_BLUE,   " Del to Delete. Q to Quit.            "
-.byt PAPER_WHITE, INK_BLUE,   " C to copy line. V to paste line      "
-.byt PAPER_WHITE, INK_BLUE,   "    Click on </> to change bar.       "
+.byt PAPER_WHITE, INK_BLUE,   " Del Delete. Q Quit.                  "
+.byt PAPER_WHITE, INK_BLUE,   " Line: C copy, V paste.               "
+.byt PAPER_WHITE, INK_BLUE,   " Speed: 1 slower, 2 faster.           "
 .byt PAPER_WHITE, INK_BLACK,  "                                      "
 
 trackerScreenDataLo

@@ -80,7 +80,7 @@ runTracker
     cmp #15
     bpl checkUp
     inc _tracker_selected_row_index
-    jmp refreshTrackerScreen
+    jmp refreshTrackerScreen    
 
     checkUp
     cpx #KEY_UP_ARROW
@@ -141,12 +141,48 @@ runTracker
 
     checkPaste
     cpx #KEY_V
-    bne loopAgain
+    bne checkOne
     jsr processPaste
+    jmp refreshTrackerScreen
+
+    checkOne
+    cpx #KEY_1
+    bne checkTwo
+    jsr slowDown
+    jmp refreshTrackerScreen
+
+    checkTwo
+    cpx #KEY_2
+    bne loopAgain
+    jsr speedUp
     jmp refreshTrackerScreen
     
     loopAgain
     jmp readAgain
+.)
+
+speedUp
+.(
+    lda _tracker_step_length
+    clc
+    cmp #01
+    bne increaseSpeed
+    rts
+
+    increaseSpeed
+    dec _tracker_step_length
+    rts
+.)
+
+slowDown
+.(
+    lda _tracker_step_length
+    cmp #20
+    bpl done
+    inc _tracker_step_length
+
+    done
+    rts
 .)
 
 processCopy
@@ -164,7 +200,7 @@ processCopy
     sta trackerCopyBuffer,Y
     iny
     cpy #06
-    bne copyLoop ;bpl; bmi; bne
+    bne copyLoop 
     rts
 .)
 
