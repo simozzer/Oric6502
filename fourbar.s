@@ -141,18 +141,18 @@ runTracker
 
     checkPaste
     cpx #KEY_V
-    bne checkOne
+    bne checkFive
     jsr processPaste
     jmp refreshTrackerScreen
 
-    checkOne
-    cpx #KEY_1
-    bne checkTwo
+    checkFive
+    cpx #KEY_5
+    bne checkSix
     jsr slowDown
     jmp refreshTrackerScreen
 
-    checkTwo
-    cpx #KEY_2
+    checkSix
+    cpx #KEY_6
     bne loopAgain
     jsr speedUp
     jmp refreshTrackerScreen

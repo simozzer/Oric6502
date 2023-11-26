@@ -13,6 +13,8 @@ processKeyboardPlayer1
     beq nextKey0
     lda #PLAYER_DIRECTION_LEFT
     sta _player1_direction
+    jsr _GetRand
+    rts
 
 nextKey0
     cpx #KEY_RIGHT_ARROW
@@ -21,7 +23,9 @@ nextKey0
     cmp #PLAYER_DIRECTION_LEFT
     beq nextKey1
     lda #PLAYER_DIRECTION_RIGHT
-    sta _player1_direction
+    sta _player1_direction   
+    jsr _GetRand 
+    rts
 
 nextKey1
     cpx #KEY_DOWN_ARROW
@@ -31,6 +35,8 @@ nextKey1
     beq nextKey2
     lda #PLAYER_DIRECTION_DOWN
     sta _player1_direction
+    jsr _GetRand
+    rts
 
 nextKey2
     cpx #KEY_UP_ARROW
@@ -40,6 +46,8 @@ nextKey2
     beq keyboardDone
     lda #PLAYER_DIRECTION_UP
     sta _player1_direction
+    jsr _GetRand
+
 keyboardDone
   rts
 .)

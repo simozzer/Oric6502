@@ -30,9 +30,9 @@ trackerScreenData
 .byt PAPER_BLACK, INK_BLACK,  "                                      "
 .byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
 .byt PAPER_WHITE, INK_BLUE,   " Arrows to navigate. +/- Change value."
-.byt PAPER_WHITE, INK_BLUE,   " Del Delete. Q Quit.                  "
-.byt PAPER_WHITE, INK_BLUE,   " Line: C copy, V paste.               "
-.byt PAPER_WHITE, INK_BLUE,   " Speed: 1 slower, 2 faster.           "
+.byt PAPER_WHITE, INK_BLUE,   " Del Delete. Q Quit. C copy, V Paste. "
+.byt PAPER_WHITE, INK_BLUE,   " Speed: 5 slower, 6 faster.           "
+.byt PAPER_WHITE, INK_BLACK,  "                                      "
 .byt PAPER_WHITE, INK_BLACK,  "                                      "
 
 trackerScreenDataLo
