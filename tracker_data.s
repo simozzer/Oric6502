@@ -31,7 +31,7 @@ trackerScreenData
 .byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
 .byt PAPER_WHITE, INK_BLUE,   " Arrows to navigate. +/- Change value."
 .byt PAPER_WHITE, INK_BLUE,   " Del to Delete. Q to Quit.            "
-.byt PAPER_WHITE, INK_BLUE,   " Respectfully click 'del' to delete.  "
+.byt PAPER_WHITE, INK_BLUE,   " C to copy line. V to paste line      "
 .byt PAPER_WHITE, INK_BLUE,   "    Click on </> to change bar.       "
 .byt PAPER_WHITE, INK_BLACK,  "                                      "
 
@@ -125,6 +125,9 @@ trackerMusicData
 .byt $00,$00,$00,$00,$00,$00 // position 13
 .byt $00,$00,$00,$00,$00,$00 // position 14
 .byt $00,$00,$00,$00,$00,$00 // position 15
+
+trackerCopyBuffer
+.byt $00,$00,$00,$00,$00,$00
 
 trackerMusicDataLo
     ;bar 0

@@ -129,12 +129,61 @@ runTracker
 
     checkDelete
     cpx #KEY_DELETE
-    bne loopAgain
+    bne checkCopy
     jsr processDelete
+    jmp refreshTrackerScreen
+
+    checkCopy
+    cpx #KEY_C
+    bne checkPaste
+    jsr processCopy
+    jmp refreshTrackerScreen
+
+    checkPaste
+    cpx #KEY_V
+    bne loopAgain
+    jsr processPaste
     jmp refreshTrackerScreen
     
     loopAgain
     jmp readAgain
+.)
+
+processCopy
+.(
+    ldy _tracker_selected_row_index
+    lda trackerMusicDataLo,Y
+    sta copyLoop+1
+    lda trackerMusicDataHi,y
+    sta copyLoop+2
+    
+    clc
+    ldy #00
+   :copyLoop
+    lda $ffff,Y
+    sta trackerCopyBuffer,Y
+    iny
+    cpy #06
+    bne copyLoop ;bpl; bmi; bne
+    rts
+.)
+
+processPaste
+.(
+    ldy _tracker_selected_row_index
+    lda trackerMusicDataLo,Y
+    sta pasteLoop+4
+    lda trackerMusicDataHi,y
+    sta pasteLoop+5
+    clc
+    ldy #00
+    :pasteLoop
+    lda trackerCopyBuffer,Y
+    sta $ffff,Y
+    iny
+    cpy #06
+    bne pasteLoop
+    rts
 .)
 
 
