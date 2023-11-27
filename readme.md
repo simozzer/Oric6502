@@ -30,6 +30,7 @@ TODO (in approximate order):
 - test again.
 - ~~create 'tracker' for creating music.~~ (e.g. Fourbar ![Just an idea](Fourbar.png))
 - Improve tracker which currently just allows for 1 bar of music
+- Add load and save routines for tracker data.
 - ~~play music in background~~ Extend for more than 1 bar.
 - ~~implement 'player', with keyboard handling and detection with maze walls.~~
 - implement 'chararacter designer', to allow creation of custom chars.

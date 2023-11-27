@@ -61,6 +61,7 @@ runTracker
 
     jsr printTrackerInstructions
     lda #0
+    sta _first_visible_tracker_step_line
     sta _tracker_selected_col_index
     sta _tracker_selected_row_index
     :refreshTrackerScreen
@@ -153,9 +154,40 @@ runTracker
 
     checkSix
     cpx #KEY_6
-    bne loopAgain
+    bne checkOne
     jsr speedUp
     jmp refreshTrackerScreen
+
+    checkOne
+    cpx #KEY_1
+    bne checkTwo
+    lda #0
+    sta _first_visible_tracker_step_line
+    jmp refreshTrackerScreen
+
+
+    checkTwo
+    cpx #KEY_2
+    bne checkThree
+    lda #16
+    sta _first_visible_tracker_step_line
+    jmp refreshTrackerScreen
+
+    checkThree
+    cpx #KEY_3
+    bne checkFour
+    lda #32
+    sta _first_visible_tracker_step_line
+    jmp refreshTrackerScreen
+
+
+    checkFour
+    cpx #KEY_4
+    bne loopAgain
+    lda #48
+    sta _first_visible_tracker_step_line
+    jmp refreshTrackerScreen
+
     
     loopAgain
     jmp readAgain
@@ -231,7 +263,10 @@ processPaste
 ; ------------------------------------------------------------------------------            
 processPlus
 .(
-    ldy _tracker_selected_row_index
+    clc
+    lda _tracker_selected_row_index
+    adc _first_visible_tracker_step_line
+    tay
     lda trackerMusicDataLo,Y
     sta _copy_mem_src_lo
     lda trackerMusicDataHi,y
@@ -489,8 +524,10 @@ done
 ; ------------------------------------------------------------------------------  
 processMinus
 .(
-
-    ldy _tracker_selected_row_index
+    clc
+    lda _tracker_selected_row_index
+    adc _first_visible_tracker_step_line
+    tay
     lda trackerMusicDataLo,Y
     sta _copy_mem_src_lo
     lda trackerMusicDataHi,y
@@ -742,7 +779,10 @@ done
 
 processDelete
 .(
-    ldy _tracker_selected_row_index
+        clc
+    lda _tracker_selected_row_index
+    adc _first_visible_tracker_step_line
+    tay
     lda trackerMusicDataLo,Y
     sta _copy_mem_src_lo
     lda trackerMusicDataHi,y
@@ -884,7 +924,7 @@ printTrackerScreen
 
     lda #04
     sta _tracker_screen_line
-    lda #00
+    lda _first_visible_tracker_step_line
     sta _tracker_step_line
     
     :printMusicLoop

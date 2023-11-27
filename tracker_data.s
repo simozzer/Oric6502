@@ -32,7 +32,7 @@ trackerScreenData
 .byt PAPER_WHITE, INK_BLUE,   " Arrows to navigate. +/- Change value."
 .byt PAPER_WHITE, INK_BLUE,   " Del Delete. Q Quit. C copy, V Paste. "
 .byt PAPER_WHITE, INK_BLUE,   " Speed: 5 slower, 6 faster.           "
-.byt PAPER_WHITE, INK_BLACK,  "                                      "
+.byt PAPER_WHITE, INK_BLUE,   " Select Bar: 1,2,3,4                  "
 .byt PAPER_WHITE, INK_BLACK,  "                                      "
 
 trackerScreenDataLo
