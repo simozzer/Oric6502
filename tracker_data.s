@@ -124,6 +124,74 @@ trackerMusicData
 .byt $00,$00,$00,$00,$00,$00 // position 13
 .byt $00,$00,$00,$00,$00,$00 // position 14
 .byt $00,$00,$00,$00,$00,$00 // position 15
+// bar 4
+.byt $21,$08,$3A,$08,$35,$08 // position 0
+.byt $00,$00,$00,$00,$00,$00 // position 1
+.byt $00,$00,$00,$00,$00,$00 // position 2
+.byt $21,$06,$3A,$06,$35,$06 // position 3
+.byt $00,$00,$00,$00,$00,$00 // position 4
+.byt $00,$00,$00,$00,$00,$00 // position 5
+.byt $21,$04,$3A,$04,$35,$04 // position 6
+.byt $00,$00,$00,$00,$00,$00 // position 7
+.byt $00,$00,$00,$00,$00,$00 // position 9
+.byt $00,$00,$00,$00,$00,$00 // position 9
+.byt $00,$00,$00,$00,$00,$00 // position 10
+.byt $00,$00,$00,$00,$00,$00 // position 11
+.byt $00,$00,$00,$00,$00,$00 // position 12
+.byt $00,$00,$00,$00,$00,$00 // position 13
+.byt $00,$00,$00,$00,$00,$00 // position 14
+.byt $00,$00,$00,$00,$00,$00 // position 15
+// bar 5
+.byt $33,$08,$35,$08,$3a,$08 // position 0
+.byt $00,$00,$00,$00,$00,$00 // position 1
+.byt $00,$00,$00,$00,$00,$00 // position 2
+.byt $33,$06,$35,$06,$3a,$06 // position 3
+.byt $00,$00,$00,$00,$00,$00 // position 4
+.byt $00,$00,$00,$00,$00,$00 // position 5
+.byt $33,$04,$35,$04,$3a,$04 // position 6
+.byt $00,$00,$00,$00,$00,$00 // position 7
+.byt $00,$00,$00,$00,$00,$00 // position 9
+.byt $00,$00,$00,$00,$00,$00 // position 9
+.byt $00,$00,$00,$00,$00,$00 // position 10
+.byt $00,$00,$00,$00,$00,$00 // position 11
+.byt $00,$00,$00,$00,$00,$00 // position 12
+.byt $00,$00,$00,$00,$00,$00 // position 13
+.byt $00,$00,$00,$00,$00,$00 // position 14
+.byt $00,$00,$00,$00,$00,$00 // position 15
+// bar 6
+.byt $21,$08,$3A,$08,$35,$08 // position 0
+.byt $00,$00,$00,$00,$00,$00 // position 1
+.byt $00,$00,$00,$00,$00,$00 // position 2
+.byt $21,$06,$3A,$06,$35,$06 // position 3
+.byt $00,$00,$00,$00,$00,$00 // position 4
+.byt $00,$00,$00,$00,$00,$00 // position 5
+.byt $21,$04,$3A,$04,$35,$04 // position 6
+.byt $00,$00,$00,$00,$00,$00 // position 7
+.byt $00,$00,$00,$00,$00,$00 // position 9
+.byt $00,$00,$00,$00,$00,$00 // position 9
+.byt $00,$00,$00,$00,$00,$00 // position 10
+.byt $00,$00,$00,$00,$00,$00 // position 11
+.byt $00,$00,$00,$00,$00,$00 // position 12
+.byt $00,$00,$00,$00,$00,$00 // position 13
+.byt $00,$00,$00,$00,$00,$00 // position 14
+.byt $00,$00,$00,$00,$00,$00 // position 15
+// bar 7
+.byt $33,$08,$35,$08,$3a,$08 // position 0
+.byt $00,$00,$00,$00,$00,$00 // position 1
+.byt $00,$00,$00,$00,$00,$00 // position 2
+.byt $33,$06,$35,$06,$3a,$06 // position 0
+.byt $00,$00,$00,$00,$00,$00 // position 4
+.byt $00,$00,$00,$00,$00,$00 // position 5
+.byt $33,$04,$35,$04,$3a,$04 // position 0
+.byt $00,$00,$00,$00,$00,$00 // position 7
+.byt $00,$00,$00,$00,$00,$00 // position 9
+.byt $00,$00,$00,$00,$00,$00 // position 9
+.byt $00,$00,$00,$00,$00,$00 // position 10
+.byt $00,$00,$00,$00,$00,$00 // position 11
+.byt $00,$00,$00,$00,$00,$00 // position 12
+.byt $00,$00,$00,$00,$00,$00 // position 13
+.byt $00,$00,$00,$00,$00,$00 // position 14
+.byt $00,$00,$00,$00,$00,$00 // position 15
 
 trackerCopyBuffer
 .byt $00,$00,$00,$00,$00,$00
@@ -149,6 +217,26 @@ trackerMusicDataLo
     .byt <trackerMusicData+312,<trackerMusicData+318,<trackerMusicData+324,<trackerMusicData+330
     .byt <trackerMusicData+336,<trackerMusicData+342,<trackerMusicData+348,<trackerMusicData+354
     .byt <trackerMusicData+360,<trackerMusicData+366,<trackerMusicData+372,<trackerMusicData+378
+    ;bar 4
+    .byt <trackerMusicData+384,<trackerMusicData+390,<trackerMusicData+396,<trackerMusicData+402
+    .byt <trackerMusicData+408,<trackerMusicData+414,<trackerMusicData+420,<trackerMusicData+426
+    .byt <trackerMusicData+432,<trackerMusicData+438,<trackerMusicData+444,<trackerMusicData+450
+    .byt <trackerMusicData+456,<trackerMusicData+462,<trackerMusicData+468,<trackerMusicData+474
+    ;bar 5
+    .byt <trackerMusicData+480,<trackerMusicData+486,<trackerMusicData+492,<trackerMusicData+498
+    .byt <trackerMusicData+504,<trackerMusicData+510,<trackerMusicData+516,<trackerMusicData+522
+    .byt <trackerMusicData+528,<trackerMusicData+534,<trackerMusicData+540,<trackerMusicData+546
+    .byt <trackerMusicData+552,<trackerMusicData+558,<trackerMusicData+564,<trackerMusicData+570
+    ;bar 6
+    .byt <trackerMusicData+576,<trackerMusicData+582,<trackerMusicData+588,<trackerMusicData+594
+    .byt <trackerMusicData+600,<trackerMusicData+606,<trackerMusicData+612,<trackerMusicData+618
+    .byt <trackerMusicData+624,<trackerMusicData+630,<trackerMusicData+636,<trackerMusicData+642
+    .byt <trackerMusicData+648,<trackerMusicData+654,<trackerMusicData+660,<trackerMusicData+666
+    ;bar 7
+    .byt <trackerMusicData+672,<trackerMusicData+678,<trackerMusicData+684,<trackerMusicData+690
+    .byt <trackerMusicData+696,<trackerMusicData+702,<trackerMusicData+708,<trackerMusicData+714
+    .byt <trackerMusicData+720,<trackerMusicData+726,<trackerMusicData+732,<trackerMusicData+738
+    .byt <trackerMusicData+744,<trackerMusicData+750,<trackerMusicData+756,<trackerMusicData+762
 
 trackerMusicDataHi
     ;bar 0
@@ -171,6 +259,26 @@ trackerMusicDataHi
     .byt >trackerMusicData+312,>trackerMusicData+318,>trackerMusicData+324,>trackerMusicData+330
     .byt >trackerMusicData+336,>trackerMusicData+342,>trackerMusicData+348,>trackerMusicData+354
     .byt >trackerMusicData+360,>trackerMusicData+366,>trackerMusicData+372,>trackerMusicData+378
+    ;bar 4
+    .byt >trackerMusicData+384,>trackerMusicData+390,>trackerMusicData+396,>trackerMusicData+402
+    .byt >trackerMusicData+408,>trackerMusicData+414,>trackerMusicData+420,>trackerMusicData+426
+    .byt >trackerMusicData+432,>trackerMusicData+438,>trackerMusicData+444,>trackerMusicData+450
+    .byt >trackerMusicData+456,>trackerMusicData+462,>trackerMusicData+468,>trackerMusicData+474
+    ;bar 5
+    .byt >trackerMusicData+480,>trackerMusicData+486,>trackerMusicData+492,>trackerMusicData+498
+    .byt >trackerMusicData+504,>trackerMusicData+510,>trackerMusicData+516,>trackerMusicData+522
+    .byt >trackerMusicData+528,>trackerMusicData+534,>trackerMusicData+540,>trackerMusicData+546
+    .byt >trackerMusicData+552,>trackerMusicData+558,>trackerMusicData+564,>trackerMusicData+570
+    ;bar 6
+    .byt >trackerMusicData+576,>trackerMusicData+582,>trackerMusicData+588,>trackerMusicData+594
+    .byt >trackerMusicData+600,>trackerMusicData+606,>trackerMusicData+612,>trackerMusicData+618
+    .byt >trackerMusicData+624,>trackerMusicData+630,>trackerMusicData+636,>trackerMusicData+642
+    .byt >trackerMusicData+648,>trackerMusicData+654,>trackerMusicData+660,>trackerMusicData+666
+    ;bar 7
+    .byt >trackerMusicData+672,>trackerMusicData+678,>trackerMusicData+684,>trackerMusicData+690
+    .byt >trackerMusicData+696,>trackerMusicData+702,>trackerMusicData+708,>trackerMusicData+714
+    .byt >trackerMusicData+720,>trackerMusicData+726,>trackerMusicData+732,>trackerMusicData+738
+    .byt >trackerMusicData+744,>trackerMusicData+750,>trackerMusicData+756,>trackerMusicData+762    
 
 
 trackerAttributeColumns
