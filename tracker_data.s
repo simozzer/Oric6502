@@ -33,7 +33,7 @@ trackerScreenData
 .byt PAPER_WHITE, INK_BLUE,   " Del Delete. Q Quit. C copy, V Paste. "
 .byt PAPER_WHITE, INK_BLUE,   " Speed: 5 slower, 6 faster.           "
 .byt PAPER_WHITE, INK_BLUE,   " Select Bar: 1,2,3,4                  "
-.byt PAPER_WHITE, INK_BLACK,  "                                      "
+.byt PAPER_WHITE, INK_BLACK,  " Toggle song/pattern: B               "
 
 trackerScreenDataLo
     .byt <trackerScreenData + 0,<trackerScreenData + 40,<trackerScreenData + 80,<trackerScreenData + 120,<trackerScreenData + 160
@@ -53,17 +53,17 @@ trackerScreenDataHi
     .byt >trackerScreenData + 1000,>trackerScreenData + 1040,>trackerScreenData + 1080
 
 
-// 4 bars of music data (for 2 channels, each word uses the format described above)
+// 4 bars of music data (for 3 channels, each word uses the format described above)
 trackerMusicData
 ;(oct/note)(vol/len)
 // bar 0
-.byt $00,$00,$00,$00,$00,$00 // position 0
+.byt $21,$08,$3A,$08,$35,$08 // position 0
 .byt $00,$00,$00,$00,$00,$00 // position 1
 .byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $00,$00,$00,$00,$00,$00 // position 3
+.byt $21,$06,$3A,$06,$35,$06 // position 3
 .byt $00,$00,$00,$00,$00,$00 // position 4
 .byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $00,$00,$00,$00,$00,$00 // position 6
+.byt $21,$04,$3A,$04,$35,$04 // position 6
 .byt $00,$00,$00,$00,$00,$00 // position 7
 .byt $00,$00,$00,$00,$00,$00 // position 9
 .byt $00,$00,$00,$00,$00,$00 // position 9
@@ -74,13 +74,13 @@ trackerMusicData
 .byt $00,$00,$00,$00,$00,$00 // position 14
 .byt $00,$00,$00,$00,$00,$00 // position 15
 // bar 1
-.byt $00,$00,$00,$00,$00,$00 // position 0
+.byt $33,$08,$35,$08,$3a,$08 // position 0
 .byt $00,$00,$00,$00,$00,$00 // position 1
 .byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $00,$00,$00,$00,$00,$00 // position 3
+.byt $33,$06,$35,$06,$3a,$06 // position 3
 .byt $00,$00,$00,$00,$00,$00 // position 4
 .byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $00,$00,$00,$00,$00,$00 // position 6
+.byt $33,$04,$35,$04,$3a,$04 // position 6
 .byt $00,$00,$00,$00,$00,$00 // position 7
 .byt $00,$00,$00,$00,$00,$00 // position 9
 .byt $00,$00,$00,$00,$00,$00 // position 9
@@ -91,14 +91,13 @@ trackerMusicData
 .byt $00,$00,$00,$00,$00,$00 // position 14
 .byt $00,$00,$00,$00,$00,$00 // position 15
 // bar 2
-
-.byt $00,$00,$00,$00,$00,$00 // position 0
+.byt $21,$08,$3A,$08,$35,$08 // position 0
 .byt $00,$00,$00,$00,$00,$00 // position 1
 .byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $00,$00,$00,$00,$00,$00 // position 3
+.byt $21,$06,$3A,$06,$35,$06 // position 3
 .byt $00,$00,$00,$00,$00,$00 // position 4
 .byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $00,$00,$00,$00,$00,$00 // position 6
+.byt $21,$04,$3A,$04,$35,$04 // position 6
 .byt $00,$00,$00,$00,$00,$00 // position 7
 .byt $00,$00,$00,$00,$00,$00 // position 9
 .byt $00,$00,$00,$00,$00,$00 // position 9
@@ -109,13 +108,13 @@ trackerMusicData
 .byt $00,$00,$00,$00,$00,$00 // position 14
 .byt $00,$00,$00,$00,$00,$00 // position 15
 // bar 3
-.byt $00,$00,$00,$00,$00,$00 // position 0
+.byt $33,$08,$35,$08,$3a,$08 // position 0
 .byt $00,$00,$00,$00,$00,$00 // position 1
 .byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $00,$00,$00,$00,$00,$00 // position 3
+.byt $33,$06,$35,$06,$3a,$06 // position 0
 .byt $00,$00,$00,$00,$00,$00 // position 4
 .byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $00,$00,$00,$00,$00,$00 // position 6
+.byt $33,$04,$35,$04,$3a,$04 // position 0
 .byt $00,$00,$00,$00,$00,$00 // position 7
 .byt $00,$00,$00,$00,$00,$00 // position 9
 .byt $00,$00,$00,$00,$00,$00 // position 9
