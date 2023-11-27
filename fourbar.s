@@ -219,7 +219,10 @@ slowDown
 
 processCopy
 .(
-    ldy _tracker_selected_row_index
+    clc
+    lda _tracker_selected_row_index
+    adc _first_visible_tracker_step_line
+    tay
     lda trackerMusicDataLo,Y
     sta copyLoop+1
     lda trackerMusicDataHi,y
@@ -238,7 +241,10 @@ processCopy
 
 processPaste
 .(
-    ldy _tracker_selected_row_index
+    clc
+    lda _tracker_selected_row_index
+    adc _first_visible_tracker_step_line
+    tay
     lda trackerMusicDataLo,Y
     sta pasteLoop+4
     lda trackerMusicDataHi,y

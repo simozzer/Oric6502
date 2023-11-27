@@ -191,9 +191,6 @@ trackerInterrupt
         
         jsr MUSIC_ATMOS
 
-
-
-
     :countDown
         dec _tracker_step_cycles_remaining
         lda _tracker_step_cycles_remaining
@@ -206,7 +203,7 @@ trackerInterrupt
         sta _tracker_step_cycles_remaining
         inc _tracker_step_index;
         lda _tracker_step_index;
-        cmp #16
+        cmp #64
         beq resetSequence
         jmp continue
 
