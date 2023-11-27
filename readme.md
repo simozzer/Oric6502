@@ -29,9 +29,10 @@ TODO (in approximate order):
 - implement fast keyboard handling to scroll each view of the maze (and disable ROM interupt for these).
 - test again.
 - ~~create 'tracker' for creating music.~~ (e.g. Fourbar ![Just an idea](Fourbar.png))
-- Improve tracker which currently just allows for 1 bar of music
+- ~~Improve tracker which currently just allows for 1 bar of music~~
+- Add toggle for song mode (repeat all bars), or pattern mode (repeat current bar)
 - Add load and save routines for tracker data.
-- ~~play music in background~~ Extend for more than 1 bar.
+- ~~play music in background~~ ~~Extend for more than 1 bar~~. Enable toggle for song/pattern mode.
 - ~~implement 'player', with keyboard handling and detection with maze walls.~~
 - implement 'chararacter designer', to allow creation of custom chars.
 - ~~think of a playable game using the code~~ (For now I'm going with the idea of tron/light-cycles)
