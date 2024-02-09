@@ -36,6 +36,7 @@ updateMovementPlayer2
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcs cannotContinueLeft
     jmp renderPlayer
@@ -51,6 +52,7 @@ updateMovementPlayer2
     ldy _player2_x;
     iny ;increment the x position, which we've previously decremented to check up is valid
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveUpFromLeft
     jmp checkCanMoveDownFromLeft
@@ -69,6 +71,7 @@ updateMovementPlayer2
     ldy _player2_x;
     iny ;increment the x position, which we've previously decremented to check down is valid
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveDownFromLeft
     jmp processLeftwardDirectionChange
@@ -160,6 +163,7 @@ checkRight
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcs cannotContinueRight
     jmp renderPlayer
@@ -175,6 +179,7 @@ checkRight
     ldy _player2_x;
     dey ;decrement the x position, which we've previously incremented to check up is valid
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveUpFromRight
     jmp checkCanMoveDownFromRight
@@ -193,6 +198,7 @@ checkRight
     ldy _player2_x;
     dey ;decrement the x position, which we've previously incremented to check down is validd
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveDownFromRight
     jmp processRightwardDirectionChange
@@ -283,6 +289,7 @@ checkUp
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc continueUp
 
@@ -298,6 +305,7 @@ checkUp
     ldy _player2_x;
     dey ;decrement the x position to check that the position to the left is valid
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveLeftFromUp
     jmp checkCanMoveRightFromUp
@@ -311,6 +319,7 @@ checkUp
     ldy _player2_x;
     iny ; increment the x position to check that the position to the right is valid
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveRightFromUp
     jmp processUpwardDirectionChange
@@ -403,6 +412,7 @@ checkDown
     sta _maze_line_start_hi
     ldy _player2_x
     lda (_maze_line_start),y
+    and #127
     cmp  #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc renderPlayer
 
@@ -418,6 +428,7 @@ checkDown
     ldy _player2_x;
     dey ;decrement the x position to check that the position to the left is valid
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveLeftFromDown
     jmp checkCanMoveRightFromDown
@@ -430,6 +441,7 @@ checkDown
     ldy _player2_x;
     iny ; increment the x position to check that the position to the right is valid
     lda (_maze_line_start),y
+    and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bcc canMoveRightFromDown    
     jmp processDownwardDirectionChange
@@ -497,12 +509,13 @@ renderPlayer
     ldy _player2_x
     lda (_maze_line_start),Y
     clc
+    and #127
     sbc #(MAX_NON_FATAL_CHAR_CODE+1)
     bpl playerDead 
     
 
     lda #PLAYER2_SEGEMENT_CHAR_CODE ; character code for segment of light trail
-    ;adc #128 //TODO ... revert when fixed collision detection for player
+    adc #128
     sta (_maze_line_start),y
 
 checkDone
@@ -517,7 +530,7 @@ checkDone
     sta _maze_line_start_hi
     ldy _player2_x
     lda #PLAYER2_SEGEMENT_CHAR_CODE ; character code for segment of light trail (player 2)
-    ;adc #128 //TODO ... revert when fixed collision detection for player
+    adc #128
     sta (_maze_line_start),y
 
     jsr ScreenRender

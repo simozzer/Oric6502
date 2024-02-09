@@ -141,9 +141,10 @@ renderPlayer
     ; check for collision
     ldy _player1_x
     lda (_maze_line_start),Y
+    and #127
 
     clc
-    sbc #(MAX_NON_FATAL_CHAR_CODE+1)
+    cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bpl playerDead
 
     lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
