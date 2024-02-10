@@ -83,7 +83,7 @@ plot_offscreen
 
     nexty ldx _plot_ch_y;
     cpx #OFFSCREEN_LAST_ROW
-    beq screen_done;
+    beq plot_inner_walls;
     
     ;move to next line
     ldx #0
@@ -106,6 +106,111 @@ plot_offscreen
     sta _maze_line_start_hi
     jmp getMazeByte
 
+// Plot walls inside the game area to create obstacles
+plot_inner_walls
+    lda #00                         ;set index to lookup first y position
+    sta _plot_index_y
+    .(
+        y_loop
+        // lookup y position
+        ldy _plot_index_y           ; lookup y position for current y index
+        lda inner_wall_y_positions,Y
+        sta center_y                ; store center y positon for walls to be drawn
+        beq screen_done             ; exit if y position is zero
+        inc _plot_index_y           ; otherwise move to next position.
+
+        lda #00                     ; set index to lookup first x position
+        sta _plot_index_x
+        .(
+            :x_loop
+            ldy _plot_index_x               ;lookup x position for current x index
+            lda inner_wall_x_positions,Y
+            sta center_x                    ; store center x position for walls to be drawn.
+            beq y_loop                      ; If x position is zero then goto next y position
+            inc _plot_index_x               ; otherwise lookup next x position
+
+            jsr plot_inner_plus             ; call routine to render obstacle
+            
+            jmp x_loop                      ; continue to loop x positions until last item in list is reached
+        .)
+    .)
+    
 screen_done
     rts
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+:center_y
+    .byt 0
+:center_x
+    .byt 0
+:plus_size
+    .byt 0
+:y_temp
+    .byt 0
+
+
+plot_inner_plus
+    .(
+    lda #3
+    sta plus_size
+
+    ldy center_y
+    lda OffscreenLineLookupLo,Y
+    sta _line_start_lo
+    lda OffscreenLineLookupHi,y
+    sta _line_start_hi
+    
+    // Draw horizontal line
+    lda center_x
+    clc
+    sbc plus_size
+    tay
+    iny
+    lda plus_size
+    adc plus_size
+    tax
+    
+    :next_x
+    txa
+    beq draw_vertical
+    dex
+    lda #(BRICK_WALL_CHAR_CODE + 128); plot inverse
+    sta (_line_start),y
+    iny
+    jmp next_x
+
+    draw_vertical
+    lda center_y
+    clc
+    sbc plus_size
+    tay
+    iny
+    lda plus_size
+    adc plus_size
+    tax
+
+    :vert_loop
+    txa
+    beq done
+    lda OffscreenLineLookupLo,Y
+    sta _line_start_lo
+    lda OffscreenLineLookupHi,y
+    sta _line_start_hi
+    tya
+    sta y_temp
+    ldy center_x
+    
+    lda #(BRICK_WALL_CHAR_CODE + 128); plot inverse
+    sta (_line_start),y
+
+    lda y_temp
+    tay
+    iny
+    dex
+    jmp vert_loop
+
+
+
+    done
+    rts
+    .)

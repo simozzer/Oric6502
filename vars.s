@@ -105,6 +105,9 @@ _playback_music_info_byte_addr
 _playback_music_info_byte_lo .dsb 1
 _playback_music_info_byte_hi .dsb 1
 
+_plot_index_y .dsb 1
+_plot_index_x .dsb 1
+
 
 
 _zp_end_

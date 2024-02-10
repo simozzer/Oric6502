@@ -225,6 +225,14 @@
     .byt >OffscreenScrollArea+17850,>OffscreenScrollArea+18105,>OffscreenScrollArea+18360,>OffscreenScrollArea+18615,>OffscreenScrollArea+18870,
     .byt >OffscreenScrollArea+19125,>OffscreenScrollArea+19380,>OffscreenScrollArea+19635,>OffscreenScrollArea+19890,>OffscreenScrollArea+20145
 
+:inner_wall_x_positions
+    .byt 18,54,90,126,162,198,234,0
+
+:inner_wall_y_positions
+    .byt 19,39,59,0
+
+
+
 
 
 
