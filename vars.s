@@ -79,12 +79,6 @@ _music_data_temp .dsb 1
 _music_info_byte_addr
 _music_info_byte_lo .dsb 1
 _music_info_byte_hi .dsb 1
-_tracker_screen_line .dsb 1
-_tracker_step_line .dsb 1
-_first_visible_tracker_step_line .dsb 1
-
-_tracker_selected_col_index .dsb 1
-_tracker_selected_row_index .dsb 1
 
 _hi_nibble .dsb 1
 _lo_nibble .dsb 1

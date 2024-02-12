@@ -50,10 +50,6 @@ trackerMusicData
 .byt $76,$84,$53,$07,$21,$07,$00,$00,$00,$00,$00,$00,$02,$8B,$51,$07
 .byt $21,$07,$00,$00,$00,$07,$21,$87,$76,$84,$41,$07,$21,$07,$00,$00
 
-
-trackerCopyBuffer
-.byt $00,$00,$00,$00,$00,$00
-
 trackerMusicDataLo
     ;bar 0
     .byt <trackerMusicData+0,<trackerMusicData+6,<trackerMusicData+12,<trackerMusicData+18
@@ -144,15 +140,6 @@ trackerBarStartLookup
 
 soundParamCopyBuffer
 .byt 00,00,00,00,00,00,00,00,00
-
-zeroPageCopyBuffer
-.dsb $ff, 00
-
-variablesCopyBuffer
-.dsb $ff, 00
-
-barCopyBuffer
-.dsb 96,00
 
 barSequenceData
 .dsb 255,$ff
