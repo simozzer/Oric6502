@@ -93,7 +93,14 @@ _last_key .dsb 1
 
 _tracker_step_index .dsb 1
 _tracker_step_cycles_remaining .dsb 1
-_tracker_step_length .dsb 1
+_tracker_step_length .dsb 1; Length of each 16th note (speed of the tune).
+_tracker_step_half_length .dsb 1
+_tracker_bar_index .dsb 1
+_tracker_bar_step_index .dsb 1
+_tracker_song_bar_lookup_index .dsb 1
+_tracker_play_mode .dsb 1
+_tracker_last_step .dsb 1
+
 
 _tracker_playback_addr
 _tracker_playback_addr_lo .dsb 1

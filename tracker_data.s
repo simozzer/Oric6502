@@ -1,197 +1,55 @@
 
-notesToDisplay
-.byt "   CC# DD# E FF# GG# AA# B"
-
-numbersToDisplay
-.byt " 0 1 2 3 4 5 6 7 8 910111213141516"
-
-
-trackerScreenData
-.byt PAPER_WHITE, INK_BLACK,  "     CH1         CH2         CH3      "
-.byt PAPER_WHITE, INK_BLACK,  " NOT OCT VOL NOT OCT VOL NOT OCT VOL  "
-.byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
-.byt PAPER_BLACK, INK_BLACK,  "                                      "
-.byt PAPER_BLACK, INK_GREEN,  ">                                    <"
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_GREEN,  ">                                    <"
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_GREEN,  ">                                    <"
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_GREEN,  ">                                    <"
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLUE,   "|                                     "
-.byt PAPER_BLACK, INK_BLACK,  "                                      "
-.byt PAPER_WHITE, INK_BLACK,  "++++++++++++++++++++++++++++++++++++++"
-.byt PAPER_WHITE, INK_BLUE,   " Arrows to navigate. +/- Change value."
-.byt PAPER_WHITE, INK_BLUE,   " Del Delete. Q Quit. C copy, V Paste. "
-.byt PAPER_WHITE, INK_BLUE,   " Speed: 5 slower, 6 faster.           "
-.byt PAPER_WHITE, INK_BLUE,   " Select Bar: 1,2,3,4                  "
-.byt PAPER_WHITE, INK_BLACK,  " Toggle song/pattern: B               "
-
-trackerScreenDataLo
-    .byt <trackerScreenData + 0,<trackerScreenData + 40,<trackerScreenData + 80,<trackerScreenData + 120,<trackerScreenData + 160
-    .byt <trackerScreenData + 200,<trackerScreenData + 240,<trackerScreenData + 280,<trackerScreenData + 320,<trackerScreenData + 360
-    .byt <trackerScreenData + 400,<trackerScreenData + 440,<trackerScreenData + 480,<trackerScreenData + 520,<trackerScreenData + 560
-    .byt <trackerScreenData + 600,<trackerScreenData + 640,<trackerScreenData + 680,<trackerScreenData + 720,<trackerScreenData + 760
-    .byt <trackerScreenData + 800,<trackerScreenData + 840,<trackerScreenData + 880,<trackerScreenData + 920,<trackerScreenData + 960
-    .byt <trackerScreenData + 1000,<trackerScreenData + 1040,<trackerScreenData + 1080
-
-
-trackerScreenDataHi
-    .byt >trackerScreenData + 0,>trackerScreenData + 40,>trackerScreenData + 80,>trackerScreenData + 120,>trackerScreenData + 160
-    .byt >trackerScreenData + 200,>trackerScreenData + 240,>trackerScreenData + 280,>trackerScreenData + 320,>trackerScreenData + 360
-    .byt >trackerScreenData + 400,>trackerScreenData + 440,>trackerScreenData + 480,>trackerScreenData + 520,>trackerScreenData + 560
-    .byt >trackerScreenData + 600,>trackerScreenData + 640,>trackerScreenData + 680,>trackerScreenData + 720,>trackerScreenData + 760
-    .byt >trackerScreenData + 800,>trackerScreenData + 840,>trackerScreenData + 880,>trackerScreenData + 920,>trackerScreenData + 960
-    .byt >trackerScreenData + 1000,>trackerScreenData + 1040,>trackerScreenData + 1080
-
-
-// 4 bars of music data (for 3 channels, each word uses the format described above)
+// 8 bars of music data (for 3 channels, each word uses the format described above)
 trackerMusicData
-;(oct/note)(vol/len)
-// bar 0
-.byt $21,$08,$3A,$08,$35,$08 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $21,$06,$3A,$06,$35,$06 // position 3
-.byt $00,$00,$00,$00,$00,$00 // position 4
-.byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $21,$04,$3A,$04,$35,$04 // position 6
-.byt $00,$00,$00,$00,$00,$00 // position 7
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00,$00,$00 // position 11
-.byt $00,$00,$00,$00,$00,$00 // position 12
-.byt $00,$00,$00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00,$00,$00 // position 15
-// bar 1
-.byt $33,$08,$35,$08,$3a,$08 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $33,$06,$35,$06,$3a,$06 // position 3
-.byt $00,$00,$00,$00,$00,$00 // position 4
-.byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $33,$04,$35,$04,$3a,$04 // position 6
-.byt $00,$00,$00,$00,$00,$00 // position 7
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00,$00,$00 // position 11
-.byt $00,$00,$00,$00,$00,$00 // position 12
-.byt $00,$00,$00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00,$00,$00 // position 15
-// bar 2
-.byt $21,$08,$3A,$08,$35,$08 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $21,$06,$3A,$06,$35,$06 // position 3
-.byt $00,$00,$00,$00,$00,$00 // position 4
-.byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $21,$04,$3A,$04,$35,$04 // position 6
-.byt $00,$00,$00,$00,$00,$00 // position 7
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00,$00,$00 // position 11
-.byt $00,$00,$00,$00,$00,$00 // position 12
-.byt $00,$00,$00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00,$00,$00 // position 15
-// bar 3
-.byt $33,$08,$35,$08,$3a,$08 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $33,$06,$35,$06,$3a,$06 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 4
-.byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $33,$04,$35,$04,$3a,$04 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 7
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00,$00,$00 // position 11
-.byt $00,$00,$00,$00,$00,$00 // position 12
-.byt $00,$00,$00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00,$00,$00 // position 15
-// bar 4
-.byt $21,$08,$3A,$08,$35,$08 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $21,$06,$3A,$06,$35,$06 // position 3
-.byt $00,$00,$00,$00,$00,$00 // position 4
-.byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $21,$04,$3A,$04,$35,$04 // position 6
-.byt $00,$00,$00,$00,$00,$00 // position 7
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00,$00,$00 // position 11
-.byt $00,$00,$00,$00,$00,$00 // position 12
-.byt $00,$00,$00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00,$00,$00 // position 15
-// bar 5
-.byt $33,$08,$35,$08,$3a,$08 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $33,$06,$35,$06,$3a,$06 // position 3
-.byt $00,$00,$00,$00,$00,$00 // position 4
-.byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $33,$04,$35,$04,$3a,$04 // position 6
-.byt $00,$00,$00,$00,$00,$00 // position 7
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00,$00,$00 // position 11
-.byt $00,$00,$00,$00,$00,$00 // position 12
-.byt $00,$00,$00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00,$00,$00 // position 15
-// bar 6
-.byt $21,$08,$3A,$08,$35,$08 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $21,$06,$3A,$06,$35,$06 // position 3
-.byt $00,$00,$00,$00,$00,$00 // position 4
-.byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $21,$04,$3A,$04,$35,$04 // position 6
-.byt $00,$00,$00,$00,$00,$00 // position 7
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00,$00,$00 // position 11
-.byt $00,$00,$00,$00,$00,$00 // position 12
-.byt $00,$00,$00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00,$00,$00 // position 15
-// bar 7
-.byt $33,$08,$35,$08,$3a,$08 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 1
-.byt $00,$00,$00,$00,$00,$00 // position 2
-.byt $33,$06,$35,$06,$3a,$06 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 4
-.byt $00,$00,$00,$00,$00,$00 // position 5
-.byt $33,$04,$35,$04,$3a,$04 // position 0
-.byt $00,$00,$00,$00,$00,$00 // position 7
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 9
-.byt $00,$00,$00,$00,$00,$00 // position 10
-.byt $00,$00,$00,$00,$00,$00 // position 11
-.byt $00,$00,$00,$00,$00,$00 // position 12
-.byt $00,$00,$00,$00,$00,$00 // position 13
-.byt $00,$00,$00,$00,$00,$00 // position 14
-.byt $00,$00,$00,$00,$00,$00 // position 15
+.byt $25,$06,$00,$00,$01,$8B,$25,$86,$00,$00,$00,$00,$38,$05,$21,$07
+.byt $76,$84,$38,$85,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$38,$05
+.byt $00,$00,$00,$00,$38,$85,$21,$87,$76,$84,$00,$00,$00,$87,$00,$00
+.byt $00,$00,$31,$86,$01,$8B,$45,$07,$00,$00,$00,$00,$00,$00,$21,$07
+.byt $76,$84,$43,$07,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$31,$07
+.byt $21,$07,$00,$00,$00,$07,$21,$87,$76,$84,$21,$07,$00,$00,$00,$00
+.byt $25,$06,$00,$00,$01,$8B,$25,$86,$00,$00,$00,$00,$48,$05,$23,$07
+.byt $76,$84,$48,$85,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$45,$05
+.byt $00,$00,$00,$00,$48,$85,$21,$87,$76,$84,$00,$00,$00,$87,$00,$00
+.byt $00,$00,$31,$86,$01,$8B,$45,$07,$00,$00,$00,$00,$00,$00,$21,$07
+.byt $76,$84,$43,$07,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$31,$07
+.byt $21,$07,$00,$00,$00,$07,$21,$87,$76,$84,$21,$07,$00,$00,$00,$00
+.byt $25,$06,$31,$87,$01,$8B,$25,$86,$21,$87,$00,$00,$38,$05,$21,$87
+.byt $76,$84,$38,$85,$21,$07,$00,$00,$00,$00,$41,$07,$02,$8B,$38,$05
+.byt $21,$87,$00,$00,$38,$85,$11,$87,$76,$84,$00,$00,$21,$07,$00,$00
+.byt $00,$00,$31,$86,$01,$8B,$45,$07,$21,$07,$00,$00,$00,$00,$41,$87
+.byt $76,$84,$43,$07,$21,$87,$00,$00,$00,$00,$21,$07,$02,$8B,$31,$07
+.byt $21,$07,$00,$00,$00,$07,$31,$87,$76,$84,$21,$07,$51,$07,$00,$00
+.byt $25,$06,$00,$00,$01,$8B,$25,$86,$00,$00,$00,$00,$48,$05,$23,$87
+.byt $76,$84,$48,$85,$23,$07,$00,$00,$00,$00,$23,$87,$02,$8B,$45,$05
+.byt $00,$00,$00,$00,$48,$85,$21,$87,$76,$84,$00,$00,$00,$87,$00,$00
+.byt $00,$00,$31,$86,$01,$8B,$45,$07,$00,$00,$00,$00,$00,$00,$21,$87
+.byt $76,$84,$43,$07,$21,$07,$00,$00,$00,$00,$00,$00,$02,$8B,$31,$07
+.byt $21,$07,$00,$00,$00,$07,$21,$87,$76,$84,$21,$07,$21,$07,$00,$00
+.byt $35,$06,$00,$00,$01,$8B,$35,$86,$00,$00,$00,$00,$48,$05,$21,$07
+.byt $76,$84,$48,$85,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$48,$05
+.byt $00,$00,$00,$00,$48,$85,$21,$87,$76,$84,$00,$00,$00,$87,$00,$00
+.byt $00,$00,$31,$86,$01,$8B,$55,$07,$00,$00,$00,$00,$00,$00,$21,$07
+.byt $76,$84,$53,$07,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$41,$07
+.byt $21,$07,$00,$00,$00,$07,$21,$87,$76,$84,$31,$07,$00,$00,$00,$00
+.byt $35,$06,$00,$00,$01,$8B,$35,$86,$00,$00,$00,$00,$58,$05,$23,$07
+.byt $76,$84,$58,$85,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$55,$05
+.byt $00,$00,$00,$00,$48,$85,$21,$87,$76,$84,$00,$00,$00,$87,$00,$00
+.byt $00,$00,$31,$86,$01,$8B,$55,$07,$00,$00,$00,$00,$00,$00,$21,$07
+.byt $76,$84,$53,$07,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$41,$07
+.byt $21,$07,$00,$00,$00,$07,$21,$87,$76,$84,$31,$07,$00,$00,$00,$00
+.byt $35,$06,$31,$87,$01,$8B,$35,$86,$21,$87,$00,$00,$48,$05,$21,$87
+.byt $76,$84,$48,$85,$21,$07,$00,$00,$00,$00,$41,$07,$02,$8B,$48,$05
+.byt $21,$87,$00,$00,$48,$85,$11,$87,$76,$84,$00,$00,$21,$07,$00,$00
+.byt $00,$00,$31,$86,$01,$8B,$55,$07,$21,$07,$00,$00,$00,$00,$41,$87
+.byt $76,$84,$53,$07,$21,$87,$00,$00,$00,$00,$21,$07,$02,$8B,$41,$07
+.byt $21,$07,$00,$00,$00,$07,$31,$87,$76,$84,$31,$07,$51,$07,$00,$00
+.byt $35,$06,$00,$00,$01,$8B,$35,$86,$00,$00,$00,$00,$58,$05,$23,$87
+.byt $76,$84,$58,$85,$23,$07,$00,$00,$00,$00,$23,$87,$02,$8B,$55,$05
+.byt $00,$00,$00,$00,$58,$85,$21,$87,$76,$84,$00,$00,$00,$87,$00,$00
+.byt $00,$00,$31,$86,$01,$8B,$55,$07,$00,$00,$00,$00,$00,$00,$21,$87
+.byt $76,$84,$53,$07,$21,$07,$00,$00,$00,$00,$00,$00,$02,$8B,$51,$07
+.byt $21,$07,$00,$00,$00,$07,$21,$87,$76,$84,$41,$07,$21,$07,$00,$00
+
 
 trackerCopyBuffer
 .byt $00,$00,$00,$00,$00,$00
@@ -281,8 +139,23 @@ trackerMusicDataHi
     .byt >trackerMusicData+744,>trackerMusicData+750,>trackerMusicData+756,>trackerMusicData+762    
 
 
-trackerAttributeColumns
-.byt 3,7,10,15,19,22,27,31,34
+trackerBarStartLookup
+.byt 0,16,32,48,64,80,96,112,128
 
-trackerAttributeColWidth
-.byt 3,2,3,3,2,3
+soundParamCopyBuffer
+.byt 00,00,00,00,00,00,00,00,00
+
+zeroPageCopyBuffer
+.dsb $ff, 00
+
+variablesCopyBuffer
+.dsb $ff, 00
+
+barCopyBuffer
+.dsb 96,00
+
+barSequenceData
+.dsb 255,$ff
+
+
+

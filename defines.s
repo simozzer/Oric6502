@@ -169,9 +169,13 @@
 #DEFINE PARAMS_6 $02E6
 #DEFINE PARAMS_7 $02E7
 
-#DEFINE MUSIC_ATMOS $fc18
-#DEFINE PLAY_ATMOS $FBd0
 
-#DEFINE INTSL $024A ; Retrun from interupt handler (normally RTI)
+#DEFINE ROM_CHECK_ADDR $EDAD; Contains 49 on Atmos and 32 on oric 1
+#DEFINE ROM_CHECK_ATMOS 49;
 
-#DEFINE TRACKER_STEP_LENGTH 10 ;// number of times interrupts handler should be called before advancing to the next step
+#DEFINE INTSL_ATMOS $024A ; Return from interrupt handler (normally RTI)
+#DEFINE INTSL_ORIC1 $0230 ;
+
+#DEFINE TRACKER_STEP_LENGTH 12 ;// number of times interrupts handler should be called before advancing to the next step
+#DEFINE TRACKER_PLAY_MODE_BAR 0
+#DEFINE TRACKER_PLAY_MODE_SONG 1
