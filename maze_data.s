@@ -230,9 +230,3 @@
 
 :inner_wall_y_positions
     .byt 19,39,59,0
-
-
-
-
-
-

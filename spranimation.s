@@ -129,6 +129,3 @@ beq loadThirdFrame
 
 
 ; copy 
-
-
-

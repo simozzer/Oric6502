@@ -1,46 +1,17 @@
+
+
 StartProg
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Main program
 ; ------------------------------------------------------------------------------
+    :start
     
+   
     ;// NOKEYCLICK+SCREEN no cursor
 	lda #8+2	
 	sta $26a
 
-
-    ;// Initialize data for the tracker
-    lda #TRACKER_PLAY_MODE_SONG
-    sta _tracker_play_mode
-    lda #16
-    sta _tracker_last_step
-    lda #0
-    sta _tracker_bar_index
-    sta _tracker_bar_step_index
-    jsr clearSound
-
-    ;// Setup song sequence
-    lda #0
-    sta barSequenceData
-    sta _tracker_song_bar_lookup_index;
-    lda #01
-    sta barSequenceData+1
-    lda #02
-    sta barSequenceData+2
-    lda #03
-    sta barSequenceData+3
-    lda #04
-    sta barSequenceData+4
-    lda #05
-    sta barSequenceData+5
-    lda #06
-    sta barSequenceData+6
-    lda #07
-    sta barSequenceData+7
-    lda #$ff
-    sta barSequenceData+8
-
-    ; setup interrupt for playing back music
-    jsr setupTrackerInterrupt
+    jsr startMusic
 
     jsr printTestInstructions       
     jsr CopySetToRam                        
@@ -60,13 +31,13 @@ StartProg
 	lda #35
 	sta rand_high
 
+
 startagain
     jsr MazeRender
     jsr printScrollInstructions
     jsr clearScreen
     jsr SetPaper
     jsr SetInk
-    
     lda #0
     sta _player_animation_index
 
@@ -515,9 +486,31 @@ printTestInstructions
 
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-    
+startMusic
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Start playback of tracker music
+; ------------------------------------------------------------------------------
+.(
+    ;// Initialize data for the tracker
+    lda #TRACKER_PLAY_MODE_SONG
+    sta _tracker_play_mode
+    lda #16
+    sta _tracker_last_step
+    lda #0
+    sta _tracker_bar_index
+    sta _tracker_bar_step_index
+    jsr clearSound
+
+    ; setup interrupt for playing back music
+    jsr setupTrackerInterrupt
+
+    rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
 
 

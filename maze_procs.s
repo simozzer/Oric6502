@@ -1,6 +1,9 @@
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Render entire maze(/game area) to an offscreen buffer
 ; ------------------------------------------------------------------------------
+_plot_index_y .dsb 1
+_plot_index_x .dsb 1
+
 :MazeRender
 
 // set the position of the maze
@@ -105,6 +108,8 @@ plot_offscreen
     lda mazeRowLookupTableHi,Y     ; lookup hi byte for row value and store
     sta _maze_line_start_hi
     jmp getMazeByte
+
+
 
 // Plot walls inside the game area to create obstacles
 plot_inner_walls
