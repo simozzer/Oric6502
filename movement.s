@@ -5,7 +5,7 @@ processKeyboardPlayer1
 
     cpx #KEY_PRESS_NONE
     beq keyboardDone
-    
+  
     cpx #KEY_LEFT_ARROW
     bne nextKey0
     lda _player1_direction

@@ -121,7 +121,7 @@ plot_inner_walls
         ldy _plot_index_y           ; lookup y position for current y index
         lda inner_wall_y_positions,Y
         sta center_y                ; store center y positon for walls to be drawn
-        beq screen_done             ; exit if y position is zero
+        beq plotRandomBlocks             ; exit if y position is zero
         inc _plot_index_y           ; otherwise move to next position.
 
         lda #00                     ; set index to lookup first x position
@@ -139,6 +139,46 @@ plot_inner_walls
             jmp x_loop                      ; continue to loop x positions until last item in list is reached
         .)
     .)
+
+
+plotRandomBlocks
+.(
+    ldy #255
+    sty y_temp
+
+    .(
+        :loop
+        beq screen_done
+        jsr _GetRand
+        lda rand_low
+        sta _plot_ch_x
+        jsr _GetRand
+        lda rand_low
+        cmp #78
+        bpl skip
+        tay
+        ;iny
+        lda OffscreenLineLookupLo,Y
+        sta _maze_line_start_lo
+        lda OffscreenLineLookupHi,y
+        sta _maze_line_start_hi
+
+        lda (_maze_line_start),Y ; check that the area doesn't alreayd contain an obstable
+        and 127
+        cmp #BRICK_WALL_CHAR_CODE
+        bcs skip
+        lda #123 + 128
+        ldy _plot_ch_x
+        sta (_maze_line_start),Y
+
+
+        skip
+        ldy y_temp
+        dey
+        sty y_temp
+        jmp loop
+    .)
+.)
     
 screen_done
     rts

@@ -2,7 +2,7 @@
 
 :ScrollInstructions .byt "PRESS ARROW KEYS TO SCROLL",0
 
-:WaitMessage .byt "PLEASE WAIT...",0
+:WaitMessage .byt "BUILDING GAME AREA PLEASE WAIT...",0
 
 :DeadMessage .byt "YOU'RE DEAD!",0
 

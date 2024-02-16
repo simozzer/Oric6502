@@ -13,11 +13,8 @@ StartProg
 
     jsr startMusic
 
-    jsr printTestInstructions       
-    jsr CopySetToRam                        
-    jsr MakeCharacters_0               
-    jsr screen_filler                       
-    jsr CopyRamToChars     
+    jsr printTestInstructions    
+    jsr clearScreen     
 
     jsr MakeCharacters_1
     jsr BackupCharacters
@@ -391,7 +388,7 @@ printTestInstructions
     sta _copy_mem_src_lo                        
     lda #>_SpriteBackup_; hi byte of source
     sta _copy_mem_src_hi                         
-    lda #$D1                        
+    lda #241                       
     sta _copy_mem_count_lo                    
     lda #$00                        
     sta _copy_mem_count_hi                        
@@ -406,30 +403,6 @@ printTestInstructions
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; MakeCharacters_0: 
-;   reconfigure the character set so that we have some sprites/alternative 
-;   characters to use in 'intro' mode.
-; ------------------------------------------------------------------------------                
-:MakeCharacters_0
-    lda #<_SpriteData_                   
-    sta _copy_mem_src_lo                         
-    lda #>_SpriteData_
-    sta _copy_mem_src_hi                         
-    lda #$D1 ; BYTE COUNT           
-    sta _copy_mem_count_lo                         
-    lda #$00                        
-    sta _copy_mem_count_hi                        
-    lda #$08                        
-    sta _copy_mem_dest_lo                      
-    lda #$B7                        
-    sta _copy_mem_dest_hi                        
-    jsr CopyMemory                                              
-    rts
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
-
-
-
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; MakeCharacters_1: 
 ;   reconfigure the character set so that we have some sprites/alternative 
 ;   characters to use in 'game' mode.
@@ -439,7 +412,7 @@ printTestInstructions
     sta _copy_mem_src_lo                         
     lda #>_AltSpriteData
     sta _copy_mem_src_hi                         
-    lda #$D1 ; BYTE COUNT           
+    lda #241 ; BYTE COUNT           
     sta _copy_mem_count_lo                         
     lda #$00                        
     sta _copy_mem_count_hi                        
