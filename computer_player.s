@@ -21,7 +21,6 @@ updateMovementPlayer2
     BCS movePlayerLeftOrTurn
 
     lda _player2_maze_x ; don't allow scrolling up past the left of the maze
-    cmp #00 ; left column of maze data
     beq movePlayerLeftOrTurn
     dec _player2_maze_x
 
@@ -274,7 +273,6 @@ checkUp
     bpl movePlayerUpOrTurn
 
     lda _player2_maze_y ; don't allow scrolling up past the top of the maze
-    cmp #00
     beq movePlayerUpOrTurn
     dec _player2_maze_y
 

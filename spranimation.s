@@ -20,7 +20,6 @@ BackupCharacters
 
 AnimateCharacters
 lda _player_animation_index
-cmp #00
 beq loadFirstFrame
 cmp #01
 beq loadSecondFrame

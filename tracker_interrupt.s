@@ -106,7 +106,6 @@ trackerInterrupt
 
             ldy #0 ; Load 1st byte of line
             lda (_playback_music_info_byte_addr),y
-            cmp #00
             bne playNote1
 
             ; no note play silence
@@ -151,7 +150,6 @@ trackerInterrupt
 
             ldy #2 ; Load 1st byte of line
             lda (_playback_music_info_byte_addr),y
-            cmp #00
             bne playNote2
 
             
@@ -199,7 +197,6 @@ trackerInterrupt
 
             ldy #4 ; Load 1st byte of line
             lda (_playback_music_info_byte_addr),y
-            cmp #00
             bne playNote3
 
             
@@ -240,7 +237,6 @@ trackerInterrupt
             ldy #5 ;; load 2nd byte of line
             lda (_playback_music_info_byte_addr),y    
             and #$70
-            cmp #00
             bne doNoise
             jmp countDown
             doNoise
@@ -328,7 +324,6 @@ trackerInterrupt
     :countDown
         dec _tracker_step_cycles_remaining
         lda _tracker_step_cycles_remaining
-        cmp #00 
         beq loadNextStep
         jmp continue
 

@@ -65,7 +65,6 @@ updateMovementPlayer1
     BCS movePlayerLeft
 
     lda _player1_maze_x
-    cmp #00 ; left column of maze data
     beq movePlayerLeft
     dec _player1_maze_x
 
@@ -104,7 +103,6 @@ checkUp
     bpl movePlayerUp
 
     lda _player1_maze_y ; don't allow scrolling up past the top of the maze
-    cmp #00
     beq movePlayerUp
     dec _player1_maze_y
 

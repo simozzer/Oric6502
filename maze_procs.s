@@ -157,7 +157,6 @@ plotRandomBlocks
         cmp #78
         bpl skip
         tay
-        ;iny
         lda OffscreenLineLookupLo,Y
         sta _maze_line_start_lo
         lda OffscreenLineLookupHi,y
@@ -173,9 +172,7 @@ plotRandomBlocks
 
 
         skip
-        ldy y_temp
-        dey
-        sty y_temp
+        dec y_temp
         jmp loop
     .)
 .)
