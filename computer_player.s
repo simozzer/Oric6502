@@ -508,7 +508,6 @@ renderPlayer
     ; check for collision
     ldy _player2_x
     lda (_maze_line_start),Y
-    clc
     and #127
     sbc #(MAX_NON_FATAL_CHAR_CODE+1)
     bpl playerDead 

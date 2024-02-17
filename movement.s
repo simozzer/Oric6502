@@ -143,7 +143,6 @@ renderPlayer
     lda (_maze_line_start),Y
     and #127
 
-    clc
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bpl playerDead
 

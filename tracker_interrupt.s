@@ -14,7 +14,6 @@ setupTrackerInterrupt
   
     sei
 
-    clc
     lda ROM_CHECK_ADDR; // EDAD contains 49 (ascii code for 1 with rom 1.1)
     cmp #ROM_CHECK_ATMOS
     bcc setupOric1Interrupt
@@ -43,7 +42,6 @@ clearTrackerInterupt
 .(
     sei
 
-    clc
     lda ROM_CHECK_ADDR; // EDAD contains 49 (ascii code for 1 with rom 1.1)
     cmp #ROM_CHECK_ATMOS
     bcc clearOric1Interrupt
@@ -74,12 +72,9 @@ trackerInterrupt
     ; Copy any params currently being used for sound, so we can restore them when the interrupt has completed
     jsr copySoundParams
 
-
-    clc
     lda _tracker_step_cycles_remaining; Decremented each time the interrupt is called.
     cmp _tracker_step_length          ; Length of each note (speed of the tune).
     beq playNextStep                  ; If the above two values match then play the next note
-    clc
     
     cmp _tracker_step_half_length     ; check if we're halfway through a note
     beq doSilenceHalfNotes
@@ -132,8 +127,7 @@ trackerInterrupt
 
             ; extract octave
             txa
-            and #$f0  
-            clc      
+            and #$f0    
             lsr
             lsr
             lsr
@@ -174,7 +168,6 @@ trackerInterrupt
             tax ; store value to later extract octave
 
             ; extract note
-            clc
             and #$0f
             sta PARAMS_5 ; store note param
 
@@ -223,7 +216,6 @@ trackerInterrupt
             tax ; store value to later extract octave
 
             ; extract note
-            clc
             and #$0f
             sta PARAMS_5 ; store note param
 
@@ -312,7 +304,6 @@ trackerInterrupt
     silenceNote3
     ldy #05 ; Load 4th byte of line
     lda (_playback_music_info_byte_addr),y
-    clc
     and #$80
     beq silenceNoise
     lda #03
