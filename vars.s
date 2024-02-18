@@ -96,11 +96,11 @@ _scroll_down_max_maze_y .dsb 1
 
 
 _display_mode .dsb 1
+_game_mode .dsb 1
 
 _possible_directions .dsb 1
 
 _player_animation_index .dsb 1
-
 
 _plot_ch_x .dsb 1
 _plot_ch_y .dsb 1
@@ -108,8 +108,6 @@ _plot_ascii .dsb 1
 _line_start
 _line_start_lo .dsb 1
 _line_start_hi .dsb 1
-
-
 
 
 

@@ -28,6 +28,9 @@ StartProg
 	lda #35
 	sta rand_high
 
+    lda #GAME_MODE_WAITING
+    sta _game_mode
+
 
 startagain
     jsr MazeRender
@@ -70,8 +73,8 @@ startagain
 
 
     // The value here will set the rendering mode
-    ;lda #DISPLAY_MODE_FULLSCREEN 
-    lda #DISPLAY_MODE_SIDE_BY_SIDE
+    lda #DISPLAY_MODE_FULLSCREEN 
+    ;lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
 
     
@@ -91,19 +94,21 @@ nextMode1
 end
     jmp startagain
    ;; jsr CopyRamToChars    
-    rts  
+    rts 
 
-runFullScreen
-    // set initial maze position
+setMazePositionForFullScreen
+.(
     lda #FULLSCREEN_MAZE_X
     sta _maze_left
     sta _player1_maze_x
     lda #FULLSCREEN_MAZE_Y
     sta _maze_top
     sta _player1_maze_y
-    
-    // set up dimensions for screen to render    
-    fullScreenLoop
+    rts
+.) 
+
+setMetricsForFullScreen
+.(
     lda #FULLSCREEN_TEXT_LAST_COLUMN
     sta _screen_render_right
     lda #FULLSCREEN_TEXT_LAST_LINE
@@ -131,30 +136,11 @@ runFullScreen
     sta _maze_left
     lda _player1_maze_y
     sta _maze_top
-
-    jsr ScreenRender
-
-    jsr AnimateCharacters
-
-    jsr processKeyboardPlayer1
-    jsr updateMovementPlayer1
-
-    lda _player2_maze_x
-    sta _maze_left
-    lda _player2_maze_y
-    sta _maze_top
-
-    jsr updateMovementPlayer2
-
-    jsr smallDelay
-    
-    lda _player_status
-    cmp #PLAYER_STATUS_BOTH_ALIVE
-    beq fullScreenLoop
     rts
+.)
 
-runSideBySide
-    // set initial maze position
+setMazePositionForSideBySide
+.(
     lda #LEFT_SCREEN_MAZE_X
     sta _player1_maze_x
     lda #LEFT_SCREEN_MAZE_Y
@@ -164,10 +150,11 @@ runSideBySide
     sta _player2_maze_x
     lda #RIGHT_SCREEN_MAZE_Y
     sta _player2_maze_y
-    jsr renderSideBySideSplitter
-    
-    // set up dimensions for screen to render    
-    :sideScreenLoop
+    rts
+.)
+
+setMetricsForLeftScreen
+.(
     lda #LEFT_SCREEN_TEXT_LAST_COLUMN
     sta _screen_render_right
     lda #LEFT_SCREEN_TEXT_LAST_LINE
@@ -181,6 +168,7 @@ runSideBySide
     lda #LEFT_SCREEN_SCROLL_LEFT_MAZE_X_THRESHOLD
     sta _scroll_left_maze_x_threshold
     lda #LEFT_SCREEN_SCROLL_RIGHT_MAZE_X_THRESHOLD
+ 
     sta _scroll_right_maze_x_threshold
     lda #LEFT_SCREEN_SCROLL_RIGHT_MAX_MAZE_X
     sta _scroll_right_max_maze_x
@@ -195,16 +183,11 @@ runSideBySide
     sta _maze_left
     lda _player1_maze_y
     sta _maze_top
-    jsr processKeyboardPlayer1
-    jsr updateMovementPlayer1
+    rts
+.)
 
-    jsr ScreenRender ; render left screen
-    jsr AnimateCharacters
-
-
-
-    
-    // set up dimensions for screen to render    
+setMetricsForRightScreen
+.(
     lda #RIGHT_SCREEN_TEXT_LAST_COLUMN
     sta _screen_render_right
     lda #RIGHT_SCREEN_TEXT_LAST_LINE
@@ -232,11 +215,81 @@ runSideBySide
     sta _maze_left
     lda _player2_maze_y
     sta _maze_top
+    rts
+.)
+
+runFullScreen
+    .(
+    // set initial maze position
+    jsr setMazePositionForFullScreen
+    
+    // set up dimensions for screen to render    
+    fullScreenLoop
+    jsr setMetricsForFullScreen
+
+    jsr ScreenRender
+    lda _game_mode
+    beq continue
+    jsr waitToStart
+
+    continue
+    jsr AnimateCharacters
+
+    jsr processKeyboardPlayer1
+    jsr updateMovementPlayer1
+
+    lda _player2_maze_x
+    sta _maze_left
+    lda _player2_maze_y
+    sta _maze_top
 
     jsr updateMovementPlayer2
 
+    jsr smallDelay
     
-    jsr ScreenRender
+    lda _player_status
+    cmp #PLAYER_STATUS_BOTH_ALIVE
+    beq fullScreenLoop
+
+    lda #GAME_MODE_WAITING
+    sta _game_mode
+    rts
+    .)
+
+runSideBySide
+    .(
+    // set initial maze position
+    jsr setMazePositionForSideBySide
+    jsr renderSideBySideSplitter
+    
+    // set up dimensions for screen to render    
+    :sideScreenLoop
+    jsr setMetricsForLeftScreen
+
+    lda _game_mode ; don't update player position if game is not running
+    bne render0
+    jsr processKeyboardPlayer1
+    jsr updateMovementPlayer1
+
+    render0
+    jsr ScreenRender ; render left screen
+    jsr AnimateCharacters
+    
+    // set up dimensions for screen to render    
+    jsr setMetricsForRightScreen
+
+    lda _game_mode ; don't update position if game is not running
+    bne render1
+    jsr updateMovementPlayer2
+
+    render1
+    jsr ScreenRender 
+    
+    lda _game_mode ; show start screen if game is not running
+    beq continue
+    jsr waitToStart
+
+    continue
     jsr smallDelay
 
     lda _player_status
@@ -244,9 +297,163 @@ runSideBySide
     bne someoneDied
     jmp sideScreenLoop
     someoneDied
+    lda #GAME_MODE_WAITING
+    sta _game_mode
     rts
+    .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+startScreenInstructions_0 .byt PAPER_YELLOW, INK_RED,   "    PRESS SPACE TO START      ", PAPER_BLACK, INK_GREEN, 0
+startScreenInstructions_1 .byt PAPER_YELLOW, INK_RED,   "PRESS S TO TOGGLE SCREEN MODE ", PAPER_BLACK, INK_GREEN, 0
+startScreenInstructions_2 .byt PAPER_YELLOW, INK_RED,   "   PRESS M TO TOGGLE MUSIC    ", PAPER_BLACK, INK_GREEN, 0
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; printStartScreen: 
+;   display instructions
+; ------------------------------------------------------------------------------
+printStartScreen
+.(
+    ldy #10
+    lda ScreenLineLookupLo,y
+    sta _line_start_lo
+    lda ScreenLineLookupHi,Y
+    sta _line_start_hi
+    ldy #5
+    ldx #0
+    .(
+        loop
+        lda startScreenInstructions_0,x
+        beq nextLine0
+        sta (_line_start),Y
+        inx
+        iny
+        jmp loop
+    .)
+    :nextLine0
+    ldy #11
+    lda ScreenLineLookupLo,y
+    sta _line_start_lo
+    lda ScreenLineLookupHi,Y
+    sta _line_start_hi
+    ldy #5
+    ldx #0
+    .(
+        loop
+        lda startScreenInstructions_1,x
+        beq nextLine1
+        sta (_line_start),Y
+        inx
+        iny
+        jmp loop
+    .)
+
+    :nextLine1
+    ldy #12
+    lda ScreenLineLookupLo,y
+    sta _line_start_lo
+    lda ScreenLineLookupHi,Y
+    sta _line_start_hi
+    ldy #5
+    ldx #0
+    .(
+        loop
+        lda startScreenInstructions_2,x
+        beq done
+        sta (_line_start),Y
+        inx
+        iny
+        jmp loop
+    .)
+    done
+    rts
+.)
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; waitToStart: 
+;   display message and wait for keypress to start game
+; ------------------------------------------------------------------------------
+waitToStart
+.(
+    ; Display start screen
+    jsr printStartScreen
+    jsr smallDelay
+
+    :waitLoop
+    ldx KEY_PRESS_LOOKUP
+    cpx _last_key
+    beq waitLoop
+    stx _last_key
+
+    cpx #KEY_SPACE
+    beq startGame
+
+    cpx #KEY_S
+    bne checkM
+    lda _display_mode
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE
+    beq setFullScreen
+
+        lda #DISPLAY_MODE_SIDE_BY_SIDE
+    sta _display_mode
+    jsr setMazePositionForSideBySide
+    jsr setMetricsForLeftScreen
+    jsr ScreenRender
+    jsr setMetricsForRightScreen
+    jsr ScreenRender
+    jsr renderSideBySideSplitter
+    jsr printStartScreen
+    jmp waitLoop
+
+
+    setFullScreen
+    lda #DISPLAY_MODE_FULLSCREEN
+    sta _display_mode
+    jsr setMazePositionForFullScreen
+    jsr setMetricsForFullScreen
+    
+    jsr ScreenRender
+    jsr printStartScreen
+
+    jmp waitLoop
+
+    checkM
+    cpx #KEY_M
+    bne loop
+
+    sei
+
+    lda ROM_CHECK_ADDR; // EDAD contains 49 (ascii code for 1 with rom 1.1)
+    cmp #ROM_CHECK_ATMOS
+    bcc checkOric1Interupt
+    
+    lda INTSL_ATMOS
+    jmp toggleMusic
+    
+    checkOric1Interupt
+    lda INTSL_ORIC1
+    
+    :toggleMusic
+    cmp #$40; RTI
+    beq initMusic
+    jsr stopMusic
+    jmp waitLoop
+
+    initMusic
+    jsr startMusic
+
+    loop
+    jmp waitLoop
+    
+    startGame
+    lda #GAME_MODE_RUNNING
+    sta _game_mode
+    jsr renderSideBySideSplitter
+    rts
+
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -483,6 +690,22 @@ startMusic
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+stopMusic
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Stop playback of tracker music
+; ------------------------------------------------------------------------------
+.(
+    jsr clearTrackerInterupt
+
+    jsr clearSound
+
+    rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
 
 
 

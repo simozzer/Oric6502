@@ -9,3 +9,5 @@
 :ComputerDeadMessage .byt "YOU KILLED THE COMPUTER!", 0
 
 :TrackerInstructions .byt "LET'S MAKE MUSIC",0
+
+:StartInstructions .byt "PRESS SPACE TO START",0

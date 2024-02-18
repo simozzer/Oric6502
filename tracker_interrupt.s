@@ -55,8 +55,6 @@ clearTrackerInterupt
     sta INTSL_ORIC1
     cli
     rts
-
-
 .)
 
 trackerInterrupt
