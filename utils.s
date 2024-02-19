@@ -107,7 +107,7 @@ smallDelay
 .(
     txa
     pha
-    ldx #$10
+    ldx #$15
 
     outer_loop
     

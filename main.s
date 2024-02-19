@@ -22,6 +22,13 @@ StartProg
     jsr SetInk
     jsr printWaitMessage
 
+
+    // The value here will set the rendering mode
+    lda #DISPLAY_MODE_TOP_TO_BOTTOM
+    ;lda #DISPLAY_MODE_SIDE_BY_SIDE
+    sta _display_mode
+
+    
     // Initialise the random generator values (taken from kong, which was supplied with the OSDK)
 	lda #23
 	sta rand_low
@@ -71,14 +78,8 @@ startagain
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
 
-
-    // The value here will set the rendering mode
-    lda #DISPLAY_MODE_FULLSCREEN 
-    ;lda #DISPLAY_MODE_SIDE_BY_SIDE
-    sta _display_mode
-
     
-    //lda _display_mode
+    lda _display_mode
     cmp #DISPLAY_MODE_FULLSCREEN
     bne nextMode0
     jsr runFullScreen   
@@ -90,7 +91,12 @@ startagain
     jsr runSideBySide  
     jmp end
 
-nextMode1
+    nextMode1
+    cmp #DISPLAY_MODE_TOP_TO_BOTTOM
+    bne end
+    jsr runTopToBottom
+
+
 end
     jmp startagain
    ;; jsr CopyRamToChars    
@@ -218,6 +224,57 @@ setMetricsForRightScreen
     rts
 .)
 
+
+setMazePositionForTopToBottom
+.(
+    lda #TOPSCREEN_MAZE_X
+    sta _player1_maze_x
+    lda #TOPSCREEN_MAZE_Y
+    sta _player1_maze_y
+
+/*
+    lda #BOTTOMSCREEN_MAZE_X
+    sta _player2_maze_x
+    lda #BOTTOMSCREEN_MAZE_Y
+    sta _player2_maze_y
+    rts
+*/
+.)
+
+
+setMetricsForTopScreen
+.(
+    lda #TOPSCREEN_TEXT_LAST_COLUMN
+    sta _screen_render_right
+    lda #TOPSCREEN_TEXT_LAST_LINE
+    sta _screen_render_bottom
+    lda #TOPSCREEN_TEXT_MAZE_OFFSET_X
+    sta _maze_render_offset_x
+    lda #TOPSCREEN_TEXT_X_WRAP
+    sta _screen_render_x_wrap
+    lda #TOPSCREEN_TEXT_Y_WRAP 
+    sta _screen_render_y_wrap
+    lda #TOP_SCREEN_SCROLL_LEFT_MAZE_X_THRESHOLD
+    sta _scroll_left_maze_x_threshold
+    lda #TOP_SCREEN_SCROLL_RIGHT_MAZE_X_THRESHOLD
+ 
+    sta _scroll_right_maze_x_threshold
+    lda #TOP_SCREEN_SCROLL_RIGHT_MAX_MAZE_X
+    sta _scroll_right_max_maze_x
+    lda #TOP_SCREEN_SCROLL_UP_MAZE_Y_THRESHOLD
+    sta _scroll_up_maze_y_threshold
+    lda #TOP_SCREEN_SCROLL_DOWN_MAX_MAZE_Y
+    sta _scroll_down_maze_y_threshold 
+    lda #TOP_SCREEN_SCROLL_DOWN_MAZE_Y_THRESHOLD
+    sta _scroll_down_max_maze_y
+
+    lda _player1_maze_x
+    sta _maze_left
+    lda _player1_maze_y
+    sta _maze_top
+    rts
+.)
+
 runFullScreen
     .(
     // set initial maze position
@@ -301,6 +358,53 @@ runSideBySide
     sta _game_mode
     rts
     .)
+
+runTopToBottom
+.(
+    // set initial maze position
+    jsr setMazePositionForTopToBottom
+   ; jsr renderSideBySideSplitter
+    
+    // set up dimensions for screen to render    
+    :vertScreenLoop
+    jsr setMetricsForTopScreen
+
+    lda _game_mode ; don't update player position if game is not running
+    bne render0
+    jsr processKeyboardPlayer1
+    jsr updateMovementPlayer1
+
+    render0
+    jsr ScreenRender ; render left screen
+    jsr AnimateCharacters
+    
+    // set up dimensions for screen to render 
+    /*   
+    jsr setMetricsForBottomScreen
+
+    lda _game_mode ; don't update position if game is not running
+    bne render1
+    jsr updateMovementPlayer2
+
+    render1
+    jsr ScreenRender 
+    */
+    lda _game_mode ; show start screen if game is not running
+    beq continue
+    jsr waitToStart
+
+    continue
+    jsr smallDelay
+
+    lda _player_status
+    cmp #PLAYER_STATUS_BOTH_ALIVE
+    bne someoneDied
+    jmp vertScreenLoop
+    someoneDied
+    lda #GAME_MODE_WAITING
+    sta _game_mode
+    rts
+.)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 startScreenInstructions_0 .byt PAPER_YELLOW, INK_RED,   "    PRESS SPACE TO START      ", PAPER_BLACK, INK_GREEN, 0
