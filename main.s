@@ -11,8 +11,6 @@ StartProg
 	lda #8+2	
 	sta $26a
 
-    jsr startMusic
-
     jsr printTestInstructions    
     jsr clearScreen     
 
@@ -84,7 +82,6 @@ startagain
     sta _last_display_mode
     cmp #DISPLAY_MODE_FULLSCREEN
     bne nextMode0
-
     jsr runFullScreen   
     jmp checkMode
      
@@ -113,7 +110,6 @@ startagain
 
 runFullScreen
     .(
-
     // set up dimensions for screen to render    
     fullScreenLoop
     jsr setMetricsForFullScreen

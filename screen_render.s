@@ -206,26 +206,30 @@ renderSideBySideSplitter
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Render splitter for top to bottom mode
+; ---------------------------------------
 renderTopBottomSplitter
 .(
     ldy #13
     lda ScreenLineLookupLo,y
-    sta writeSplitter+1
+    sta _line_start_lo
     lda ScreenLineLookupHi,Y
-    sta writeSplitter+2
+    sta _line_start_hi
 
     ldy #39
-    lda #TOP_BOTTTOM_SPLITTER + 128
+    lda #TOP_BOTTTOM_SPLITTER
 
     loop
       cpy #01
       beq done
       :writeSplitter
-      sta $ffff,y
+      sta (_line_start),y
       dey
       jmp loop
     
 
     done
     rts    
-.)
+.)    
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

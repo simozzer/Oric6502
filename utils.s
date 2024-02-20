@@ -201,40 +201,28 @@ clear_next_line
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;// Taken from Kong source code 
-;// Calculate some RANDOM values
-;// Not accurate at all, but who cares ?
-;// For what I need it's enough.
+; Simple galois16 taken from https://github.com/bbbradsmith/prng_6502/blob/master/galois16.s
 ; ------------------------------------------------------------------------------
 rand_low		.dsb 1		;// Random number generator, low part
 rand_high		.dsb 1		;// Random number generator, high part
 b_tmp1          .dsb 1
 
 _GetRand
-	lda rand_high
-	sta b_tmp1
+.(
+    ldy #8  
 	lda rand_low
-	asl 
-	rol b_tmp1
-	asl 
-	rol b_tmp1
-	asl
-	rol b_tmp1
-	asl
-	rol b_tmp1
-	clc
-	adc rand_low
-	pha
-	lda b_tmp1
-	adc rand_high
-	sta rand_high
-	pla
-	adc #$11
+:back
+	asl        ; shift the register
+	rol rand_high
+	bcc noEor
+	eor #$39   ; apply XOR feedback whenever a 1 bit is shifted out
+:noEor
+	dey
+	bne back
 	sta rand_low
-	lda rand_high
-	adc #$36
-	sta rand_high
+	cmp #0     ; reload flags
 	rts
+    .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
