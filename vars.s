@@ -16,15 +16,6 @@ _copy_mem_count
 _copy_mem_count_lo .dsb 1
 _copy_mem_count_hi .dsb 1
 
-_line_no .dsb 1
-
-_gKey .dsb 1
-
-_music_octave .dsb 1
-_music_note .dsb 1
-_music_vol .dsb 1
-_noise_pitch .dsb 1
-_music_data_temp .dsb 1
 _music_info_byte_addr
 _music_info_byte_lo .dsb 1
 _music_info_byte_hi .dsb 1
@@ -52,6 +43,7 @@ _playback_music_info_byte_hi .dsb 1
 _player1_x .dsb 1
 _player1_y .dsb 1
 _player1_direction .dsb 1
+
 _player_status .dsb 1
 
 
@@ -69,6 +61,7 @@ _maze_byte .dsb 1
 
 _display_mode .dsb 1
 _last_display_mode .dsb 1
+
 _game_mode .dsb 1
 
 _possible_directions .dsb 1
@@ -102,6 +95,8 @@ temp_value .byt 0
 game_area_x .byt 0
 game_area_y .byt 0
 
+rand_low		.dsb 1		;// Random number generator, low part
+rand_high		.dsb 1		;// Random number generator, high part
 
 _zp_end_
 

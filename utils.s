@@ -107,7 +107,7 @@ smallDelay
 .(
     txa
     pha
-    ldx #$10
+    ldx #$12
 
     outer_loop
     
@@ -203,10 +203,6 @@ clear_next_line
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Simple galois16 taken from https://github.com/bbbradsmith/prng_6502/blob/master/galois16.s
 ; ------------------------------------------------------------------------------
-rand_low		.dsb 1		;// Random number generator, low part
-rand_high		.dsb 1		;// Random number generator, high part
-b_tmp1          .dsb 1
-
 _GetRand
 .(
     ldy #8  
