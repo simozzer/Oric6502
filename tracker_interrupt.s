@@ -345,7 +345,7 @@ trackerInterrupt
 
     ; we're in song mode
     songMode
-        // TODO - fetch next bar in sequence and set _tracker_step_index
+        // Fetch next bar in sequence and set _tracker_step_index
         // If we've reached the last bar in the sequence then goto start
         inc _tracker_song_bar_lookup_index;
         ldy _tracker_song_bar_lookup_index

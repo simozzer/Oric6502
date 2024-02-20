@@ -28,20 +28,12 @@ _music_data_temp .dsb 1
 _music_info_byte_addr
 _music_info_byte_lo .dsb 1
 _music_info_byte_hi .dsb 1
-_tracker_screen_line .dsb 1
-_tracker_step_line .dsb 1
-_first_visible_tracker_step_line .dsb 1
+
 _tracker_play_mode .dsb 1
 _tracker_last_step .dsb 1
 
 _tracker_bar_index .dsb 1
 _tracker_bar_step_index .dsb 1
-
-_tracker_selected_col_index .dsb 1
-_tracker_selected_row_index .dsb 1
-
-_hi_nibble .dsb 1
-_lo_nibble .dsb 1
 
 _last_key .dsb 1
 
@@ -76,6 +68,7 @@ _maze_top .dsb 1
 _maze_byte .dsb 1
 
 _display_mode .dsb 1
+_last_display_mode .dsb 1
 _game_mode .dsb 1
 
 _possible_directions .dsb 1

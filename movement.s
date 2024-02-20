@@ -115,9 +115,26 @@ checkDone
     lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
-    ; TODO.. set metrics based on screen mode
+    ; Set metrics based on screen mode
+    lda _display_mode
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE
+    beq updateSideBySide
+    cmp #DISPLAY_MODE_FULLSCREEN
+    beq updateStatusLine
+
+    jsr setMetricsForTopScreen
     jsr plotArea
-    
+    jsr setMetricsForBottomScreen
+    jsr plotArea
+    jmp updateStatusLine
+
+    updateSideBySide
+    jsr setMetricsForLeftScreen
+    jsr plotArea
+    jsr setMetricsForRightScreen
+    jsr plotArea
+
+    :updateStatusLine
     ; print message on status line
     lda #<DeadMessage
     sta loadMessageLoop+1

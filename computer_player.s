@@ -481,9 +481,26 @@ checkDone
     adc #128
     sta (_maze_line_start),y
 
-    ;// TODO set metrics based on screen mode
+    ;// set metrics based on screen mode
+    lda _display_mode
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE
+    beq updateSideBySide
+    cmp #DISPLAY_MODE_FULLSCREEN
+    beq updateStatus
+
+    jsr setMetricsForTopScreen
+    jsr plotArea
+    jsr setMetricsForBottomScreen
+    jsr plotArea
+    jmp updateStatus
+
+    updateSideBySide
+    jsr setMetricsForLeftScreen
+    jsr plotArea
+    jsr setMetricsForRightScreen
     jsr plotArea
     
+    :updateStatus
     ; print message on status line
     lda #<ComputerDeadMessage
     sta loadMessageLoop+1

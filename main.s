@@ -11,7 +11,7 @@ StartProg
 	lda #8+2	
 	sta $26a
 
-    ; TODOjsr startMusic
+    jsr startMusic
 
     jsr printTestInstructions    
     jsr clearScreen     
@@ -27,6 +27,7 @@ StartProg
     ;lda #DISPLAY_MODE_TOP_TO_BOTTOM
     lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
+    sta _last_display_mode
 
     
     // Initialise the random generator values (taken from kong, which was supplied with the OSDK)
@@ -78,115 +79,36 @@ startagain
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
 
-    
+    setMode
     lda _display_mode
+    sta _last_display_mode
     cmp #DISPLAY_MODE_FULLSCREEN
     bne nextMode0
+
     jsr runFullScreen   
-    jmp end
+    jmp checkMode
      
     nextMode0
     cmp #DISPLAY_MODE_SIDE_BY_SIDE
     bne nextMode1
     jsr runSideBySide  
-    jmp end
+    jsr renderSideBySideSplitter
+    jmp checkMode
 
     nextMode1
     cmp #DISPLAY_MODE_TOP_TO_BOTTOM
-    bne end
+    bne checkMode
+    jsr renderTopBottomSplitter
     jsr runTopToBottom
-
-
-end
-    jmp startagain
-   ;; jsr CopyRamToChars    
+    
+    :checkMode
+    lda _last_display_mode
+    cmp _display_mode
+    bne setMode
+    
+    jmp startagain 
     rts 
 
-setMetricsForFullScreen
-.(
-    lda #FULL_SCREEN_WIDTH
-    sta screen_area_width
-    lda #FULL_SCREEN_HEIGHT
-    sta screen_area_height
-    lda _player1_x
-    sta player_x
-    lda _player1_y
-    sta player_y
-    lda #FULLSCREEN_TEXT_FIRST_COLUMN
-    sta screen_area_left
-    lda #FULLSCREEN_TEXT_FIRST_ROW
-    sta screen_area_top
-    rts
-.)
-
-setMetricsForLeftScreen
-.(
-    lda #LEFT_SCREEN_WIDTH
-    sta screen_area_width
-    lda #LEFT_SCREEN_HEIGHT
-    sta screen_area_height
-    lda _player1_x
-    sta player_x
-    lda _player1_y
-    sta player_y
-    lda #LEFTSCREEN_TEXT_FIRST_COLUMN
-    sta screen_area_left
-    lda #LEFTSCREEN_TEXT_FIRST_ROW
-    sta screen_area_top
-    rts
-.)
-
-setMetricsForRightScreen
-.(
-    lda #RIGHT_SCREEN_WIDTH
-    sta screen_area_width
-    lda #RIGHT_SCREEN_HEIGHT
-    sta screen_area_height
-    lda _player2_x
-    sta player_x
-    lda _player2_y
-    sta player_y
-    lda #RIGHTSCREEN_TEXT_FIRST_COLUMN
-    sta screen_area_left
-    lda #RIGHTSCREEN_TEXT_FIRST_ROW
-    sta screen_area_top
-    rts
-.)
-
-
-setMetricsForTopScreen
-.(
-    lda #TOP_SCREEN_WIDTH
-    sta screen_area_width
-    lda #TOP_SCREEN_HEIGHT
-    sta screen_area_height
-    lda _player1_x
-    sta player_x
-    lda _player1_y
-    sta player_y
-    lda #TOPSCREEN_TEXT_FIRST_COLUMN
-    sta screen_area_left
-    lda #TOPSCREEN_TEXT_FIRST_ROW
-    sta screen_area_top
-    rts
-.)
-
-setMetricsForBottomScreen
-.(
-    lda #BOTTOM_SCREEN_WIDTH
-    sta screen_area_width
-    lda #BOTTOM_SCREEN_HEIGHT
-    sta screen_area_height
-    lda _player2_x
-    sta player_x
-    lda _player2_y
-    sta player_y
-    lda #BOTTOMSCREEN_TEXT_FIRST_COLUMN
-    sta screen_area_left
-    lda #BOTTOMSCREEN_TEXT_FIRST_ROW
-    sta screen_area_top
-    rts
-.)
 
 
 runFullScreen
@@ -200,6 +122,9 @@ runFullScreen
     lda _game_mode
     beq continue
     jsr waitToStart
+    lda _display_mode
+    cmp #DISPLAY_MODE_FULLSCREEN
+    bne stop
 
     continue
     jsr AnimateCharacters
@@ -218,6 +143,8 @@ runFullScreen
 
     lda #GAME_MODE_WAITING
     sta _game_mode
+
+    stop
     rts
     .)
 
@@ -252,6 +179,9 @@ runSideBySide
     lda _game_mode ; show start screen if game is not running
     beq continue
     jsr waitToStart
+    lda _display_mode
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE
+    bne stop
 
     continue
     jsr smallDelay
@@ -263,6 +193,8 @@ runSideBySide
     someoneDied
     lda #GAME_MODE_WAITING
     sta _game_mode
+
+    stop
     rts
     .)
 
@@ -297,6 +229,9 @@ runTopToBottom
     lda _game_mode ; show start screen if game is not running
     beq continue
     jsr waitToStart
+    lda _display_mode
+    cmp #DISPLAY_MODE_TOP_TO_BOTTOM
+    bne stop
 
     continue
     jsr smallDelay
@@ -308,6 +243,8 @@ runTopToBottom
     someoneDied
     lda #GAME_MODE_WAITING
     sta _game_mode
+
+    stop
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -402,7 +339,9 @@ waitToStart
     bne checkM
     lda _display_mode
     cmp #DISPLAY_MODE_SIDE_BY_SIDE
-    beq setFullScreen
+    beq nextMode_0
+    cmp #DISPLAY_MODE_FULLSCREEN
+    beq nextMode_1
 
     lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
@@ -411,18 +350,27 @@ waitToStart
     jsr setMetricsForRightScreen
     jsr plotArea
     jsr renderSideBySideSplitter
-    jsr printStartScreen
-    jmp waitLoop
+    jmp plotStartScreen
 
 
-    setFullScreen
+    :nextMode_0
     lda #DISPLAY_MODE_FULLSCREEN
     sta _display_mode
     jsr setMetricsForFullScreen
-    
     jsr plotArea
-    jsr printStartScreen
+    jmp plotStartScreen
 
+    :nextMode_1
+    lda #DISPLAY_MODE_TOP_TO_BOTTOM
+    sta _display_mode
+    jsr setMetricsForTopScreen
+    jsr plotArea
+    jsr setMetricsForBottomScreen
+    jsr plotArea
+    jsr renderTopBottomSplitter
+
+    :plotStartScreen
+    jsr printStartScreen
     jmp waitLoop
 
     checkM
@@ -456,10 +404,21 @@ waitToStart
     startGame
     lda #GAME_MODE_RUNNING
     sta _game_mode
+
+    lda _display_mode
+    cmp #DISPLAY_MODE_FULLSCREEN
+    bne checkSplitter
+    rts
+    
+    checkSplitter
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE
+    bne nextSplitter
     jsr renderSideBySideSplitter
-    jsr renderTopBottomSplitter
     rts
 
+    nextSplitter
+    jsr renderTopBottomSplitter
+    rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
