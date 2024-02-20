@@ -1,8 +1,3 @@
-
-;/ THIS COULD BE SIMPLIFIED with getCharAbove, getCharBelow, getCharToLeft, getCharToRight
-; or GetCanMoveUp, GetCanMoveDown, GetCanMoveLeft, GetCanMoveRight
-;/ WHICH MIGHT BE EASIER TO READ AND MAINTAIN (but would probably be less performant)
-
 ;// THIS IS FOR THE PLAYER CONTROLLED BY THE COMPUTER
 updateMovementPlayer2 
 .(
@@ -15,16 +10,6 @@ updateMovementPlayer2
     lda #POSSIBLE_DIRECTION_NONE
     sta _possible_directions
 
-    ; // Keep the maze in view, and dont allow display of elements outside of the maze!!
-    LDA _player2_x; if player is neear the right of the screen then don't scroll
-    CMP _scroll_left_maze_x_threshold
-    BCS movePlayerLeftOrTurn
-
-    lda _player2_maze_x ; don't allow scrolling up past the left of the maze
-    beq movePlayerLeftOrTurn
-    dec _player2_maze_x
-
-    movePlayerLeftOrTurn
     dec _player2_x
 
     ; check that the move is valid, and that we don't have any signicant collisions
@@ -141,17 +126,6 @@ checkRight
     lda #POSSIBLE_DIRECTION_NONE
     sta _possible_directions
 
-    ; // Keep the maze in view, and dont allow display of elements outside of the maze!!
-    LDA _player2_x ; if the player is near the left of the maze then don't scroll
-    CMP _scroll_right_maze_x_threshold
-    BCC movePlayerRightOrTurn
-
-    lda _player2_maze_x ; if the player is near the right of the maze then don't scroll
-    cmp _scroll_right_max_maze_x
-    beq movePlayerRightOrTurn
-    inc _player2_maze_x
-
-    movePlayerRightOrTurn
     inc _player2_x
 
     ; check that the move is valid, and that we don't have any signicant collisions
@@ -266,17 +240,6 @@ checkUp
     :processCheckUp
     lda #POSSIBLE_DIRECTION_NONE
     sta _possible_directions
-
-    ; // Keep the maze in view, and dont allow display of elements outside of the maze!!
-    lda _player2_y ;if player is near the bottom of the screen then don't scroll
-    cmp _scroll_up_maze_y_threshold
-    bpl movePlayerUpOrTurn
-
-    lda _player2_maze_y ; don't allow scrolling up past the top of the maze
-    beq movePlayerUpOrTurn
-    dec _player2_maze_y
-
-    movePlayerUpOrTurn
     dec _player2_y ;move the player upwards, (we will need to correct this when checking left/right possibilties)
 
     ; check that the move is valid, and that we don't have any signicant collisions
@@ -388,18 +351,6 @@ checkDown
     :processCheckDown
     lda #POSSIBLE_DIRECTION_NONE
     sta _possible_directions
-
-    ; // Keep the maze in view, and dont allow display of elements outside of the maze!!
-    lda _player2_y ;if player is neear the top of the screen then don't scroll
-    cmp _scroll_down_maze_y_threshold
-    bmi movePlayerDownOrTurn
-
-    lda _player2_maze_y; don't allow scrolling up past the top of the maze
-    cmp _scroll_down_max_maze_y
-    beq movePlayerDownOrTurn
-    inc _player2_maze_y
-
-    movePlayerDownOrTurn
     inc _player2_y
 
     ; check that the move is valid, and that we don't have any signicant collisions
@@ -530,7 +481,8 @@ checkDone
     adc #128
     sta (_maze_line_start),y
 
-    jsr ScreenRender
+    ;// TODO set metrics based on screen mode
+    jsr plotArea
     
     ; print message on status line
     lda #<ComputerDeadMessage

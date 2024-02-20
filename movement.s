@@ -58,17 +58,6 @@ updateMovementPlayer1
     lda _player1_direction
     cmp #PLAYER_DIRECTION_LEFT
     bne checkRight
-
-    ;scroll if we can
-    LDA _player1_x
-    CMP _scroll_left_maze_x_threshold
-    BCS movePlayerLeft
-
-    lda _player1_maze_x
-    beq movePlayerLeft
-    dec _player1_maze_x
-
-    movePlayerLeft
     dec _player1_x
     jmp renderPlayer
 
@@ -76,18 +65,6 @@ checkRight
     lda _player1_direction
     cmp #PLAYER_DIRECTION_RIGHT
     bne checkUp
-
-    ;scroll if we can
-    LDA _player1_x
-    CMP _scroll_right_maze_x_threshold
-    BCC movePlayerRight
-
-    lda _player1_maze_x
-    cmp _scroll_right_max_maze_x
-    beq movePlayerRight
-    inc _player1_maze_x
-
-    movePlayerRight
     inc _player1_x
     jmp renderPlayer
 
@@ -95,18 +72,6 @@ checkUp
     lda _player1_direction
     cmp #PLAYER_DIRECTION_UP
     bne checkDown
-
-
-
-    lda _player1_y ;if player is neear the bottom of the screen then don't scroll
-    cmp _scroll_up_maze_y_threshold
-    bpl movePlayerUp
-
-    lda _player1_maze_y ; don't allow scrolling up past the top of the maze
-    beq movePlayerUp
-    dec _player1_maze_y
-
-    movePlayerUp
     dec _player1_y
     jmp renderPlayer
 
@@ -115,17 +80,6 @@ checkDown
     lda _player1_direction
     cmp #PLAYER_DIRECTION_DOWN
     bne checkDone
-
-
-    lda _player1_y ;if player is neear the top of the screen then don't scroll
-    cmp _scroll_down_maze_y_threshold
-    bmi movePlayerDown
-    ;scroll if we can
-    lda _player1_maze_y
-    cmp _scroll_down_max_maze_y
-    beq movePlayerDown
-    inc _player1_maze_y
-
     movePlayerDown
     inc _player1_y
 
@@ -161,7 +115,8 @@ checkDone
     lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
-    jsr ScreenRender
+    ; TODO.. set metrics based on screen mode
+    jsr plotArea
     
     ; print message on status line
     lda #<DeadMessage

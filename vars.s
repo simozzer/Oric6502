@@ -61,39 +61,19 @@ _player1_x .dsb 1
 _player1_y .dsb 1
 _player1_direction .dsb 1
 _player_status .dsb 1
-_player1_maze_x .dsb 1
-_player1_maze_y .dsb 1
+
 
 _player2_x .dsb 1
 _player2_y .dsb 1
 _player2_direction .dsb 1
-_player2_maze_x .dsb 1
-_player2_maze_y .dsb 1
+
 
 _maze_line_start
 _maze_line_start_lo .dsb 1
 _maze_line_start_hi .dsb 1
 _maze_left .dsb 1
 _maze_top .dsb 1
-_maze_right .dsb 1
 _maze_byte .dsb 1
-_maze_x_tmp .dsb 1
-_maze_y_tmp .dsb 1
-
-_screen_render_right .dsb 1
-_screen_render_bottom .dsb 1
-_maze_render_offset_x .dsb 1
-_screen_render_x_wrap .dsb 1 ; the value x must hit to go to the previous line
-_screen_render_y_wrap .dsb 1 ; the value y must be for render complete
-
-
-_scroll_left_maze_x_threshold .dsb 1
-_scroll_right_maze_x_threshold .dsb 1   
-_scroll_right_max_maze_x .dsb 1
-_scroll_up_maze_y_threshold .dsb 1
-_scroll_down_maze_y_threshold .dsb 1
-_scroll_down_max_maze_y .dsb 1
-
 
 _display_mode .dsb 1
 _game_mode .dsb 1
@@ -109,6 +89,25 @@ _line_start
 _line_start_lo .dsb 1
 _line_start_hi .dsb 1
 
+
+
+screen_area_width .byt 0
+screen_area_height .byt 0
+screen_area_half_width .byt 0
+screen_area_half_height .byt 0
+screen_area_left .byt 0
+screen_area_top .byt 0
+screen_area_x .byt 0
+screen_area_y .byt 0
+screen_area_last_col .byt 0
+screen_area_last_row .byt 0
+player_x .byt 0
+player_y .byt 0
+game_area_top .byt 0
+game_area_left .byt 0
+temp_value .byt 0
+game_area_x .byt 0
+game_area_y .byt 0
 
 
 _zp_end_

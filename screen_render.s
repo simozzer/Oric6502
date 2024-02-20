@@ -1,77 +1,166 @@
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; Render a section of the maze to an area of the screen
+; Plot a section of the maze to an area of the screen.
+; This routine calculates the area to display based on
+; the current position of the player
 ; ------------------------------------------------------------------------------
-ScreenRender
-
-    // set the start position for plotting on screen.
-    lda _screen_render_right
-    sta _plot_ch_x
-    lda _screen_render_bottom
-    sta _plot_ch_y
-
-    // set the start position for grabbing data from offscreen
-    lda _maze_left
-    clc
-    adc _maze_render_offset_x
-    sta _maze_x_tmp
-    sta _maze_right
-
-    lda _maze_top
-    adc _screen_render_bottom
-    sta _maze_y_tmp
-
+plotArea
 .(
-loop
-    // lookup start of line for plotting on screen
-    ldy _plot_ch_y
-    lda ScreenLineLookupLo,y
-    sta _line_start_lo
-    lda ScreenLineLookupHi,Y
-    sta _line_start_hi
+  ; calculate half width
+  lda screen_area_width
+  lsr 
+  sta screen_area_half_width
 
-    // look up start of line for grabbing data from offscreen
-    ldy _maze_y_tmp
-    lda OffscreenLineLookupLo,Y
-    sta _maze_line_start_lo
-    lda OffscreenLineLookupHi,y
-    sta _maze_line_start_hi
+  ; calculate half height
+  lda screen_area_height
+  lsr
+  sta screen_area_half_height
 
-innerloop
-    // grab character from offscreen 
-    ldy _maze_x_tmp
-    lda (_maze_line_start),Y
+  ; Calculate game area top
 
-    // plot character onscreen
-    ldy _plot_ch_x
-    sta (_line_start),y
+  ; if player_y > (OFFSCREEN_LAST_ROW - screen_area_half_height) 
+  ; then game_area_top = (OFFSCREEN_LAST_ROW - screen_area_height)
+  lda #OFFSCREEN_LAST_ROW
+  clc
+  sbc screen_area_half_height
+  sta temp_value
+  
+  lda player_y
+  cmp temp_value
+  bcs preventScrollingPastBottom
 
-    // move to previous character
-    ldx _plot_ch_x
-    dex
-    cpx _screen_render_x_wrap
-    beq RenderNextLine
-    
-    stx _plot_ch_x
-    dec _maze_x_tmp
-    jmp innerloop
+  ; if player_y < screen_area_half_height then game_area_top = 0
+  lda player_y
+  cmp screen_area_half_height
+  bcc preventScrollingPastTop
 
-    RenderNextLine
-    ldx _plot_ch_y
-    dex
-    cpx _screen_render_y_wrap
-    bmi complete
-    
-    ; move maze data to previous line
-    stx _plot_ch_y
-    lda _screen_render_right
-    sta _plot_ch_x
-    dec _maze_y_tmp
-    lda _maze_right
-    sta _maze_x_tmp
-    jmp loop
+  ;otherwise game_area_top = player_y - half_screen_height
+  clc
+  sbc screen_area_half_height
+  sta game_area_top
+  bpl calculateLeft
+  inc game_area_top
+  jmp calculateLeft
 
-complete
-    rts
+  preventScrollingPastBottom
+  lda #OFFSCREEN_LAST_ROW
+  clc
+  adc #01
+  sbc screen_area_height
+  sta game_area_top
+  jmp calculateLeft
+
+  preventScrollingPastTop
+  lda #0
+  sta game_area_top
+
+  :calculateLeft 
+  ; if player_x > (OFFSCREEN_LAST_COLUMN - screen_area_half_width) 
+  ; then game_area_left = (OFFSCREEN_LAST_COLUMN - screen_area_half_width)
+  lda #OFFSCREEN_LAST_COLUMN
+  clc
+  adc #01
+  sbc screen_area_half_width
+  sta temp_value
+  
+  lda player_x
+  cmp temp_value
+  bcs preventScrollingPastRight
+
+  ; if player_x < screen_area_half_width then game_area_left = 0
+  lda player_x
+  cmp screen_area_half_width
+  bcc preventScrollingPastLeft
+
+  ;otherwise game_area_left = player_x - half_screen_width
+  clc
+  sbc screen_area_half_width
+  sta game_area_left
+  bpl plotOnScreen
+  inc game_area_left
+
+  jmp plotOnScreen
+
+  preventScrollingPastRight
+  lda #OFFSCREEN_LAST_COLUMN
+  clc
+  adc #02
+  clc
+  sbc screen_area_width
+  sta game_area_left
+  jmp plotOnScreen
+
+  preventScrollingPastLeft
+  lda #0
+  sta game_area_left
+
+  :plotOnScreen
+  ; game_area_left, game_area_top are the topLeft position in the offscreen data
+  lda game_area_top
+  sta game_area_y
+  lda game_area_left
+  sta game_area_x
+  lda screen_area_left
+  sta screen_area_x
+  clc
+  adc screen_area_width
+  sta screen_area_last_col
+  lda screen_area_top
+  sta screen_area_y
+  clc
+  adc screen_area_height
+  sta screen_area_last_row
+
+  
+  :plotNextLine
+  ldy game_area_y
+  ; lookup the offscreen row
+  lda OffscreenLineLookupLo,Y
+  sta _maze_line_start_lo
+  lda OffscreenLineLookupHi,y
+  sta _maze_line_start_hi
+
+  :plotChar
+  ; lookup the correct column in the offscreen row
+  ldy game_area_x
+  lda (_maze_line_start),y
+  sta temp_value ;temp value now contains the ascii code of the character to plot
+
+  ; lookup the onscreen row
+  ldy screen_area_y
+  lda ScreenLineLookupLo,y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,Y
+  sta _line_start_hi
+
+  ;plot the character on the screen
+  lda temp_value
+  ldy screen_area_x
+  sta (_line_start),y
+
+  ; move to the next column
+  iny
+  cpy screen_area_last_col
+  beq nextRow
+  sty screen_area_x
+  inc game_area_x
+  jmp plotChar
+
+  nextRow
+  lda screen_area_left
+  sta screen_area_x
+  ldy screen_area_y
+  iny
+  cpy screen_area_last_row
+  beq done
+  sty screen_area_y
+  inc game_area_y
+  lda game_area_left
+  sta game_area_x
+  jmp plotNextLine
+
+
+  done
+  rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -115,3 +204,28 @@ renderSideBySideSplitter
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+renderTopBottomSplitter
+.(
+    ldy #13
+    lda ScreenLineLookupLo,y
+    sta writeSplitter+1
+    lda ScreenLineLookupHi,Y
+    sta writeSplitter+2
+
+    ldy #39
+    lda #TOP_BOTTTOM_SPLITTER + 128
+
+    loop
+      cpy #01
+      beq done
+      :writeSplitter
+      sta $ffff,y
+      dey
+      jmp loop
+    
+
+    done
+    rts    
+.)
