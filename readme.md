@@ -25,7 +25,7 @@ TODO (in approximate order):
 - ~~Use the above routine to parse maze bitmasks into an off screen buffer and create a new routine to render from that (should be faster)~~
 - ~~When scrolling move the existing data on screen, and just add in the new column or row~~ (I've decided not to do this, as any moving items will be plotted directly to the offscreen buffer - will make the code easier)
 - ~~test.~~ I'm happy with the performance of things higher up this list but will continue to test as I add more code and features.
-- ~~adjust routines to handle split screen (both vertical and horizontal)~~ For now I've just gone with side-by-side mode (/vertical). Due to a lack of screen real estate in text mode the use of top to bottom splitting does not seem valid/useable for the current game I'm building.
+- ~~adjust routines to handle split screen (both vertical and horizontal)~~ 
 - implement fast keyboard handling to scroll each view of the maze (and disable ROM interupt for these).
 - test again.
 - ~~Playback music created using my tracker program (Fourbar)~~
@@ -38,7 +38,7 @@ TODO (in approximate order):
 - apply decompression to sprites, maze and sound.
 
 
-The aim of this bit of coding is to provide a scrolling area which is much bigger than the Oric screen
+The aim of this bit of coding was, origionally, to provide a scrolling area which is much bigger than the Oric screen
 ![The aim](ScrollArea.png)
 
 
