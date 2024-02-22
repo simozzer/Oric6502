@@ -199,7 +199,7 @@ plotRandomBlocks
 
 plotRandomBlackHoles
 .(
-    ldy #5
+    ldy #10
     sty y_temp
 
     .(
@@ -208,12 +208,12 @@ plotRandomBlackHoles
         jsr _GetRand
         lda rand_low
         cmp #249
-        bpl skip
+        bcs no_skip
         sta _plot_ch_x
         jsr _GetRand
         lda rand_low
         cmp #74
-        bpl skip
+        bcs no_skip
         clc
         adc #3
         sta _plot_ch_y
@@ -246,6 +246,7 @@ plotRandomBlackHoles
 
         skip
         dec y_temp
+        no_skip
         jmp loop
     .)
     rts

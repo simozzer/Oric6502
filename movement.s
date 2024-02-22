@@ -90,7 +90,7 @@ renderPlayer
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
 
-    ; check for collision
+    ; check for collision with fatal object
     ldy _player1_x
     lda (_maze_line_start),Y
     and #127
@@ -98,6 +98,37 @@ renderPlayer
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
     bpl playerDead
 
+
+    ; check for collision with black hole
+    ldy _player1_x
+    lda (_maze_line_start),Y
+    cmp #BLACK_HOLE_TOP_LEFT_CHAR_CODE
+    bcc noBlackHole
+    cmp #BLACK_HOLE_BOTTOM_RIGHT_CHAR_CODE+1
+    bcs noBlackHole
+
+    ;process black hole collision
+    .(
+    getX
+    jsr _GetRand; get random x position
+    lda rand_low;
+    cmp #245
+    bcs getX
+    clc
+    adc #05
+    sta _player1_x
+
+    getY
+    jsr _GetRand;
+    lda rand_low;
+    cmp #70
+    bcs getY
+    clc
+    adc #05
+    sta _player1_y
+    .)
+
+    noBlackHole
     lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
