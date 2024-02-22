@@ -86,7 +86,7 @@ plot_offscreen
 
     nexty ldx _plot_ch_y;
     cpx #OFFSCREEN_LAST_ROW
-    beq plot_inner_walls;
+    beq plotStuff;
     
     ;move to next line
     ldx #0
@@ -109,10 +109,22 @@ plot_offscreen
     sta _maze_line_start_hi
     jmp getMazeByte
 
+plotStuff
+    jsr plot_inner_walls
+    jsr plotRandomBlocks
+    jsr plotRandomBlackHoles
+
+    
+screen_done
+    rts
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 
 
 // Plot walls inside the game area to create obstacles
 plot_inner_walls
+.(
     lda #00                         ;set index to lookup first y position
     sta _plot_index_y
     .(
@@ -121,7 +133,7 @@ plot_inner_walls
         ldy _plot_index_y           ; lookup y position for current y index
         lda inner_wall_y_positions,Y
         sta center_y                ; store center y positon for walls to be drawn
-        beq plotRandomBlocks             ; exit if y position is zero
+        beq done             ; exit if y position is zero
         inc _plot_index_y           ; otherwise move to next position.
 
         lda #00                     ; set index to lookup first x position
@@ -139,6 +151,9 @@ plot_inner_walls
             jmp x_loop                      ; continue to loop x positions until last item in list is reached
         .)
     .)
+    done
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 plotRandomBlocks
@@ -148,7 +163,7 @@ plotRandomBlocks
 
     .(
         :loop
-        beq screen_done
+        beq done
         jsr _GetRand
         lda rand_low
         sta _plot_ch_x
@@ -163,10 +178,11 @@ plotRandomBlocks
         sta _maze_line_start_hi
 
         lda (_maze_line_start),Y ; check that the area doesn't alreayd contain an obstable
+        clc
         and 127
         cmp #BRICK_WALL_CHAR_CODE
         bcs skip
-        lda #123 + 128
+        lda #RANDOM_BLOCK_CHAR_CODE + 128
         ldy _plot_ch_x
         sta (_maze_line_start),Y
 
@@ -175,11 +191,67 @@ plotRandomBlocks
         dec y_temp
         jmp loop
     .)
-.)
-    
-screen_done
+    done 
     rts
+.)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+plotRandomBlackHoles
+.(
+    ldy #5
+    sty y_temp
+
+    .(
+        :loop
+        beq screen_done
+        jsr _GetRand
+        lda rand_low
+        cmp #249
+        bpl skip
+        sta _plot_ch_x
+        jsr _GetRand
+        lda rand_low
+        cmp #74
+        bpl skip
+        clc
+        adc #3
+        sta _plot_ch_y
+        tay
+        lda OffscreenLineLookupLo,Y
+        sta _maze_line_start_lo
+        lda OffscreenLineLookupHi,y
+        sta _maze_line_start_hi
+
+        lda #BLACK_HOLE_TOP_LEFT_CHAR_CODE;
+        ldy _plot_ch_x
+        sta (_maze_line_start),Y
+        iny
+        lda #BLACK_HOLE_TOP_RIGHT_CHAR_CODE
+        sta (_maze_line_start),y
+
+        ldy _plot_ch_y
+        iny
+        lda OffscreenLineLookupLo,Y
+        sta _maze_line_start_lo
+        lda OffscreenLineLookupHi,y
+        sta _maze_line_start_hi
+
+        lda #BLACK_HOLE_BOTTOM_LEFT_CHAR_CODE;
+        ldy _plot_ch_x
+        sta (_maze_line_start),Y
+        iny
+        lda #BLACK_HOLE_BOTTOM_RIGHT_CHAR_CODE
+        sta (_maze_line_start),y
+
+        skip
+        dec y_temp
+        jmp loop
+    .)
+    rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
 :center_y
     .byt 0

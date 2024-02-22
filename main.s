@@ -467,59 +467,26 @@ printTestInstructions
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; CopySetToRam: 
-;   Copy initial data for characters a-z into a buffer so we can restore them 
-;   later
-; ------------------------------------------------------------------------------   
-:CopySetToRam 
-    lda #$08 ;lo byte of src                  
-    sta _copy_mem_src_lo                         
-    lda #$B7 ;hi byte of src                       
-    sta _copy_mem_src_hi                         
-    lda #$D1                        
-    sta _copy_mem_count_lo                        
-    lda #$00                        
-    sta _copy_mem_count_hi                        
-    lda #<_SpriteBackup_; lo byte of dest                         
-    sta _copy_mem_dest_lo                       
-    lda #>_SpriteBackup_ ; hi byte of dest
-    sta _copy_mem_dest_hi                        
-    jsr CopyMemory                       
-    rts 
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
-
-
-
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; CopyRamToChars: 
-;   Copy initial data for characters a-z back from buffer so that we can use
-;   the entire initial character set outside of 'game mode'.
-; ------------------------------------------------------------------------------                                  
-:CopyRamToChars 
-    lda #<_SpriteBackup_; lo byte of source                 
-    sta _copy_mem_src_lo                        
-    lda #>_SpriteBackup_; hi byte of source
-    sta _copy_mem_src_hi                         
-    lda #241                       
-    sta _copy_mem_count_lo                    
-    lda #$00                        
-    sta _copy_mem_count_hi                        
-    lda #$08  ;lo bye of dest                      
-    sta _copy_mem_dest_lo                         
-    lda #$B7  ;hi byte of dest                      
-    sta _copy_mem_dest_hi                         
-    jsr CopyMemory                       
-    rts                             
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
-
-
-
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; MakeCharacters_1: 
 ;   reconfigure the character set so that we have some sprites/alternative 
 ;   characters to use in 'game' mode.
 ; ------------------------------------------------------------------------------            
 :MakeCharacters_1
+    lda #<preNumericSpriteData
+    sta _copy_mem_src_lo
+    lda #>preNumericSpriteData
+    sta _copy_mem_src_hi
+    lda #121; byte count
+    sta _copy_mem_count_lo                         
+    lda #$00                        
+    sta _copy_mem_count_hi                        
+    lda #$08                        
+    sta _copy_mem_dest_lo                      
+    lda #$B5                      
+    sta _copy_mem_dest_hi                        
+    jsr CopyMemory   
+
+
     lda #<_AltSpriteData                   
     sta _copy_mem_src_lo                         
     lda #>_AltSpriteData
