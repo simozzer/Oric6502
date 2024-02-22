@@ -199,7 +199,7 @@ plotRandomBlocks
 
 plotRandomBlackHoles
 .(
-    ldy #10
+    ldy #6
     sty y_temp
 
     .(
