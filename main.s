@@ -12,7 +12,8 @@ StartProg
 	sta $26a
 
     jsr printTestInstructions    
-    jsr clearScreen     
+    jsr clearScreen    
+    jsr initTrailMemory 
 
     jsr MakeCharacters_1
     jsr BackupCharacters
@@ -39,6 +40,7 @@ StartProg
 
 
 startagain
+    ;jsr initTrailMemory
     jsr MazeRender
     jsr printScrollInstructions
     jsr clearScreen
@@ -398,6 +400,7 @@ waitToStart
     jmp waitLoop
     
     startGame
+    ;jsr initTrailMemory
     lda #GAME_MODE_RUNNING
     sta _game_mode
 

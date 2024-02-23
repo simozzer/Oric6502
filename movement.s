@@ -110,25 +110,48 @@ renderPlayer
     ;process black hole collision
     .(
     getX
-    jsr _GetRand; get random x position
-    lda rand_low;
-    cmp #245
-    bcs getX
-    clc
-    adc #05
-    sta _player1_x
+        jsr _GetRand; get random x position
+        lda rand_low;
+        cmp #245
+        bcs getX
+        clc
+        adc #05
+        sta _player1_x
 
-    getY
-    jsr _GetRand;
-    lda rand_low;
-    cmp #70
-    bcs getY
-    clc
-    adc #05
-    sta _player1_y
+        getY
+        jsr _GetRand;
+        lda rand_low;
+        cmp #70
+        bcs getY
+        clc
+        adc #05
+        sta _player1_y
     .)
 
     noBlackHole
+    ; check for collision with eraser
+    cmp #ERASER_CHAR_CODE
+    bne storeAndPlot
+    jsr eraseTrail
+    lda _player1_x
+    tay
+    jmp plot0
+
+    storeAndPlot
+    ; store trail data
+    lda _player1_x
+    sta trailItemX
+    lda _player1_y
+    sta trailItemY
+    lda (_maze_line_start),Y
+    sta trailChar
+    tya
+    tax
+    jsr addTrailItem
+    txa
+    tay
+
+    :plot0
     lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 

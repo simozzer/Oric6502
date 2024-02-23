@@ -76,6 +76,13 @@ _line_start_lo .dsb 1
 _line_start_hi .dsb 1
 
 
+trail_data_player_1
+trail_data_low_player_1 .dsb 1
+trail_data_hi_player_1 .dsb 1
+trail_index_player_1 .dsb 1
+trailItemX .byt 1
+trailItemY .byt 1
+trailChar .byt 1
 
 screen_area_width .byt 0
 screen_area_height .byt 0
@@ -95,10 +102,12 @@ temp_value .byt 0
 game_area_x .byt 0
 game_area_y .byt 0
 
-rand_low		.dsb 1		;// Random number generator, low part
-rand_high		.dsb 1		;// Random number generator, high part
+
+rand_low		.byt 1		;// Random number generator, low part
+rand_high		.byt 1		;// Random number generator, high part
+
 
 _zp_end_
 
-
 .text
+

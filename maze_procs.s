@@ -110,8 +110,10 @@ plot_offscreen
     jmp getMazeByte
 
 plotStuff
-    jsr plot_inner_walls
+    jsr plotRandomErasers
     jsr plotRandomBlocks
+    jsr plot_inner_walls
+    
     jsr plotRandomBlackHoles
 
     
@@ -158,7 +160,7 @@ plot_inner_walls
 
 plotRandomBlocks
 .(
-    ldy #255
+    ldy #100
     sty y_temp
 
     .(
@@ -166,22 +168,23 @@ plotRandomBlocks
         beq done
         jsr _GetRand
         lda rand_low
+        cmp #253
+        bcs skip
+        clc
+        adc #01
         sta _plot_ch_x
         jsr _GetRand
         lda rand_low
         cmp #78
-        bpl skip
+        bcs skip
+        clc
+        adc #1
         tay
         lda OffscreenLineLookupLo,Y
         sta _maze_line_start_lo
         lda OffscreenLineLookupHi,y
         sta _maze_line_start_hi
 
-        lda (_maze_line_start),Y ; check that the area doesn't alreayd contain an obstable
-        clc
-        and 127
-        cmp #BRICK_WALL_CHAR_CODE
-        bcs skip
         lda #RANDOM_BLOCK_CHAR_CODE + 128
         ldy _plot_ch_x
         sta (_maze_line_start),Y
@@ -253,6 +256,40 @@ plotRandomBlackHoles
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+plotRandomErasers
+.(
+    ldy #100
+    sty y_temp
+
+    .(
+        :loop
+        beq done
+        jsr _GetRand
+        lda rand_low
+        sta _plot_ch_x
+        jsr _GetRand
+        lda rand_low
+        cmp #78
+        bpl skip
+        tay
+        lda OffscreenLineLookupLo,Y
+        sta _maze_line_start_lo
+        lda OffscreenLineLookupHi,y
+        sta _maze_line_start_hi
+        lda #ERASER_CHAR_CODE
+        ldy _plot_ch_x
+        sta (_maze_line_start),Y
+
+
+        skip
+        dec y_temp
+        jmp loop
+    .)
+    done 
+    rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 :center_y
     .byt 0
