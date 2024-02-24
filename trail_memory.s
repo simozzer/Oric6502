@@ -52,6 +52,27 @@ addTrailItemPlayer1
   rts
 .)
 
+addTrailItemPlayer2
+.(
+  ldy trail_index_player_2
+  cpy #TRAIL_MEMORY_LENGTH
+  bne add
+  ldy #0
+  sty trail_index_player_2
+  add
+  lda trailItemX
+  sta trail_x_pos_player_2,y
+
+  lda trailItemY
+  sta trail_y_pos_player_2,y
+  
+  lda trailChar
+  sta trail_char_player_2,y
+  
+  inc trail_index_player_2
+  rts
+.)
+
 eraseTrailPlayer1
 .(
   ldx #TRAIL_MEMORY_LENGTH-1
@@ -76,6 +97,53 @@ eraseTrailPlayer1
   sta trailItemY
 
   lda trail_char_player_1,Y
+  sta trailChar
+
+  ; restore the character for the trail item
+  ldy trailItemY
+  lda OffscreenLineLookupLo,y
+  sta _line_start_lo
+  lda OffscreenLineLookupHi,y
+  sta _line_start_hi
+  ldy trailItemX
+  lda trailChar
+  sta (_line_start),y
+
+  dex
+  cpx #00
+  beq done
+  jmp loop
+  
+  done
+    jsr initTrailMemory
+    rts
+.)
+
+
+eraseTrailPlayer2
+.(
+  ldx #TRAIL_MEMORY_LENGTH-1
+  loop
+  ldy trail_index_player_2
+  cpy #00
+  bne doItWithDec0
+  ldy #TRAIL_MEMORY_LENGTH-1
+  sty trail_index_player_2
+  jmp doItWithNoDec0
+
+  doItWithDec0
+  dey
+  sty trail_index_player_2
+  :doItWithNoDec0
+  ;get xpos - if it is zero then the entry is empty and we're done
+  lda trail_x_pos_player_2,y
+  beq done
+  sta trailItemX
+
+  lda trail_y_pos_player_2,Y
+  sta trailItemY
+
+  lda trail_char_player_2,Y
   sta trailChar
 
   ; restore the character for the trail item

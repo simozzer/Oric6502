@@ -10,8 +10,7 @@ StartProg
     ;// NOKEYCLICK+SCREEN no cursor
 	lda #8+2	
 	sta $26a
-
-    jsr printTestInstructions    
+ 
     jsr clearScreen    
     jsr initTrailMemory 
 
@@ -420,22 +419,6 @@ waitToStart
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
-
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; printTestInstructions: 
-;   Print some instructions in the status line at the top of the screen
-; ------------------------------------------------------------------------------
-printTestInstructions
-    lda #<TestInstructions
-    sta loadMessageLoop+1
-    lda #>TestInstructions
-    sta loadMessageLoop+2
-    jsr printStatusMessage
-    rts
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<    
-
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

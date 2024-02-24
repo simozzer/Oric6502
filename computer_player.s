@@ -492,6 +492,30 @@ renderPlayer
 
     
     noBlackHole
+    ; check for collision with eraser
+    cmp #ERASER_CHAR_CODE
+    bne storeAndPlot1
+    jsr eraseTrailPlayer2
+    lda _player2_x
+    tay
+    jmp plot1
+
+    storeAndPlot1
+    ; store trail data
+    lda _player2_y
+    sta trailItemY
+    lda _player2_x
+    sta trailItemX
+    tay
+    lda (_maze_line_start),Y
+    sta trailChar
+    tya
+    tax
+    jsr addTrailItemPlayer2
+    txa
+    tay
+
+    :plot1
     lda #PLAYER2_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     adc #128
     sta (_maze_line_start),y
