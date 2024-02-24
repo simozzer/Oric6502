@@ -80,6 +80,7 @@ trail_data_player_1
 trail_data_low_player_1 .dsb 1
 trail_data_hi_player_1 .dsb 1
 trail_index_player_1 .dsb 1
+trail_index_player_2 .dsb 1
 trailItemX .byt 1
 trailItemY .byt 1
 trailChar .byt 1

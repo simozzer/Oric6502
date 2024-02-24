@@ -132,22 +132,23 @@ renderPlayer
     ; check for collision with eraser
     cmp #ERASER_CHAR_CODE
     bne storeAndPlot
-    jsr eraseTrail
+    jsr eraseTrailPlayer1
     lda _player1_x
     tay
     jmp plot0
 
     storeAndPlot
     ; store trail data
-    lda _player1_x
-    sta trailItemX
     lda _player1_y
     sta trailItemY
+    lda _player1_x
+    sta trailItemX
+    tay
     lda (_maze_line_start),Y
     sta trailChar
     tya
     tax
-    jsr addTrailItem
+    jsr addTrailItemPlayer1
     txa
     tay
 

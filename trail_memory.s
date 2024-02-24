@@ -1,95 +1,84 @@
 ; allow 3 bytes for each section of the trail data
 ; each 'record' will contain x_pos, y_pos and the previous char at that position
-trailData 
-.byt 0,0,0,0,0,0,0,0,0,0 
-.byt 0,0,0,0,0,0,0,0,0,0
-.byt 0,0,0,0,0,0,0,0,0,0
-.byt 0,0,0,0,0,0,0,0,0,0
-.byt 0,0,0,0,0,0,0,0,0,0
-.byt 0,0,0,0,0,0,0,0,0,0 
+trail_x_pos_player_1 .dsb TRAIL_MEMORY_LENGTH,1 
+trail_y_pos_player_1 .dsb  TRAIL_MEMORY_LENGTH,2
+trail_char_player_1 .dsb TRAIL_MEMORY_LENGTH,3
+
+trail_x_pos_player_2 .dsb  TRAIL_MEMORY_LENGTH,1 
+trail_y_pos_player_2 .dsb  TRAIL_MEMORY_LENGTH,2
+trail_char_player_2 .dsb TRAIL_MEMORY_LENGTH,3
+
 
 
 initTrailMemory
 .(
-  ;setup zero page pointer to trail data 
-  lda #<trailData
-  sta trail_data_low_player_1
-  lda #>trailData
-  sta trail_data_hi_player_1
-
-  ; set trail index to zero
   lda #00
-  sta trail_index_player_1
-  ; zero out the data for the trail
-  ldy #29
-
-  lda #$00
+  ldy #00
   loop
-    sta (trail_data_player_1),Y
-    dey  
-    bne loop
-  exit
-    sta (trail_data_player_1),Y
-   rts
+  sta trail_x_pos_player_1,Y
+  sta trail_y_pos_player_1,Y
+  sta trail_char_player_1,y
+  sta trail_x_pos_player_2,Y
+  sta trail_y_pos_player_2,Y
+  sta trail_char_player_2,y
+  iny
+  cpy #TRAIL_MEMORY_LENGTH
+  bne loop
+
+  sta trail_index_player_1
+  sta trail_index_player_2
+  rts
 .)
 
 
-addTrailItem
+addTrailItemPlayer1
 .(
   ldy trail_index_player_1
-  cpy #31
-  bcc add
+  cpy #TRAIL_MEMORY_LENGTH
+  bne add
   ldy #0
   sty trail_index_player_1
   add
   lda trailItemX
-  sta (trail_data_player_1),Y
-  iny 
+  sta trail_x_pos_player_1,y
+
   lda trailItemY
-  sta (trail_data_player_1),Y
-  iny 
+  sta trail_y_pos_player_1,y
+  
   lda trailChar
-  sta (trail_data_player_1),Y
-  iny
-  sty trail_index_player_1
-  itemAdded
+  sta trail_char_player_1,y
+  
+  inc trail_index_player_1
   rts
 .)
 
-eraseTrail
+eraseTrailPlayer1
 .(
-  ldx #9; set the maximum number of iterations
+  ldx #TRAIL_MEMORY_LENGTH-1
   loop
-  ldy trail_index_player_1; get the current index in the trail data
-  bne getItem
-  bob
-  ldy #30 ; if we're at zero then move to the last item in the data
-  sty trail_index_player_1
-  :getItem
   ldy trail_index_player_1
-  dey
-  dex
-  beq done ; if we've done max iterations then we're done.
-  
-  lda (trail_data_player_1),Y
-  beq done ; if the trail data is empty then we're done
-  sta trailChar
-  ; erase char in trail history
-  lda #0 
-  sta (trail_data_player_1),Y
+  cpy #00
+  bne doItWithDec
+  ldy #TRAIL_MEMORY_LENGTH-1
+  sty trail_index_player_1
+  jmp doItWithNoDec
 
+  doItWithDec
   dey
-  lda (trail_data_player_1),y
-  sta trailItemY
-  
-  
-  dey
-  lda (trail_data_player_1),Y
+  sty trail_index_player_1
+  :doItWithNoDec
+  ;get xpos - if it is zero then the entry is empty and we're done
+  lda trail_x_pos_player_1,y
+  beq done
   sta trailItemX
 
-  sty trail_index_player_1
+  lda trail_y_pos_player_1,Y
+  sta trailItemY
 
-  ; restore the character in the play area
+  lda trail_char_player_1,Y
+  sta trailChar
+
+  ; restore the character for the trail item
   ldy trailItemY
   lda OffscreenLineLookupLo,y
   sta _line_start_lo
@@ -99,9 +88,10 @@ eraseTrail
   lda trailChar
   sta (_line_start),y
 
-  jmp getItem
-
-
+  dex
+  cpx #00
+  beq done
+  jmp loop
   
   done
     jsr initTrailMemory
