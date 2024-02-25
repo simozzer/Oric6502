@@ -44,3 +44,5 @@ KEY_DELETE_STR .byt "DELETE",0
 KEY_UNKNOWN_STR .byt "UNKNOWN",0
 
 PRESS_KEY_STR .byt "PRESS KEY",0
+
+key_column_bitmasks .byt 1,2,4,8,16,32,64,128

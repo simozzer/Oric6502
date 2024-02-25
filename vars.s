@@ -95,6 +95,7 @@ trailChar .byt 1
 ; <BEGIN KEYMAP WARNING>
 ; THESE KEY MAPPINGS ARE IN A FIXED ORDER TO MAKE WRITING
 ; THE KEY EDITOR EASIER.. DO NOT MODIFY
+keyboardRows
 key_up_player1_row .dsb 1
 key_down_player1_row .dsb 1
 key_left_player1_row .dsb 1
@@ -104,6 +105,7 @@ key_down_player2_row .dsb 1
 key_left_player2_row .dsb 1
 key_right_player2_row .dsb 1
 
+keyboardColMasks
 key_up_player1_col_mask .dsb 1
 key_down_player1_col_mask .dsb 1
 key_left_player1_col_mask .dsb 1

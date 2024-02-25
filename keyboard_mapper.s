@@ -76,6 +76,8 @@ runKeyboardMapper
     jmp k2
     edit
     jsr editSelectedKey
+    jsr displayAllKeyMappings
+    jsr highlightSelectedRow
     jsr keyDelay
   :k2
   jmp loop
@@ -90,8 +92,41 @@ _keyboard_mapper_selected_row_index
 .byt 0
 
 
+_selectedKey_matrix_index .byt 0
+_row_start_index .byt 0
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; getMatrixIndexForAsciiCode: returns the index within the
+; keyboard matrix for a given ascii code.
+; params:
+;    temp_param_0: ascii code to find
+; returns
+;    temp_return: the index of the ascii code within the matrix
+; ----------------------------------------------------------------
+getMatrixIndexForAsciiCode
+.(
+  ldy #00
+  :loop
+    cpy #64
+    beq done
+    lda _KeyAsciiUpper,Y
+    cmp temp_param_0
+    beq found
+    iny
+    jmp loop
+
+  found
+    sty temp_result
+
+  done 
+    rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 editSelectedKey
 .(
+  jsr keyDelay
   ldy _keyboard_mapper_selected_row_index
   lda _keyboard_mapper_row_indexes,y
   tay
@@ -118,18 +153,143 @@ editSelectedKey
 
   jsr keyDelay
   lda #01
+
   :loop
-  jsr _ReadKey
+  jsr _ReadKeyNoBounce
   cpx #00
-  bne setKey
+  beq loop
+  jsr keyDelay
+
+  setKey
+  // register x should now contain the ascii code of the character pressed.
+  // it also appears that register y contains the index+1 of the lookup 
+  // into the key matrix
+  // TODO translate key to index and check not used elsewhere
+  stx temp_param_0
+  jsr getMatrixIndexForAsciiCode
+  lda temp_result
+  sta _selectedKey_matrix_index
+  jsr getKeyUnique
+  lda temp_result
+  cmp #0
+  beq keyIsUnique
   jmp loop
 
+  keyIsUnique
+  doSetKey
+  lda _selectedKey_matrix_index
+  ; devide by 8 to find keyboard matrix row
+  lsr
+  lsr
+  lsr
+  clc
+  ; store matrix row value for selected item
+  ldy _keyboard_mapper_selected_row_index
+  sta keyboardRows,y 
 
+  ; multiply row by 8 
+  asl
+  asl
+  asl
+  sta _row_start_index
   
-  setKey
-  // TODO translate key to index and check not used elsewhere
+  ;subtract value from _selectedKey_matrix_index
+  lda _selectedKey_matrix_index
+  clc
+  sbc _row_start_index
+  tay
+  iny
+
+  ; a should now contain the index for the bitmask
+  lda key_column_bitmasks,Y
+  ldy _keyboard_mapper_selected_row_index
+  sta keyboardColMasks,y
+
+
+
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+selectedAsciiCode .byt 0
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; getKeyUnique : returns whether the key pressed, for the 
+; selected user action, is unique amongst the key presses 
+; (or the same as the existing key).
+; params:
+;   temp_param_0: ascii code selected for the key
+; returns:
+;   temp_result: will be set to zero id the key is unique 
+;      (or the same as the existing selection)
+;-------------------------------------------------------------
+getKeyUnique
+.(
+  ldy _keyboard_mapper_selected_row_index
+  sta temp_param_0
+  sta selectedAsciiCode
+  jsr getAsciiCode
+  lda temp_result
+  cmp selectedAsciiCode
+  bne checkOtherKeys
+
+  ;ascii code is the same as the current selection
+  lda #0
+  sta temp_result
+  rts
+
+  checkOtherKeys
+  ldy #0
+  loop
+    cpy _keyboard_mapper_selected_row_index
+    beq skip
+    sty temp_param_0
+    jsr getAsciiCode
+    lda temp_result
+    cmp selectedAsciiCode
+    beq exists
+
+  skip
+    iny
+    cpy #08
+    bne loop
+
+    ; we've reached the end with no match
+    lda #0
+    sta temp_result
+    rts
+  exists
+    lda #1
+    sta temp_result
+    rts
+
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; getAsciiCode: returns the ascii code for a given user action
+; index
+; params:
+;   temp_param_0: the index of the user action
+; returns:
+;   temp_result: the asctii code assigned to the user action
+; ------------------------------------------------------------
+getAsciiCode
+.(
+  tya
+  pha
+  ldy temp_param_0;
+  lda keyboardRows,Y
+  sta temp_param_0
+  lda keyboardColMasks,y
+  sta temp_param_1
+  jsr getAsciiCodeForKeyPosition ; sets temp_result to asciiCode
+  pla
+  tay
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 highlightSelectedRow
 .(
@@ -458,7 +618,10 @@ displayKeyMapping
 
 getAsciiCodeForKeyPosition
 .(
-lda #00
+  tya
+  pha
+
+  lda #00
   clc
   ldy temp_param_0
   decRow
@@ -489,6 +652,9 @@ lda #00
   tay
   lda _KeyAsciiUpper,Y
   sta temp_result
+
+  pla
+  tay
 
   rts
 .)
