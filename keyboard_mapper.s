@@ -73,13 +73,25 @@ runKeyboardMapper
     cmp #$20
     and #$20
     bne edit
-    jmp k2
+    beq k2
     edit
     jsr editSelectedKey
     jsr displayAllKeyMappings
     jsr highlightSelectedRow
     jsr keyDelay
-  :k2
+    jmp loop
+  k2
+    ldy #6
+    lda _KeyMatrix,Y
+    cmp #$40
+    and #$40
+    bne quit
+    jmp loop
+    quit
+    jsr keyDelay
+    rts
+
+  k3
   jmp loop
   rts
 .)
@@ -155,7 +167,9 @@ editSelectedKey
   lda #01
 
   :loop
+  sei
   jsr _ReadKeyNoBounce
+  cli
   cpx #00
   beq loop
   jsr keyDelay
@@ -204,8 +218,6 @@ editSelectedKey
   lda key_column_bitmasks,Y
   ldy _keyboard_mapper_selected_row_index
   sta keyboardColMasks,y
-
-
 
   rts
 .)

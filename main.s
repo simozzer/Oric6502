@@ -343,6 +343,7 @@ printStartScreen
 ; ------------------------------------------------------------------------------
 waitToStart
 .(
+    :redo
     ; Display start screen
     jsr printStartScreen
     jsr smallDelay
@@ -459,6 +460,10 @@ waitToStart
     cmp #01
     bne loop
     jsr runKeyboardMapper
+    jsr MakeCharacters_1
+    ; TODO -- rerender game area
+    jsr keyDelay
+    jmp redo
 
     loop
     jmp waitLoop
