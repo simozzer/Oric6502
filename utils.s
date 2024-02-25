@@ -253,4 +253,99 @@ _GetRand
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; CopyCharsFromROM: reset the character set for text mode using data from the ROM
+; -------------------------------------------------------------------------------
+CopyCharsFromROM
+.(
+  lda #$78
+  sta _copy_mem_src_lo
+  lda #$FC
+  sta _copy_mem_src_hi
+
+  lda #$f8
+  sta _copy_mem_count_lo
+  lda #$03
+  sta _copy_mem_count_hi
+
+  lda #$00
+  sta _copy_mem_dest_lo
+  lda #$B5
+  sta _copy_mem_dest_hi
+
+  jsr CopyMemory
+
+  rts
+.)
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; printStr: Print at null termintaed string at a given position on the
+; screen. 
+; This is a modified version of the AdvancedPrint function found in the
+; OSDK samples for C
+; Params: 
+;   params_0: x position
+;   params_1: y position
+;   params_2: address of string lo
+;   params_3: address of string hi
+; --------------------------------------------------------------------
+printStr
+.(
+	
+	; Initialise display adress
+	; this uses self-modifying code
+	; (the $0123 is replaced by display adress)
+	
+	; The idea is to get the Y position from the stack,
+	; and use it as an index in the two adress tables.
+	; We also need to add the value of the X position,
+	; also taken from the stack to the resulting value.
+	
+
+	lda temp_param_1		; Access Y coordinate
+	tax
+	
+	lda ScreenLineLookupLo,x	; Get the LOW part of the screen adress
+	clc						; Clear the carry (because we will do an addition after)
+	adc temp_param_0				; Add X coordinate
+	sta write+1
+	lda ScreenLineLookupHi,x	; Get the HIGH part of the screen adress
+	adc #0					; Eventually add the carry to complete the 16 bits addition
+	sta write+2				
+
+
+
+	; Initialise message adress using the stack parameter
+	; this uses self-modifying code
+	; (the $0123 is replaced by message adress)
+	lda temp_param_2
+	sta read+1
+	iny
+	lda temp_param_3
+	sta read+2
+
+
+	; Start at the first character
+	ldx #0
+loop_char
+
+	; Read the character, exit if it's a 0
+read
+	lda $0123,x
+	beq end_loop_char
+
+	; Write the character on screen
+write
+	sta $0123,x
+
+	; Next character, and loop
+	inx
+	jmp loop_char  
+
+	; Finished !
+end_loop_char
+	rts
+.)
+; --------------------------------------------------------------------
 

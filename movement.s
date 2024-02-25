@@ -2,12 +2,12 @@
 processKeyboardPlayer1
 .(
     
-    lda _KeyRowArrows
-    beq keyboardDone
+    ldy key_left_player1_row
+    lda _KeyMatrix,y
+    beq nextKey0
 
-    tax
-    and #$20
-    cmp #$20; #KEY_LEFT_ARROW
+    and key_left_player1_col_mask
+    cmp key_left_player1_col_mask
     bne nextKey0
     lda _player1_direction
     cmp #PLAYER_DIRECTION_RIGHT
@@ -18,9 +18,11 @@ processKeyboardPlayer1
     rts
 
 nextKey0
-    txa
-    and #$80; #KEY_RIGHT_ARROW
-    cmp #$80
+    ldy key_right_player1_row
+    lda _KeyMatrix,y
+    beq nextKey1
+    and key_right_player1_col_mask
+    cmp key_right_player1_col_mask
     bne nextKey1
     lda _player1_direction
     cmp #PLAYER_DIRECTION_LEFT
@@ -31,9 +33,10 @@ nextKey0
     rts
 
 nextKey1
-    txa
-    and #$40; #KEY_DOWN_ARROW
-    cmp #$40
+    ldy key_down_player1_row
+    lda _KeyMatrix,y
+    and key_down_player1_col_mask
+    cmp key_down_player1_col_mask
     bne nextKey2
     lda _player1_direction
     cmp #PLAYER_DIRECTION_UP
@@ -44,9 +47,10 @@ nextKey1
     rts
 
 nextKey2
-    txa
-    and #$08;#KEY_UP_ARROW
-    cmp #$08
+    ldy key_up_player1_row
+    lda _KeyMatrix,y
+    and key_up_player1_col_mask
+    cmp key_up_player1_col_mask
     bne keyboardDone
     lda _player1_direction
     cmp #PLAYER_DIRECTION_DOWN
@@ -206,6 +210,60 @@ checkDone
     lda #PLAYER_STATUS_DEAD_PLAYER_1
     sta _player_status
     jsr bigDelay
+    rts
+.)
+
+
+setupDefaultKeys
+.(
+    lda #LEFT_KEY_PLAYER1_ROW
+    sta key_left_player1_row
+
+    lda #RIGHT_KEY_PLAYER1_ROW
+    sta key_right_player1_row
+
+    lda #UP_KEY_PLAYER1_ROW
+    sta key_up_player1_row
+
+    lda #DOWN_KEY_PLAYER1_ROW
+    sta key_down_player1_row
+
+    lda #LEFT_KEY_PLAYER1_COL_MASK
+    sta key_left_player1_col_mask
+
+    lda #RIGHT_KEY_PLAYER1_COL_MASK
+    sta key_right_player1_col_mask
+
+    lda #UP_KEY_PLAYER1_COL_MASK
+    sta key_up_player1_col_mask
+
+    lda #DOWN_KEY_PLAYER1_COL_MASK
+    sta key_down_player1_col_mask
+
+
+    lda #LEFT_KEY_PLAYER2_ROW
+    sta key_left_player2_row
+
+    lda #RIGHT_KEY_PLAYER2_ROW
+    sta key_right_player2_row
+
+    lda #UP_KEY_PLAYER2_ROW
+    sta key_up_player2_row
+
+    lda #DOWN_KEY_PLAYER2_ROW
+    sta key_down_player2_row
+
+    lda #LEFT_KEY_PLAYER2_COL_MASK
+    sta key_left_player2_col_mask
+
+    lda #RIGHT_KEY_PLAYER2_COL_MASK
+    sta key_right_player2_col_mask
+
+    lda #UP_KEY_PLAYER2_COL_MASK
+    sta key_up_player2_col_mask
+
+    lda #DOWN_KEY_PLAYER2_COL_MASK
+    sta key_down_player2_col_mask
     rts
 .)
 

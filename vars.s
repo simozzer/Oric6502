@@ -32,6 +32,7 @@ _last_key .dsb 1
 temp_param_0    .dsb 1
 temp_param_1    .dsb 1
 temp_param_2    .dsb 1
+temp_param_3    .dsb 1
 temp_result     .dsb 1
 
 _tracker_step_index .dsb 1; The index of the note to be played
@@ -90,6 +91,29 @@ trail_index_player_2 .dsb 1
 trailItemX .byt 1
 trailItemY .byt 1
 trailChar .byt 1
+
+; <BEGIN KEYMAP WARNING>
+; THESE KEY MAPPINGS ARE IN A FIXED ORDER TO MAKE WRITING
+; THE KEY EDITOR EASIER.. DO NOT MODIFY
+key_up_player1_row .dsb 1
+key_down_player1_row .dsb 1
+key_left_player1_row .dsb 1
+key_right_player1_row .dsb 1
+key_up_player2_row .dsb 1
+key_down_player2_row .dsb 1
+key_left_player2_row .dsb 1
+key_right_player2_row .dsb 1
+
+key_up_player1_col_mask .dsb 1
+key_down_player1_col_mask .dsb 1
+key_left_player1_col_mask .dsb 1
+key_right_player1_col_mask .dsb 1
+key_up_player2_col_mask .dsb 1
+key_down_player2_col_mask .dsb 1
+key_left_player2_col_mask .dsb 1
+key_right_player2_col_mask .dsb 1
+;<END KEYMAP WARNING>
+
 
 screen_area_width .byt 0
 screen_area_height .byt 0

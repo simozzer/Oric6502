@@ -10,6 +10,8 @@ StartProg
 	lda #8+2	
 	sta $26a
 
+    jsr setupDefaultKeys
+
     jsr _InitIRQ
  
     jsr clearScreen    
@@ -252,6 +254,7 @@ runTopToBottom
 startScreenInstructions_0 .byt PAPER_YELLOW, INK_RED,   "    PRESS SPACE TO START      ", PAPER_BLACK, INK_GREEN, 0
 startScreenInstructions_1 .byt PAPER_YELLOW, INK_RED,   "PRESS S TO TOGGLE SCREEN MODE ", PAPER_BLACK, INK_GREEN, 0
 startScreenInstructions_2 .byt PAPER_YELLOW, INK_RED,   "   PRESS M TO TOGGLE MUSIC    ", PAPER_BLACK, INK_GREEN, 0
+startScreenInstructions_3 .byt PAPER_YELLOW, INK_RED,   "    PRESS K TO SETUP KEYS     ", PAPER_BLACK, INK_GREEN, 0
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -305,6 +308,24 @@ printStartScreen
     .(
         loop
         lda startScreenInstructions_2,x
+        beq nextLine2
+        sta (_line_start),Y
+        inx
+        iny
+        jmp loop
+    .)
+
+    nextLine2
+    ldy #13
+    lda ScreenLineLookupLo,y
+    sta _line_start_lo
+    lda ScreenLineLookupHi,Y
+    sta _line_start_hi
+    ldy #5
+    ldx #0
+    .(
+        loop
+        lda startScreenInstructions_3,x
         beq done
         sta (_line_start),Y
         inx
@@ -400,14 +421,13 @@ waitToStart
     jmp waitLoop
 
     checkM
-
     ; lookup the M key in the key matrix
     ldy #02
     lda _KeyMatrix,Y
     and #01
     cmp #01
     beq toggleSound
-    bne loop
+    bne checkK
 
     toggleSound
     jsr keyDelay
@@ -431,6 +451,14 @@ waitToStart
 
     initMusic
     jsr startMusic
+
+    checkK
+    ldy #03
+    lda _KeyMatrix,Y
+    and #01
+    cmp #01
+    bne loop
+    jsr runKeyboardMapper
 
     loop
     jmp waitLoop
