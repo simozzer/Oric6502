@@ -454,20 +454,20 @@ renderPlayer
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
 
+    lda _player2_x
+    sta temp_param_0
+    lda _player2_y
+    sta temp_param_1
+    jsr getCollisionInfo
+    lda temp_result
+
     ; check for fatal collision
-    ldy _player2_x
-    lda (_maze_line_start),Y
-    and #127
-    sbc #(MAX_NON_FATAL_CHAR_CODE+1)
-    bpl playerDead 
+    cmp #COLLISION_TYPE_FATAL
+    beq playerDead 
 
     ; check for collision with black hole
-    ldy _player2_x
-    lda (_maze_line_start),Y
-    cmp #BLACK_HOLE_TOP_LEFT_CHAR_CODE
-    bcc noBlackHole
-    cmp #BLACK_HOLE_BOTTOM_RIGHT_CHAR_CODE+1
-    bcs noBlackHole
+    cmp #COLLISION_TYPE_BLACK_HOLE
+    bne noBlackHole
 
     ;process black hole collision
     .(
@@ -493,7 +493,7 @@ renderPlayer
     
     noBlackHole
     ; check for collision with eraser
-    cmp #ERASER_CHAR_CODE
+    cmp #COLLISION_TYPE_ERASER
     bne storeAndPlot1
     jsr eraseTrailPlayer2
     lda _player2_x

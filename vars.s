@@ -28,6 +28,12 @@ _tracker_bar_step_index .dsb 1
 
 _last_key .dsb 1
 
+
+temp_param_0    .dsb 1
+temp_param_1    .dsb 1
+temp_param_2    .dsb 1
+temp_result     .dsb 1
+
 _tracker_step_index .dsb 1; The index of the note to be played
 _tracker_step_cycles_remaining .dsb 1; Decremented each time the interrupt is called.
 _tracker_step_length .dsb 1; Length of each 16th note (speed of the tune).
@@ -106,6 +112,7 @@ game_area_y .byt 0
 
 rand_low		.byt 1		;// Random number generator, low part
 rand_high		.byt 1		;// Random number generator, high part
+
 
 
 _zp_end_

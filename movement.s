@@ -1,6 +1,7 @@
 
 processKeyboardPlayer1
 .(
+    
     lda _KeyRowArrows
     beq keyboardDone
 
@@ -97,22 +98,20 @@ renderPlayer
     sta _maze_line_start_hi
 
     ; check for collision with fatal object
-    ldy _player1_x
-    lda (_maze_line_start),Y
-    and #127
-
-    cmp #(MAX_NON_FATAL_CHAR_CODE+1)
-    bpl playerDead
+    lda _player1_x
+    sta temp_param_0
+    lda _player1_y
+    sta temp_param_1
+    jsr getCollisionInfo
+    lda temp_result
+    cmp #COLLISION_TYPE_FATAL
+    beq playerDead
 
 
     ; check for collision with black hole
-    ldy _player1_x
-    lda (_maze_line_start),Y
-    cmp #BLACK_HOLE_TOP_LEFT_CHAR_CODE
-    bcc noBlackHole
-    cmp #BLACK_HOLE_BOTTOM_RIGHT_CHAR_CODE+1
-    bcs noBlackHole
-
+    cmp #COLLISION_TYPE_BLACK_HOLE
+    bne noBlackHole
+    
     ;process black hole collision
     .(
     getX
@@ -136,7 +135,7 @@ renderPlayer
 
     noBlackHole
     ; check for collision with eraser
-    cmp #ERASER_CHAR_CODE
+    cmp #COLLISION_TYPE_ERASER
     bne storeAndPlot
     jsr eraseTrailPlayer1
     lda _player1_x
