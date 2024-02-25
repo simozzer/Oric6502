@@ -1,5 +1,4 @@
 
-
 StartProg
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Main program
@@ -10,6 +9,8 @@ StartProg
     ;// NOKEYCLICK+SCREEN no cursor
 	lda #8+2	
 	sta $26a
+
+    jsr _InitIRQ
  
     jsr clearScreen    
     jsr initTrailMemory 
@@ -39,7 +40,7 @@ StartProg
 
 
 startagain
-    ;jsr initTrailMemory
+    jsr initTrailMemory
     jsr MazeRender
     jsr printScrollInstructions
     jsr clearScreen
@@ -195,6 +196,8 @@ runSideBySide
     rts
     .)
 
+
+
 runTopToBottom
 .(
     // set initial maze position
@@ -324,16 +327,42 @@ waitToStart
     jsr smallDelay
 
     :waitLoop
-    ldx KEY_PRESS_LOOKUP
-    cpx _last_key
-    beq waitLoop
-    stx _last_key
+    ; use the modified keyoard handler to check for key presses
 
-    cpx #KEY_SPACE
-    beq startGame
+    ; lookup the space key in the key matrix
+    ldy #0
+    lda _KeyRowArrows,y;
+    and #01; cpx #KEY_SPACE
+    bne startGame
+    beq checkS
 
-    cpx #KEY_S
-    bne checkM
+    startGame
+    ;jsr initTrailMemory
+    lda #GAME_MODE_RUNNING
+    sta _game_mode
+
+    lda _display_mode
+    cmp #DISPLAY_MODE_FULLSCREEN
+    bne checkSplitter
+    rts
+
+    checkSplitter
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE
+    bne nextSplitter
+    jsr renderSideBySideSplitter
+    rts
+
+    nextSplitter
+    jsr renderTopBottomSplitter
+    rts
+
+    checkS
+    ; lookup the S key in the key matrix
+    ldy #6
+    lda _KeyMatrix,Y
+    and #64 ;#KEY_S
+    beq checkM
+    jsr keyDelay
     lda _display_mode
     cmp #DISPLAY_MODE_SIDE_BY_SIDE
     beq nextMode_0
@@ -371,9 +400,17 @@ waitToStart
     jmp waitLoop
 
     checkM
-    cpx #KEY_M
+
+    ; lookup the M key in the key matrix
+    ldy #02
+    lda _KeyMatrix,Y
+    and #01
+    cmp #01
+    beq toggleSound
     bne loop
 
+    toggleSound
+    jsr keyDelay
     sei
 
     lda ROM_CHECK_ADDR; // EDAD contains 49 (ascii code for 1 with rom 1.1)
@@ -397,26 +434,7 @@ waitToStart
 
     loop
     jmp waitLoop
-    
-    startGame
-    ;jsr initTrailMemory
-    lda #GAME_MODE_RUNNING
-    sta _game_mode
 
-    lda _display_mode
-    cmp #DISPLAY_MODE_FULLSCREEN
-    bne checkSplitter
-    rts
-    
-    checkSplitter
-    cmp #DISPLAY_MODE_SIDE_BY_SIDE
-    bne nextSplitter
-    jsr renderSideBySideSplitter
-    rts
-
-    nextSplitter
-    jsr renderTopBottomSplitter
-    rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

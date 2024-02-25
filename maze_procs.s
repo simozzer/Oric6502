@@ -33,7 +33,7 @@ maze_start_top
     sta _maze_line_start_hi
 
 :getMazeByte
-    jsr _GetRand
+    ;jsr _GetRand
 
     ; find the correct byte from row by dividing col b y 8
     ldy _maze_left

@@ -1,12 +1,12 @@
 
 processKeyboardPlayer1
 .(
-    ldx KEY_PRESS_LOOKUP  
-
-    cpx #KEY_PRESS_NONE
+    lda _KeyRowArrows
     beq keyboardDone
-  
-    cpx #KEY_LEFT_ARROW
+
+    tax
+    and #$20
+    cmp #$20; #KEY_LEFT_ARROW
     bne nextKey0
     lda _player1_direction
     cmp #PLAYER_DIRECTION_RIGHT
@@ -17,7 +17,9 @@ processKeyboardPlayer1
     rts
 
 nextKey0
-    cpx #KEY_RIGHT_ARROW
+    txa
+    and #$80; #KEY_RIGHT_ARROW
+    cmp #$80
     bne nextKey1
     lda _player1_direction
     cmp #PLAYER_DIRECTION_LEFT
@@ -28,7 +30,9 @@ nextKey0
     rts
 
 nextKey1
-    cpx #KEY_DOWN_ARROW
+    txa
+    and #$40; #KEY_DOWN_ARROW
+    cmp #$40
     bne nextKey2
     lda _player1_direction
     cmp #PLAYER_DIRECTION_UP
@@ -39,7 +43,9 @@ nextKey1
     rts
 
 nextKey2
-    cpx #KEY_UP_ARROW
+    txa
+    and #$08;#KEY_UP_ARROW
+    cmp #$08
     bne keyboardDone
     lda _player1_direction
     cmp #PLAYER_DIRECTION_DOWN

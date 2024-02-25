@@ -26,10 +26,10 @@ TODO (in approximate order):
 - ~~When scrolling move the existing data on screen, and just add in the new column or row~~ (I've decided not to do this, as any moving items will be plotted directly to the offscreen buffer - will make the code easier)
 - ~~test.~~ I'm happy with the performance of things higher up this list but will continue to test as I add more code and features.
 - ~~adjust routines to handle split screen (both vertical and horizontal)~~ 
-- implement fast keyboard handling to scroll each view of the maze (and disable ROM interupt for these).
+- ~~implement fast keyboard handling~~ to scroll each view of the maze (and disable ROM interupt for these). Used keyboard routines (as described here)[https://osdk.org/index.php?page=articles&ref=ART20]
 - test again.
-- ~~Playback music created using my tracker program (Fourbar)~~
-- implement 'chararacter designer', to allow creation of custom chars.
+- ~~Playback music created using my tracker program (Fourbar)~~(Link to Fourbar)[https://github.com/simozzer/FourBar]
+- ~~implement 'chararacter designer', to allow creation of custom chars.~~ (done as a separate tool)[https://github.com/simozzer/OricCharacterBuilder]
 - ~~think of a playable game using the code~~ (For now I'm going with the idea of tron/light-cycles)
 - implement it.
 - test
