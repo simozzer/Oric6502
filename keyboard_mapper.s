@@ -176,9 +176,7 @@ editSelectedKey
 
   setKey
   // register x should now contain the ascii code of the character pressed.
-  // it also appears that register y contains the index+1 of the lookup 
-  // into the key matrix
-  // TODO translate key to index and check not used elsewhere
+  // Check that key selection is acceptable (i.e. not used elsewhere)
   stx temp_param_0
   jsr getMatrixIndexForAsciiCode
   lda temp_result
@@ -192,7 +190,7 @@ editSelectedKey
   keyIsUnique
   doSetKey
   lda _selectedKey_matrix_index
-  ; devide by 8 to find keyboard matrix row
+  ; divide by 8 to find keyboard matrix row
   lsr
   lsr
   lsr
@@ -237,11 +235,15 @@ selectedAsciiCode .byt 0
 ;-------------------------------------------------------------
 getKeyUnique
 .(
-  ldy _keyboard_mapper_selected_row_index
-  sta temp_param_0
+  lda temp_param_0
   sta selectedAsciiCode
-  jsr getAsciiCode
+
+  ;find the stored ascii code for the currently selected row
+  ldy _keyboard_mapper_selected_row_index
+  sty temp_param_0
+  jsr getAsciiCodeForActionIndex
   lda temp_result
+
   cmp selectedAsciiCode
   bne checkOtherKeys
 
@@ -256,7 +258,7 @@ getKeyUnique
     cpy _keyboard_mapper_selected_row_index
     beq skip
     sty temp_param_0
-    jsr getAsciiCode
+    jsr getAsciiCodeForActionIndex
     lda temp_result
     cmp selectedAsciiCode
     beq exists
@@ -280,14 +282,14 @@ getKeyUnique
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; getAsciiCode: returns the ascii code for a given user action
+; getAsciiCodeForActionIndex: returns the ascii code for a given user action
 ; index
 ; params:
 ;   temp_param_0: the index of the user action
 ; returns:
 ;   temp_result: the asctii code assigned to the user action
 ; ------------------------------------------------------------
-getAsciiCode
+getAsciiCodeForActionIndex
 .(
   tya
   pha

@@ -33,6 +33,8 @@ TODO (in approximate order):
 - ~~think of a playable game using the code~~ (For now I'm going with the idea of tron/light-cycles)
 - implement it.
 - test
+
+Would be nice to 
 - compress maze data (possibly using an external compression routine lz77)
 - decompress maze data (lz77?)
 - apply decompression to sprites, maze and sound.

@@ -44,7 +44,7 @@ StartProg
 startagain
     jsr initTrailMemory
     jsr MazeRender
-    jsr printScrollInstructions
+    jsr clearStatusLine
     jsr clearScreen
     jsr SetPaper
     jsr SetInk
@@ -359,23 +359,10 @@ waitToStart
     beq checkS
 
     startGame
-    ;jsr initTrailMemory
+    jsr initTrailMemory
     lda #GAME_MODE_RUNNING
     sta _game_mode
-
-    lda _display_mode
-    cmp #DISPLAY_MODE_FULLSCREEN
-    bne checkSplitter
-    rts
-
-    checkSplitter
-    cmp #DISPLAY_MODE_SIDE_BY_SIDE
-    bne nextSplitter
-    jsr renderSideBySideSplitter
-    rts
-
-    nextSplitter
-    jsr renderTopBottomSplitter
+    jsr renderGameArea
     rts
 
     checkS
@@ -393,32 +380,24 @@ waitToStart
 
     lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
-    jsr setMetricsForLeftScreen
-    jsr plotArea
-    jsr setMetricsForRightScreen
-    jsr plotArea
-    jsr renderSideBySideSplitter
-    jmp plotStartScreen
-
+    jmp render
 
     :nextMode_0
     lda #DISPLAY_MODE_FULLSCREEN
     sta _display_mode
-    jsr setMetricsForFullScreen
-    jsr plotArea
-    jmp plotStartScreen
+    jmp render
 
     :nextMode_1
     lda #DISPLAY_MODE_TOP_TO_BOTTOM
     sta _display_mode
-    jsr setMetricsForTopScreen
-    jsr plotArea
-    jsr setMetricsForBottomScreen
-    jsr plotArea
-    jsr renderTopBottomSplitter
+ 
+    :render
+    jsr renderGameArea
 
     :plotStartScreen
     jsr printStartScreen
+
+    jsr keyDelay
     jmp waitLoop
 
     checkM
@@ -461,7 +440,9 @@ waitToStart
     bne loop
     jsr runKeyboardMapper
     jsr MakeCharacters_1
-    ; TODO -- rerender game area
+    jsr SetPaper
+    jsr SetInk
+    jsr renderGameArea
     jsr keyDelay
     jmp redo
 
@@ -471,20 +452,40 @@ waitToStart
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; printScrollInstructions: 
-;   Print some instructions in the status line at the top of the screen
-; ------------------------------------------------------------------------------    
-:printScrollInstructions                                 
-    lda #<ScrollInstructions
-    sta loadMessageLoop+1
-    lda #>ScrollInstructions
-    sta loadMessageLoop+2
-    jsr printStatusMessage
-    rts
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
+; renderGameArea: 
+;   Render the game area for the current display mode
+; ------------------------------------------------------------------------------ 
+renderGameArea
+.(
+    lda _display_mode
+    beq renderFullScreen
 
+    cmp #DISPLAY_MODE_SIDE_BY_SIDE
+    beq renderSideBySide
+
+    ; render top to bottom
+    jsr setMetricsForTopScreen
+    jsr plotArea
+    jsr setMetricsForBottomScreen
+    jsr plotArea
+    jsr renderTopBottomSplitter
+    rts
+
+    renderFullScreen
+    jsr setMetricsForFullScreen
+    jsr plotArea
+    rts
+
+    renderSideBySide
+    jsr setMetricsForLeftScreen
+    jsr plotArea
+    jsr setMetricsForRightScreen
+    jsr plotArea
+    jsr renderSideBySideSplitter
+    rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -612,8 +613,6 @@ stopMusic
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
