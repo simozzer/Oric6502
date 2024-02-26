@@ -61,6 +61,14 @@ startagain
     lda #PLAYER_STATUS_BOTH_ALIVE
     sta _player_status
 
+    ; plot a safe zone around the starting position
+    lda _player1_x
+    sta center_x
+    lda _player1_y
+    sta center_y
+    jsr plotSafeSpace
+
+    
     // render player
     ldy _player1_y
     lda OffscreenLineLookupLo,Y
@@ -80,6 +88,14 @@ startagain
     sta _player2_y
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
+
+    ; plot a safe zone around the starting position
+    lda _player2_x
+    sta center_x
+    lda _player2_y
+    sta center_y
+    jsr plotSafeSpace
+
 
     setMode
     lda _display_mode

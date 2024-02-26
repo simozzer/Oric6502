@@ -64,7 +64,6 @@ maze_start_top
     jmp plot_offscreen
 :nowall
     ; plot some empty space
-    ;lda #32
 
     ; plot some random 'grains' to give a background texture to ensure a feeling of motion when scrolling through 'empty' space
     jsr _GetRand
@@ -288,6 +287,79 @@ plotRandomErasers
     .)
     done 
     rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; plotSafeSpace: fill an area with 'safe characters'. This is used to ensure that
+;    when the game starts a player has a small 'safe-zone' so that they don't
+;    crash immediately.
+; params : center_x, center_y
+;-------------------------------------------------------------------------------
+plotSafeSpace
+.(
+    lda center_x
+    clc
+    adc #08
+    sta last_x+1
+
+    lda center_x
+    clc
+    sbc #08
+    sta startx +1
+
+    lda center_y
+    clc
+    adc #08
+    sta last_y+1
+
+    lda center_y
+    clc
+    sbc #08
+    sta center_y
+
+    tay
+    loopy
+        ;ldy center_y
+        lda OffscreenLineLookupLo,Y 
+        sta _line_start_lo
+        lda OffscreenLineLookupHi,Y
+        sta _line_start_hi
+
+        :startx
+        ldy #00; will be self modified
+
+        loopx
+        tya ; save y param, as this is modified in _GetRand
+        pha
+
+        ; get a random 'grain' to plot
+        jsr _GetRand
+        lda rand_low;
+        and #15
+        adc #97
+        sta grain+1
+
+        pla ; restore y param
+        tay
+        :grain
+        lda #$ff; will be self modified
+        sta (_line_start),y
+        iny
+        :last_x
+        cpy #$ff; will be self modified
+        bne loopx
+
+        ldy center_y
+        iny 
+        sty center_y
+        :last_y
+        cpy #$ff; will be self modified
+        bne loopy
+
+    rts
+
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
