@@ -1,5 +1,5 @@
 ;// THIS IS FOR THE PLAYER CONTROLLED BY THE COMPUTER
-updateMovementPlayer2 
+updateMovementComputerPlayer 
 .(
     lda _player2_direction
     cmp #PLAYER_DIRECTION_LEFT
@@ -556,9 +556,9 @@ checkDone
     
     :updateStatus
     ; print message on status line
-    lda #<ComputerDeadMessage
+    lda #<Player2DeadMessage
     sta loadMessageLoop+1
-    lda #>ComputerDeadMessage
+    lda #>Player2DeadMessage
     sta loadMessageLoop+2
     jsr printStatusMessage
 

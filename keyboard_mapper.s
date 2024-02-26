@@ -341,7 +341,7 @@ highlightSelectedRow
     sta _line_start_hi
 
     ldy #18
-    lda #PAPER_BLUE
+    lda #PAPER_YELLOW
     sta (_line_start),Y
     
     rts

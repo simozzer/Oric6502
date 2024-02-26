@@ -210,12 +210,12 @@ plotRandomBlackHoles
         jsr _GetRand
         lda rand_low
         cmp #249
-        bcs no_skip
+        bcs skip
         sta _plot_ch_x
         jsr _GetRand
         lda rand_low
         cmp #74
-        bcs no_skip
+        bcs skip
         clc
         adc #3
         sta _plot_ch_y
@@ -248,7 +248,6 @@ plotRandomBlackHoles
 
         skip
         dec y_temp
-        no_skip
         jmp loop
     .)
     rts
@@ -268,12 +267,12 @@ plotRandomErasers
         lda rand_low
         sta _plot_ch_x
         cmp #253
-        bpl skip
+        bcs skip
         adc #01
         jsr _GetRand
         lda rand_low
         cmp #78
-        bpl skip
+        bcs skip
         adc #2
         tay
         lda OffscreenLineLookupLo,Y

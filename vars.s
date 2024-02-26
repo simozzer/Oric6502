@@ -139,6 +139,7 @@ game_area_y .byt 0
 rand_low		.byt 1		;// Random number generator, low part
 rand_high		.byt 1		;// Random number generator, high part
 
+player_count .byt 1
 
 
 _zp_end_

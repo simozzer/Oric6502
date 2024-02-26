@@ -2,8 +2,8 @@
 
 :WaitMessage .byt "BUILDING GAME AREA PLEASE WAIT",0
 
-:DeadMessage .byt "YOU ARE DEAD",0
+:Player1DeadMessage .byt "PLAYER 1 CRASHED",0
 
-:ComputerDeadMessage .byt "YOU KILLED THE COMPUTER", 0
+:Player2DeadMessage .byt "PLAYER 2 CRASHED", 0
 
 :StartInstructions .byt "PRESS SPACE TO START",0

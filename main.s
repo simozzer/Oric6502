@@ -23,9 +23,10 @@ StartProg
     jsr SetInk
     jsr printWaitMessage
 
+    lda #PLAYER_COUNT_1
+    sta player_count
 
     // The value here will set the rendering mode
-    ;lda #DISPLAY_MODE_TOP_TO_BOTTOM
     lda #DISPLAY_MODE_SIDE_BY_SIDE
     sta _display_mode
     sta _last_display_mode
@@ -149,8 +150,16 @@ runFullScreen
     jsr updateMovementPlayer1
 
 
+    lda player_count
+    beq _updateMovementComputerPlayer
+    jsr processKeyboardplayer2
     jsr updateMovementPlayer2
+    jmp afterMove
 
+    _updateMovementComputerPlayer
+    jsr updateMovementComputerPlayer
+
+    :afterMove
     jsr smallDelay
     
     lda _player_status
@@ -187,7 +196,16 @@ runSideBySide
 
     lda _game_mode ; don't update position if game is not running
     bne render1
+    
+    lda player_count
+    beq _updateMovementComputerPlayer
+    jsr processKeyboardplayer2
     jsr updateMovementPlayer2
+    clc
+    bcc render1
+
+    _updateMovementComputerPlayer
+    jsr updateMovementComputerPlayer
 
     render1
     jsr plotArea 
@@ -239,7 +257,16 @@ runTopToBottom
 
     lda _game_mode ; don't update position if game is not running
     bne render1
+    
+    lda player_count
+    beq _updateMovementComputerPlayer
+    jsr processKeyboardplayer2
     jsr updateMovementPlayer2
+    clc
+    bcc render1
+
+    _updateMovementComputerPlayer
+    jsr updateMovementComputerPlayer
 
     render1
     jsr plotArea 
@@ -266,7 +293,8 @@ runTopToBottom
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
+startScreenInstructions_1player .byt PAPER_YELLOW, INK_RED,   "  1 PLAYER PRESS T TO TOGGLE  ", PAPER_BLACK, INK_GREEN, 0
+startScreenInstructions_2players .byt PAPER_YELLOW, INK_RED,   " 2 PLAYERS PRESS T TO TOGGLE  ", PAPER_BLACK, INK_GREEN, 0
 startScreenInstructions_0 .byt PAPER_YELLOW, INK_RED,   "    PRESS SPACE TO START      ", PAPER_BLACK, INK_GREEN, 0
 startScreenInstructions_1 .byt PAPER_YELLOW, INK_RED,   "PRESS S TO TOGGLE SCREEN MODE ", PAPER_BLACK, INK_GREEN, 0
 startScreenInstructions_2 .byt PAPER_YELLOW, INK_RED,   "   PRESS M TO TOGGLE MUSIC    ", PAPER_BLACK, INK_GREEN, 0
@@ -279,6 +307,31 @@ startScreenInstructions_3 .byt PAPER_YELLOW, INK_RED,   "    PRESS K TO SETUP KE
 ; ------------------------------------------------------------------------------
 printStartScreen
 .(
+    ldy #9
+    lda ScreenLineLookupLo,y
+    sta _line_start_lo
+    lda ScreenLineLookupHi,Y
+    sta _line_start_hi
+    ldy #5
+    ldx #0
+    .(
+        loop
+        lda player_count
+        bne display_player_count_2
+        lda startScreenInstructions_1player,x
+        jmp checkEndOfLine
+        
+        display_player_count_2
+        lda startScreenInstructions_2players,x
+        
+        :checkEndOfLine    
+        beq nextLine_
+        sta (_line_start),Y
+        inx
+        iny
+        jmp loop
+    .)
+    nextLine_
     ldy #10
     lda ScreenLineLookupLo,y
     sta _line_start_lo
@@ -362,7 +415,7 @@ waitToStart
     :redo
     ; Display start screen
     jsr printStartScreen
-    jsr smallDelay
+    jsr keyDelay
 
     :waitLoop
     ; use the modified keyoard handler to check for key presses
@@ -453,13 +506,32 @@ waitToStart
     lda _KeyMatrix,Y
     and #01
     cmp #01
-    bne loop
+    bne checkT
     jsr runKeyboardMapper
     jsr MakeCharacters_1
     jsr SetPaper
     jsr SetInk
     jsr renderGameArea
     jsr keyDelay
+    jmp redo
+
+    checkT
+    ldy #01
+    lda _KeyMatrix,Y
+    and #02
+    cmp #02
+    bne loop
+
+    lda player_count
+    beq setPlayerCount2
+
+    lda #PLAYER_COUNT_1
+    sta player_count
+    jmp redo
+
+    setPlayerCount2
+    lda #PLAYER_COUNT_2
+    sta player_count
     jmp redo
 
     loop
