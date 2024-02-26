@@ -96,9 +96,13 @@ _InitIRQ
     ; Since this is an slow process, we set the VIA timer to 
     ; issue interrupts at 25Hz, instead of 100 Hz. This is 
     ; not necessary -- it depends on your needs
-    lda #<40000
+
+    ;I've set this to 50Hz for my purposes. This allows
+    ; for more regular calls to the Tracker interupt which I use on RTI.
+    ; This will allow for more granular timing when adding sound effects
+    lda #<20000
     sta via_t1ll 
-    lda #>40000
+    lda #>20000
     sta via_t1lh
 
 

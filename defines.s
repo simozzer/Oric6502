@@ -85,7 +85,7 @@
 #DEFINE INTSL_ATMOS $024A ; Return from interrupt handler (normally RTI)
 #DEFINE INTSL_ORIC1 $0230 ;
 
-#DEFINE TRACKER_STEP_LENGTH 3 ;// number of times interrupts handler should be called before advancing to the next step
+#DEFINE TRACKER_STEP_LENGTH 6 ;// number of times interrupts handler should be called before advancing to the next step
 
 
 
