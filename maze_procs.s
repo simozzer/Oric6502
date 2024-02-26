@@ -170,7 +170,7 @@ plotRandomBlocks
         cmp #253
         bcs skip
         clc
-        adc #01
+        adc #2
         sta _plot_ch_x
         jsr _GetRand
         lda rand_low
@@ -184,7 +184,7 @@ plotRandomBlocks
         lda OffscreenLineLookupHi,y
         sta _maze_line_start_hi
 
-        lda #RANDOM_BLOCK_CHAR_CODE + 128
+        lda #BRICK_WALL_CHAR_CODE + 128
         ldy _plot_ch_x
         sta (_maze_line_start),Y
 
@@ -267,10 +267,14 @@ plotRandomErasers
         jsr _GetRand
         lda rand_low
         sta _plot_ch_x
+        cmp #253
+        bpl skip
+        adc #01
         jsr _GetRand
         lda rand_low
         cmp #78
         bpl skip
+        adc #2
         tay
         lda OffscreenLineLookupLo,Y
         sta _maze_line_start_lo
