@@ -4,8 +4,10 @@
 #define ROM
 
 #ifdef ROM
-#define IRQ_ADDRLO $0245
-#define IRQ_ADDRHI $0246
+#define IRQ_ADDRLO_ATMOS $0245
+#define IRQ_ADDRHI_ATMOS $0246
+#define IRQ_ADDR_LO_ORIC_1 $0229
+#define IRQ_ADDR_HI_ORIC_1 $022A
 #else
 #define IRQ_ADDRLO $fffe
 #define IRQ_ADDRHI $ffff
@@ -99,13 +101,28 @@ _InitIRQ
     lda #>40000
     sta via_t1lh
 
+
+    lda ROM_CHECK_ADDR; // EDAD contains 49 (ascii code for 1 with rom 1.1)
+    cmp #ROM_CHECK_ATMOS
+    bcc setOric1IRQ
+
+
     ; Patch IRQ vector
     lda #<irq_routine 
-    sta IRQ_ADDRLO
+    sta IRQ_ADDRLO_ATMOS
     lda #>irq_routine 
-    sta IRQ_ADDRHI
+    sta IRQ_ADDRHI_ATMOS
     cli 
     rts 
+
+    setOric1IRQ
+    lda #<irq_routine 
+    sta IRQ_ADDR_LO_ORIC_1
+    lda #>irq_routine 
+    sta IRQ_ADDR_HI_ORIC_1
+    cli 
+    rts
+
 .)
 
 
@@ -128,9 +145,19 @@ irq_routine
     ldx irq_X
     ldy irq_Y
 
+
+    lda ROM_CHECK_ADDR; // EDAD contains 49 (ascii code for 1 with rom 1.1)
+    cmp #ROM_CHECK_ATMOS
+    bcc endOric1IRQ
+    lda irq_A
     jmp $24A
     ; End of IRQ 
     rti 
+
+    endOric1IRQ
+    lda irq_A
+    jmp $230
+    rti
 .)
 
 
