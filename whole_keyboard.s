@@ -1,3 +1,10 @@
+; This code was from Dhbug after reading the following article on the Oric forums
+; https://osdk.org/index.php?page=articles&ref=ART20
+
+; The original code can be found here: https://github.com/Oric-Software-Development-Kit/Keyboard-FullMatrix
+
+; I've made a couple of small modifications so that the standard RTI addresses can
+; be used on the Oric1 and Atmos (when not using ROM overlay)
 
 #include "whole_keyboard.h"
 
@@ -150,6 +157,8 @@ irq_routine
     ldy irq_Y
 
 
+    ; Addded this code to alllow standard RTI locations to be used on the
+    ; Oric1 and Atmos (when not using ROM overlay)
     lda ROM_CHECK_ADDR; // EDAD contains 49 (ascii code for 1 with rom 1.1)
     cmp #ROM_CHECK_ATMOS
     bcc endOric1IRQ
