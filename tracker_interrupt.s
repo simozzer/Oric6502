@@ -1,9 +1,11 @@
 
 setupTrackerInterrupt
 .(
-
     lda #0
     sta _tracker_step_index;
+
+    lda #1
+    sta _tracker_running; // start tracker interupt with playback disabled
 
     ; set the default number of intervals before moving to next step
     lda #TRACKER_STEP_LENGTH
@@ -57,6 +59,42 @@ clearTrackerInterupt
     rts
 .)
 
+enableMusicPlayback
+.(
+    sei
+    lda _tracker_running
+    beq done
+    lda #TRACKER_PLAY_MODE_SONG
+    sta _tracker_play_mode
+    lda #16
+    sta _tracker_last_step
+    lda #0
+    sta _tracker_bar_index
+    sta _tracker_bar_step_index
+    jsr clearSound
+    lda #0
+    sta _tracker_running;
+    sta _tracker_step_index;
+
+    done
+    cli
+    rts
+.)
+
+disableMusicPlayback
+.(
+    sei
+    lda _tracker_running
+    bne done
+    lda #1
+    sta _tracker_running
+    jsr clearSound
+
+    done
+    cli
+    rts
+.)
+
 trackerInterrupt
 .(
 
@@ -67,6 +105,17 @@ trackerInterrupt
     tya
     pha
 
+    lda _sound_effect_cycles_remaining
+    beq checkRunning
+    jsr playSoundEffects
+    dec _sound_effect_cycles_remaining
+
+    checkRunning
+    lda _tracker_running
+    beq run
+    jmp exit
+
+    run
     ; Copy any params currently being used for sound, so we can restore them when the interrupt has completed
     jsr copySoundParams
 
@@ -184,7 +233,10 @@ trackerInterrupt
 
             jsr independentMusic
 
-
+            ;don't playback channel 3 or noise is there is a sound effect running
+            lda _sound_effect_cycles_remaining
+            beq channel3
+            jmp silenceHalfNotes
 
             // --- start channel 3 ---
             :channel3
@@ -295,6 +347,10 @@ trackerInterrupt
     sta PARAMS_5
     jsr independentMusic
 
+    lda _sound_effect_cycles_remaining
+    beq silenceNote3
+    jmp countDown
+
     silenceNote3
     ldy #05 ; Load 4th byte of line
     lda (_playback_music_info_byte_addr),y
@@ -385,14 +441,16 @@ trackerInterrupt
         sta _tracker_bar_step_index
 
     :continue
-
         jsr restoreSoundParams
+    :exit
+        
         ;restore reg (pull y,x,a)
         pla
         tay
         pla
         tax
         pla
+
 
         rti
 .)

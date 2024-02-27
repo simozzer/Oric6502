@@ -11,6 +11,11 @@ StartProg
 
     jsr setupDefaultKeys
 
+    ; enable the tracker interupt but start with music disabled
+    lda #1
+    sta _tracker_running;
+    jsr setupTrackerInterrupt;
+
     jsr _InitIRQ
  
     jsr clearScreen    
@@ -480,26 +485,14 @@ waitToStart
 
     toggleSound
     jsr keyDelay
-    sei
+    lda _tracker_running
+    beq stopMusic
+    jsr enableMusicPlayback
+    jmp redo
 
-    lda ROM_CHECK_ADDR; // EDAD contains 49 (ascii code for 1 with rom 1.1)
-    cmp #ROM_CHECK_ATMOS
-    bcc checkOric1Interupt
-    
-    lda INTSL_ATMOS
-    jmp toggleMusic
-    
-    checkOric1Interupt
-    lda INTSL_ORIC1
-    
-    :toggleMusic
-    cmp #$40; RTI
-    beq initMusic
-    jsr stopMusic
-    jmp waitLoop
-
-    initMusic
-    jsr startMusic
+    stopMusic
+    jsr disableMusicPlayback
+    jmp redo
 
     checkK
     ldy #03
@@ -668,41 +661,5 @@ renderGameArea
         bpl loop
     .)
     rts
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
-startMusic
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; Start playback of tracker music
-; ------------------------------------------------------------------------------
-.(
-    ;// Initialize data for the tracker
-    lda #TRACKER_PLAY_MODE_SONG
-    sta _tracker_play_mode
-    lda #16
-    sta _tracker_last_step
-    lda #0
-    sta _tracker_bar_index
-    sta _tracker_bar_step_index
-    jsr clearSound
-
-    ; setup interrupt for playing back music
-    jsr setupTrackerInterrupt
-
-    rts
-.)
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-stopMusic
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; Stop playback of tracker music
-; ------------------------------------------------------------------------------
-.(
-    jsr clearTrackerInterupt
-
-    jsr clearSound
-
-    rts
-.)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

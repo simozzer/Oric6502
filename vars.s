@@ -39,6 +39,10 @@ _tracker_step_index .dsb 1; The index of the note to be played
 _tracker_step_cycles_remaining .dsb 1; Decremented each time the interrupt is called.
 _tracker_step_length .dsb 1; Length of each 16th note (speed of the tune).
 _tracker_step_half_length .dsb 1
+_tracker_running .dsb 1
+_sound_effect_cycles_remaining .dsb 1; When this is >0 channel 3 and the noise channel will not be played back
+_sound_effect_id .dsb 1
+
 
 _tracker_song_bar_lookup_index .dsb 1
 
