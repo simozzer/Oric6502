@@ -63,16 +63,9 @@ keyboardDone
   rts
 .)
 
-/* currently not working
+
 processJoystickPlayer1
 .(
-    jsr checkIJKPresent
-    bcs getJoystickInfo
-    rts
-
-    getJoystickInfo
-    jsr GenericReadIJK
-
     lda joy_Left
     beq done
 
@@ -127,7 +120,7 @@ processJoystickPlayer1
 
     done rts
 .)
-*/
+
 
 processKeyboardplayer2
 .(
@@ -192,6 +185,64 @@ nextKey2
 keyboardDone
   rts
 .)
+
+processJoystickPlayer2
+.(
+    lda joy_Right
+    beq done
+
+    and #%00000001
+    cmp #%00000001
+    bne checkRight
+    lda _player2_direction
+    cmp #PLAYER_DIRECTION_RIGHT
+    beq checkRight
+    lda #PLAYER_DIRECTION_LEFT
+    sta _player2_direction
+    jsr _GetRand
+    rts
+
+    checkRight
+    lda joy_Right
+    and #%000000010
+    cmp #%000000010
+    bne checkDown
+    lda _player2_direction
+    cmp #PLAYER_DIRECTION_LEFT
+    beq checkDown
+    lda #PLAYER_DIRECTION_RIGHT
+    sta _player2_direction   
+    jsr _GetRand 
+    rts
+
+    checkDown
+    lda joy_Right
+    and #%000001000
+    cmp #%000001000
+    bne checkUp
+    lda _player2_direction
+    cmp #PLAYER_DIRECTION_UP
+    beq checkUp
+    lda #PLAYER_DIRECTION_DOWN
+    sta _player2_direction
+    jsr _GetRand
+    rts
+
+    checkUp
+    lda joy_Right
+    and #%000010000
+    cmp #%000010000
+    bne done
+    lda _player2_direction
+    cmp #PLAYER_DIRECTION_DOWN
+    beq done
+    lda #PLAYER_DIRECTION_UP
+    sta _player2_direction
+    jsr _GetRand
+
+    done rts
+.)
+
 
 
 

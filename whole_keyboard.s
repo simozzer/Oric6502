@@ -151,6 +151,8 @@ irq_routine
     ; Process keyboard 
     jsr ReadKeyboard 
 
+    jsr GenericReadIJK
+
     ; Restore Registers 
     lda irq_A
     ldx irq_X

@@ -141,8 +141,9 @@ rand_high		.byt 1		;// Random number generator, high part
 
 player_count .byt 1
 
-; joy_Left .byt 1
-; joy_Right .byt 1
+
+joy_Left .byt 1
+joy_Right .byt 1
 
 
 _zp_end_

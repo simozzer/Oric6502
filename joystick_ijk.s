@@ -41,22 +41,3 @@ GenericReadIJK
          LDA #%11111111
          STA via_ddra
          RTS
-
-
-
-checkIJKPresent ; sets carry flag if present
-.(
-    LDA #%11000000
-    STA via_ddra
-    STA via_porta
-    LDA via_porta
-    AND #%00100000
-    clc
-    BNE ijkPresent
-    rts
-
-    ijkPresent
-    sec
-    rts
-
-.)

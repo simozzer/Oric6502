@@ -1,4 +1,3 @@
-
 StartProg
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Main program
@@ -147,12 +146,14 @@ runFullScreen
     jsr AnimateCharacters
 
     jsr processKeyboardPlayer1
+    jsr processJoystickPlayer1
     jsr updateMovementPlayer1
 
 
     lda player_count
     beq _updateMovementComputerPlayer
     jsr processKeyboardplayer2
+    jsr processJoystickPlayer2
     jsr updateMovementPlayer2
     jmp afterMove
 
@@ -185,6 +186,7 @@ runSideBySide
     lda _game_mode ; don't update player position if game is not running
     bne render0
     jsr processKeyboardPlayer1
+    jsr processJoystickPlayer1
     jsr updateMovementPlayer1
 
     render0
@@ -200,6 +202,7 @@ runSideBySide
     lda player_count
     beq _updateMovementComputerPlayer
     jsr processKeyboardplayer2
+    jsr processJoystickPlayer2
     jsr updateMovementPlayer2
     clc
     bcc render1
@@ -246,6 +249,7 @@ runTopToBottom
     lda _game_mode ; don't update player position if game is not running
     bne render0
     jsr processKeyboardPlayer1
+    jsr processJoystickPlayer1
     jsr updateMovementPlayer1
 
     render0
@@ -261,6 +265,7 @@ runTopToBottom
     lda player_count
     beq _updateMovementComputerPlayer
     jsr processKeyboardplayer2
+    jsr processJoystickPlayer2
     jsr updateMovementPlayer2
     clc
     bcc render1
