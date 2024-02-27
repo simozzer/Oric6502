@@ -10,20 +10,35 @@ triggerSoundEffect
     lda _sound_effect_id
     cmp #00
     bne n1
-    lda #31
+    lda #16
     sta _sound_effect_cycles_remaining
 
     n1 
     cmp #01
     bne n2
-    lda #62
+    lda #32
     sta _sound_effect_cycles_remaining
 
     n2
     cmp #02
-    bne done
-    lda #40
+    bne n3
+    lda #32
     sta _sound_effect_cycles_remaining
+
+    n3 
+    cmp #03
+    bne done
+    lda #64
+    sta _sound_effect_cycles_remaining
+    
+    lda #4
+    sta PARAMS_1
+    lda #0
+    sta PARAMS_3
+    lda #0
+    sta PARAMS_5
+    jsr independentSound
+
 
     done
     cli
@@ -39,7 +54,7 @@ silenceForEffect
     lda #00
     sta PARAMS_3
     sta PARAMS_7
-    lda #01
+    lda #00
     sta PARAMS_5
     jsr independentMusic
 
@@ -62,6 +77,8 @@ playSoundEffects
     beq p2
     cmp #02
     beq p3
+    cmp #03
+    beq p4
     rts
 
     p1
@@ -75,6 +92,9 @@ playSoundEffects
     p3 
     jsr playSoundEffect3
     rts
+
+    p4
+    jsr playSoundEffect4
 .)
 
 playSoundEffect1
@@ -92,18 +112,17 @@ playSoundEffect1
     clc
     sbc _sound_effect_cycles_remaining
     sta PARAMS_3
-    lda _sound_effect_cycles_remaining
-    lsr
+    lda #10
     sta PARAMS_5
     jsr independentSound
 
     lda #06
     sta PARAMS_1;
     lda _sound_effect_cycles_remaining
+    asl
     sta PARAMS_3
-    lsr
-    lsr
-    lda #10
+    lda _sound_effect_cycles_remaining
+
     sta PARAMS_5
     jsr independentSound
 
@@ -111,13 +130,14 @@ playSoundEffect1
     sta PARAMS_1
     lda #4
     sta PARAMS_3
-    lda #0
+    lda #1
     sta PARAMS_5
-    lda #0
+    lda #250
     sta PARAMS_7
     jsr independentPlay
     rts
 .)
+
 
 
 playSoundEffect2
@@ -133,7 +153,8 @@ playSoundEffect2
     clc
 
     lda _sound_effect_cycles_remaining
-    cmp #32
+    cmp #16
+    adc _sound_effect_cycles_remaining
     bpl secondHalf
     lda #31
     sbc _sound_effect_cycles_remaining
@@ -163,7 +184,7 @@ playSoundEffect2
 .)
 
 
-
+// similar to explode
 playSoundEffect3
 .(
     lda _sound_effect_cycles_remaining
@@ -177,7 +198,8 @@ playSoundEffect3
     jsr _GetRand
     lda rand_low
     sta PARAMS_3
-    lda #10
+    lda _sound_effect_cycles_remaining
+    lsr
     sta PARAMS_5
     jsr independentSound
 
@@ -190,5 +212,26 @@ playSoundEffect3
     lda #0
     sta PARAMS_7
     jsr independentPlay
+    rts
+.)
+
+playSoundEffect4 
+.(
+lda _sound_effect_cycles_remaining
+    cmp #01
+    bne play
+    jsr silenceForEffect
+    rts
+    play
+
+    lda #03
+    sta PARAMS_1
+    lda #255
+    clc
+    sbc _sound_effect_cycles_remaining
+    sta PARAMS_3
+    lda #10
+    sta PARAMS_5
+    jsr independentSound
     rts
 .)
