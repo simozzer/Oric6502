@@ -1,6 +1,8 @@
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; runKeyboardMapper: launch a screen to allow a user to 
 ; define custom keys for playing the game
+; Params : none
+; Returns :null
 ; ------------------------------------------------------------
 runKeyboardMapper
 .(
@@ -97,14 +99,18 @@ runKeyboardMapper
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+; Holds the y positions of the rows containing items to be mapped
 _keyboard_mapper_row_indexes
 .byt 12,13,14,15,19,20,21,22,00
 
+; The index of the currently selected row
 _keyboard_mapper_selected_row_index 
 .byt 0
 
-
+; the index of the selected key within the keyboard matrix
 _selectedKey_matrix_index .byt 0
+
+; used to store the index of the start of a row for a key within the keyboard matrix
 _row_start_index .byt 0
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -136,6 +142,12 @@ getMatrixIndexForAsciiCode
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; editSelectedKey: starts an editor for the selected key, checks
+; that the key selection is valid and stores the result.
+; Params: none
+; Returns: null
+; ----------------------------------------------------------------
 editSelectedKey
 .(
   jsr keyDelay
@@ -222,7 +234,10 @@ editSelectedKey
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-selectedAsciiCode .byt 0
+; holds the ascii code of the newly selected key
+_selected_ascii_code .byt 0
+
+
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; getKeyUnique : returns whether the key pressed, for the 
 ; selected user action, is unique amongst the key presses 
@@ -236,7 +251,7 @@ selectedAsciiCode .byt 0
 getKeyUnique
 .(
   lda temp_param_0
-  sta selectedAsciiCode
+  sta _selected_ascii_code
 
   ;find the stored ascii code for the currently selected row
   ldy _keyboard_mapper_selected_row_index
@@ -244,7 +259,7 @@ getKeyUnique
   jsr getAsciiCodeForActionIndex
   lda temp_result
 
-  cmp selectedAsciiCode
+  cmp _selected_ascii_code
   bne checkOtherKeys
 
   ;ascii code is the same as the current selection
@@ -260,7 +275,7 @@ getKeyUnique
     sty temp_param_0
     jsr getAsciiCodeForActionIndex
     lda temp_result
-    cmp selectedAsciiCode
+    cmp _selected_ascii_code
     beq exists
 
   skip
@@ -305,6 +320,13 @@ getAsciiCodeForActionIndex
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; highlightSelectedRow: Changes the background color of 
+; the currently selected item.
+; params: none
+; returns: null
+; ------------------------------------------------------------
 highlightSelectedRow
 .(
 
@@ -347,7 +369,15 @@ highlightSelectedRow
     rts
 
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; displayAllKeyMappings: displays the keys mapped to each
+; keyboard action
+; params: none
+; returns: null
+; ------------------------------------------------------------
 displayAllKeyMappings
 .(
   lda key_up_player1_row
@@ -438,13 +468,18 @@ displayAllKeyMappings
  
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-; params:
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; displayAllKeyMappings: Displays the key for a given position
+; in the keyboard matrix, at a specified position.
+; Params:
 ;   temp_param_0: keyboard row
 ;   temp_param_1: keyboard column mask
 ;   temp_param_2: screen x pos
 ;   temp_param_3: screen y pos
+;--------------------------------------------------------------
 displayKeyMapping
 .(
   ;no need to alter temp_param_0 & 1 as these 
@@ -619,6 +654,9 @@ displayKeyMapping
 
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; getAsciiCodeForKeyPosition: get the ascii code
@@ -629,7 +667,6 @@ displayKeyMapping
 ; returns:
 ;   temp_result: the ascii code
 ; ------------------------------------------------------------
-
 getAsciiCodeForKeyPosition
 .(
   tya
@@ -672,3 +709,4 @@ getAsciiCodeForKeyPosition
 
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

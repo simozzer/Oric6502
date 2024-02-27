@@ -172,15 +172,13 @@ independentMusic
     LSR $02E4 
     ROR $02E3 
     JMP decY
-jumpToSound
+    jumpToSound
     JMP independentSound ;Goto Sound command. 
     INC $02E0 
     RTS 
 .)
 
 TonePeriodLookup1
-//FC5E
     .byt $00,$07,$07,$06,$06,$05,$05,$05,$04,$04,$04,$04,$03
 TonePeriodLookup2
-//FC6B
     .byt $00,$77,$0B,$A6,$47,$EC,$97,$47,$FB,$B3,$70,$30,$F4

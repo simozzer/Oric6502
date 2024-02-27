@@ -1,4 +1,10 @@
-;// THIS IS FOR THE PLAYER CONTROLLED BY THE COMPUTER
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; updateMovementComputerPlayer: updates the movement for the computer 
+; controlled player, checks for any collision types and processes 
+; the collisions
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
 updateMovementComputerPlayer 
 .(
     lda _player2_direction
@@ -116,7 +122,7 @@ updateMovementComputerPlayer
     :continueLeft
     jmp renderPlayer
 
-checkRight
+    checkRight
     lda _player2_direction
     cmp #PLAYER_DIRECTION_RIGHT
     beq processCheckRight
@@ -230,8 +236,7 @@ checkRight
 
     :continueRight
     jmp renderPlayer
-checkUp
-.(
+    checkUp
     lda _player2_direction
     cmp #PLAYER_DIRECTION_UP
     beq processCheckUp
@@ -337,12 +342,12 @@ checkUp
     lda #PLAYER_DIRECTION_LEFT
     sta _player2_direction
     jmp renderPlayer
-.)
+
     :continueUp
     jmp renderPlayer
 
 
-checkDown
+    checkDown
     lda _player2_direction
     cmp #PLAYER_DIRECTION_DOWN
     beq processCheckDown
@@ -367,7 +372,7 @@ checkDown
 
     // cannot continue down
 
-; check if can move left
+    ; check if can move left
     ldy _player2_y;
     dey ; deccrement the y position, as we had a collision at that point
     lda OffscreenLineLookupLo,Y
@@ -447,7 +452,7 @@ checkDown
     sta _player2_direction
     jmp renderPlayer
 
-renderPlayer
+    renderPlayer
     ldy _player2_y;
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
@@ -470,7 +475,6 @@ renderPlayer
     bne noBlackHole
 
     ;process black hole collision
-    .(
     getX
     jsr _GetRand; get random x position
     lda rand_low;
@@ -488,7 +492,6 @@ renderPlayer
     clc
     adc #05
     sta _player2_y
-    .)
 
     
     noBlackHole
@@ -520,10 +523,10 @@ renderPlayer
     adc #128
     sta (_maze_line_start),y
 
-checkDone
-   rts
+    checkDone
+    rts
 
-:playerDead
+    :playerDead
     ; update the player position on screen
     ldy _player2_y;
     lda OffscreenLineLookupLo,Y

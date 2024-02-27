@@ -293,12 +293,7 @@ runTopToBottom
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-startScreenInstructions_1player .byt PAPER_YELLOW, INK_RED,   "  1 PLAYER PRESS T TO TOGGLE  ", PAPER_BLACK, INK_GREEN, 0
-startScreenInstructions_2players .byt PAPER_YELLOW, INK_RED,   " 2 PLAYERS PRESS T TO TOGGLE  ", PAPER_BLACK, INK_GREEN, 0
-startScreenInstructions_0 .byt PAPER_YELLOW, INK_RED,   "    PRESS SPACE TO START      ", PAPER_BLACK, INK_GREEN, 0
-startScreenInstructions_1 .byt PAPER_YELLOW, INK_RED,   "PRESS S TO TOGGLE SCREEN MODE ", PAPER_BLACK, INK_GREEN, 0
-startScreenInstructions_2 .byt PAPER_YELLOW, INK_RED,   "   PRESS M TO TOGGLE MUSIC    ", PAPER_BLACK, INK_GREEN, 0
-startScreenInstructions_3 .byt PAPER_YELLOW, INK_RED,   "    PRESS K TO SETUP KEYS     ", PAPER_BLACK, INK_GREEN, 0
+
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -630,40 +625,44 @@ renderGameArea
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
 
-
-
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; SetInk: Sets the global ink color for the screen
+; ------------------------------------------------------------------------------ 
 :SetInk
     ldy #FULLSCREEN_TEXT_LAST_LINE
     ldx #INK_GREEN
-.(
+    .(
     loop
-    lda ScreenLineLookupLo,Y
-    sta writePaper+1
-    lda ScreenLineLookupHi,y
-    sta writePaper+2
-    :writePaper stx $ffff
-    dey
-    bpl loop
-
+        lda ScreenLineLookupLo,Y
+        sta writePaper+1
+        lda ScreenLineLookupHi,y
+        sta writePaper+2
+        :writePaper stx $ffff
+        dey
+        bpl loop
+    .)
     rts
-.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
 
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; SetInk: Sets the global paper color for the screen
+; ------------------------------------------------------------------------------ 
 :SetPaper
     ldy #FULLSCREEN_TEXT_LAST_LINE
     ldx #01
-.(
+    .(
     loop
-    lda ScreenLineLookupLo,Y
-    sta writeInk+1
-    lda ScreenLineLookupHi,y
-    sta writeInk+2
-    lda #PAPER_BLACK
-    :writeInk sta $ffff,x
-    dey
-    bpl loop
-
+        lda ScreenLineLookupLo,Y
+        sta writeInk+1
+        lda ScreenLineLookupHi,y
+        sta writeInk+2
+        lda #PAPER_BLACK
+        :writeInk sta $ffff,x
+        dey
+        bpl loop
+    .)
     rts
-.)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
@@ -701,69 +700,4 @@ stopMusic
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; Screen filler: (not used)
-;   Fill screen in turn with characters from a-z and repeat
-;    Exit if key pressed
-; ------------------------------------------------------------------------------
-screen_filler
-    lda #FULLSCREEN_TEXT_FIRST_COLUMN
-    sta _plot_ch_x                          
-    lda #0; Start ON ROW 0           
-    sta _plot_ch_y                          
-    lda #97; Start with lower case a
-    sta _plot_ascii 
-
-print_line ; get the line address once a line
-    ldy _plot_ch_y        ; Load row value                     
-    lda ScreenLineLookupLo,Y    ; lookup low byte for row value and store
-    sta _line_start_lo                
-    lda ScreenLineLookupHi,Y     ; lookup hi byte for row value and store
-    sta _line_start_hi
-
-    ldy #FULLSCREEN_TEXT_FIRST_COLUMN
-    lda _plot_ascii
-print_next_char
-    sta (_line_start),Y                     
-                           
-    cpy #FULLSCREEN_TEXT_LAST_COLUMN ;CHECK FOR LAST COLUMN   
-    beq next_line                                               
-    iny
-    jmp print_next_char                           
-    
-    next_line
-    ldy #FULLSCREEN_TEXT_FIRST_COLUMN
-    ldx _plot_ch_y                          
-    cpx #FULLSCREEN_TEXT_LAST_LINE ;CHECK IF AT LAST LINE   
-    beq next_char                                              
-    inc _plot_ch_y ;move to next line
-    jmp print_line                           
-    
-    next_char
-    ldx _plot_ascii; load current char     
-    cpx #122; check if we've reached last char                        
-    beq screen_filler                       
-    inc _plot_ascii ; move to next char
-    lda #FULLSCREEN_TEXT_FIRST_COLUMN; Set next character at start of screen                                  
-    sta _plot_ch_x                          
-    lda #0                           
-    sta _plot_ch_y                          
-    ;TEST FOR KEY PRESS  (temporarily disabled)                                   
-    ldx KEY_PRESS_LOOKUP
-    cpx KEY_PRESS_NONE                                        
-    bne ExitScreenFill    
-
-    jmp print_line                          
-    :ExitScreenFill 
-    rts
-; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<    
-
-
-
-
-
-
-
 

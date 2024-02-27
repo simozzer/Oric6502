@@ -11,7 +11,6 @@
 ;   temp_param_1: y position
 ; Returns:
 ;   temp_result: the type of collision that has occurred
-;
 ; -------------------------------------------------------------------
 getCollisionInfo
 .(
