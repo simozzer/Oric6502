@@ -110,6 +110,7 @@ playSoundEffectEraser
     lda #03
     sta PARAMS_1
     lda _sound_effect_cycles_remaining
+    asl
     clc
     adc #150
     sta PARAMS_3
@@ -118,11 +119,10 @@ playSoundEffectEraser
     jsr independentSound
 
 
+    jsr WipeParams
     lda #06
     sta PARAMS_1;
     lda _sound_effect_cycles_remaining
-    clc
-    adc #01
     sta PARAMS_3
     lda #8
     sta PARAMS_5
@@ -151,27 +151,26 @@ playSoundEffectBlackHole
     play
 
     jsr WipeParams
-    lda #06
-    sta PARAMS_1;
+    lda #03
+    sta PARAMS_1
+    lda #200
     clc
-
-    lda _sound_effect_cycles_remaining
-    cmp #SOUND_EFFECT_LENGTH_BLACK_HOLE / 2
-    bpl secondHalf
-    
-
-    lda #SOUND_EFFECT_LENGTH_BLACK_HOLE /2 
     sbc _sound_effect_cycles_remaining
-    jmp storePitchParam
-    
-    
-    secondHalf
-    lda _sound_effect_cycles_remaining
-
-    :storePitchParam
     asl
     sta PARAMS_3
-    lda _sound_effect_cycles_remaining
+    lda #10
+    sta PARAMS_5
+    jsr independentSound
+
+
+    jsr WipeParams
+    lda #06
+    sta PARAMS_1;
+    lda #15
+    clc
+    sbc _sound_effect_cycles_remaining
+    sta PARAMS_3
+    lda #8
     sta PARAMS_5
     jsr independentSound
 
@@ -181,7 +180,6 @@ playSoundEffectBlackHole
     sta PARAMS_3
     lda #0
     sta PARAMS_5
-    lda #0
     sta PARAMS_7
     jsr independentPlay
     rts
