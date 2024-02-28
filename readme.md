@@ -45,3 +45,17 @@ The aim of this bit of coding was, origionally, to provide a scrolling area whic
 ![The aim](ScrollArea.png)
 
 
+Bits that might be re-used
+
+Offscreen layout
+
+The split screen scroller
+
+The tracker and sound effects
+
+Rom independent sound
+
+Keyboard mapper
+
+
+

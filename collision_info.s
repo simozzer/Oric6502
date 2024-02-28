@@ -42,7 +42,7 @@ getCollisionInfo
     bcs noBlackHole
     lda #COLLISION_TYPE_BLACK_HOLE
     sta temp_result
-    lda #1
+    lda #SOUND_EFFECT_ERASER
     sta _sound_effect_id
     jsr triggerSoundEffect
     rts
@@ -53,13 +53,13 @@ getCollisionInfo
     bne done
     lda #COLLISION_TYPE_ERASER
     sta temp_result
-    lda #0
+    lda #SOUND_EFFECT_BLACK_HOLE
     sta _sound_effect_id
     jsr triggerSoundEffect
     rts
 
     playerDead
-    lda #02
+    lda #SOUND_EFFECT_DEATH
     sta _sound_effect_id
     jsr triggerSoundEffect
     lda #COLLISION_TYPE_FATAL

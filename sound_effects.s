@@ -8,37 +8,28 @@ triggerSoundEffect
     jsr restoreSoundParams
 
     lda _sound_effect_id
-    cmp #00
+    cmp #SOUND_EFFECT_ERASER
     bne n1
-    lda #16
+    lda #SOUND_EFFECT_LENGTH_ERASER
     sta _sound_effect_cycles_remaining
 
     n1 
-    cmp #01
+    cmp #SOUND_EFFECT_BLACK_HOLE
     bne n2
-    lda #32
+    lda #SOUND_EFFECT_LENGTH_BLACK_HOLE
     sta _sound_effect_cycles_remaining
 
     n2
-    cmp #02
+    cmp #SOUND_EFFECT_DEATH
     bne n3
-    lda #32
+    lda #SOUND_EFFECT_LENGTH_DEATH
     sta _sound_effect_cycles_remaining
 
     n3 
     cmp #03
     bne done
-    lda #64
+    lda #16
     sta _sound_effect_cycles_remaining
-    
-    lda #4
-    sta PARAMS_1
-    lda #0
-    sta PARAMS_3
-    lda #0
-    sta PARAMS_5
-    jsr independentSound
-
 
     done
     cli
@@ -53,12 +44,21 @@ silenceForEffect
     sta PARAMS_1
     lda #00
     sta PARAMS_3
-    sta PARAMS_7
-    lda #00
     sta PARAMS_5
+    sta PARAMS_7
     jsr independentMusic
 
     ;silence noise
+    jsr WipeParams
+    lda #06
+    sta PARAMS_1
+    lda #00
+    sta PARAMS_3
+    lda #00
+    sta PARAMS_5
+    jsr independentSound
+
+    jsr WipeParams
     lda #7
     sta PARAMS_1
     lda #0
@@ -71,33 +71,33 @@ rts
 playSoundEffects
 .(
     lda _sound_effect_id
-    cmp #00
+    cmp #SOUND_EFFECT_ERASER
     beq p1
-    cmp #01
+    cmp #SOUND_EFFECT_BLACK_HOLE
     beq p2
-    cmp #02
+    cmp #SOUND_EFFECT_DEATH
     beq p3
     cmp #03
     beq p4
     rts
 
     p1
-    jsr playSoundEffect1
+    jsr playSoundEffectEraser
     rts
 
     p2
-    jsr playSoundEffect2
+    jsr playSoundEffectBlackHole
     rts
 
     p3 
-    jsr playSoundEffect3
+    jsr playSoundEffectDeath
     rts
 
     p4
     jsr playSoundEffect4
 .)
 
-playSoundEffect1
+playSoundEffectEraser
 .(
     lda _sound_effect_cycles_remaining
     cmp #01
@@ -106,23 +106,25 @@ playSoundEffect1
     rts
     play
 
+    jsr WipeParams
     lda #03
     sta PARAMS_1
-    lda #255
+    lda _sound_effect_cycles_remaining
     clc
-    sbc _sound_effect_cycles_remaining
+    adc #150
     sta PARAMS_3
     lda #10
     sta PARAMS_5
     jsr independentSound
 
+
     lda #06
     sta PARAMS_1;
     lda _sound_effect_cycles_remaining
-    asl
+    clc
+    adc #01
     sta PARAMS_3
-    lda _sound_effect_cycles_remaining
-
+    lda #8
     sta PARAMS_5
     jsr independentSound
 
@@ -130,9 +132,8 @@ playSoundEffect1
     sta PARAMS_1
     lda #4
     sta PARAMS_3
-    lda #1
+    lda #0
     sta PARAMS_5
-    lda #250
     sta PARAMS_7
     jsr independentPlay
     rts
@@ -140,7 +141,7 @@ playSoundEffect1
 
 
 
-playSoundEffect2
+playSoundEffectBlackHole
 .(
     lda _sound_effect_cycles_remaining
     cmp #01
@@ -148,26 +149,29 @@ playSoundEffect2
     jsr silenceForEffect
     rts
     play
+
+    jsr WipeParams
     lda #06
     sta PARAMS_1;
     clc
 
     lda _sound_effect_cycles_remaining
-    cmp #16
-    adc _sound_effect_cycles_remaining
+    cmp #SOUND_EFFECT_LENGTH_BLACK_HOLE / 2
     bpl secondHalf
-    lda #31
+    
+
+    lda #SOUND_EFFECT_LENGTH_BLACK_HOLE /2 
     sbc _sound_effect_cycles_remaining
-    jmp storeParam
+    jmp storePitchParam
     
     
     secondHalf
     lda _sound_effect_cycles_remaining
 
-    :storeParam
+    :storePitchParam
+    asl
     sta PARAMS_3
     lda _sound_effect_cycles_remaining
-    lsr
     sta PARAMS_5
     jsr independentSound
 
@@ -185,7 +189,7 @@ playSoundEffect2
 
 
 // similar to explode
-playSoundEffect3
+playSoundEffectDeath
 .(
     lda _sound_effect_cycles_remaining
     cmp #01
@@ -193,12 +197,14 @@ playSoundEffect3
     jsr silenceForEffect
     rts
     play
+    jsr WipeParams
     lda #06
     sta PARAMS_1;
     jsr _GetRand
     lda rand_low
     sta PARAMS_3
     lda _sound_effect_cycles_remaining
+    lsr
     lsr
     sta PARAMS_5
     jsr independentSound
@@ -217,21 +223,40 @@ playSoundEffect3
 
 playSoundEffect4 
 .(
-lda _sound_effect_cycles_remaining
+    lda _sound_effect_cycles_remaining
     cmp #01
     bne play
     jsr silenceForEffect
     rts
     play
 
+    jsr WipeParams
     lda #03
     sta PARAMS_1
-    lda #255
-    clc
-    sbc _sound_effect_cycles_remaining
+    lda _sound_effect_cycles_remaining
+    asl
     sta PARAMS_3
-    lda #10
+    lda #8
     sta PARAMS_5
     jsr independentSound
+
+    lda #06
+    sta PARAMS_1
+    lda #00
+    sta PARAMS_3
+    sta PARAMS_5
+    jsr independentSound
+
+        
+    jsr WipeParams
+    lda #7
+    sta PARAMS_1
+    lda #0
+    sta PARAMS_3
+    lda #0
+    sta PARAMS_5
+    lda #0
+    sta PARAMS_7
+    jsr independentPlay
     rts
 .)
