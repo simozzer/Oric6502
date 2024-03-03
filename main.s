@@ -16,6 +16,8 @@ StartProg
     sta _tracker_running;
     jsr setupTrackerInterrupt;
 
+    jsr clearSound;
+
     jsr _InitIRQ
  
     jsr clearScreen    

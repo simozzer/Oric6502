@@ -511,6 +511,23 @@ clearSound
         lda PARAMS_7
         jsr independentMusic
 
+
+    jsr WipeParams
+    lda #04
+    sta PARAMS_1
+    lda #0
+    sta PARAMS_3
+    sta PARAMS_5
+    jsr independentSound
+
+    jsr WipeParams
+    lda #05
+    sta PARAMS_1
+    lda #0
+    sta PARAMS_3
+    sta PARAMS_5
+    jsr independentSound
+
     jsr WipeParams
     lda #06
     sta PARAMS_1
