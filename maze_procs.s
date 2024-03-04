@@ -264,10 +264,10 @@ plotRandomErasers
         beq done
         jsr _GetRand
         lda rand_low
-        sta _plot_ch_x
         cmp #251
         bcs skip
-        adc #02
+        adc #01
+        sta _plot_ch_x
         jsr _GetRand
         lda rand_low
         cmp #78

@@ -90,7 +90,8 @@ triggerSoundEffect
 
 
 silenceForEffect
-; silence channel 3
+.(
+    ; silence channel 3
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -118,7 +119,8 @@ silenceForEffect
     sta PARAMS_5
     sta PARAMS_7
     jsr independentPlay
-rts
+    rts
+.)
 
 playSoundEffects
 .(
@@ -253,7 +255,7 @@ playSoundEffectBlackHole
     sbc _sound_effect_cycles_remaining
     asl
     sta PARAMS_3
-    lda #10
+    lda #6
     sta PARAMS_5
     jsr independentSound
 
@@ -594,8 +596,6 @@ playSoundEffectBlipFall
     jsr independentSound
     rts
 .)
-
-
 
 
 :slidePitchData
