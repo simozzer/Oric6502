@@ -2,6 +2,7 @@
 #define COLLISION_TYPE_FATAL 1
 #define COLLISION_TYPE_BLACK_HOLE 2
 #define COLLISION_TYPE_ERASER 3
+#define COLLISION_TYPE_SLOW 4
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; getCollisionInfo: returns the type of collision, if any, for a point
@@ -50,10 +51,23 @@ getCollisionInfo
     noBlackHole
     txa 
     cmp #ERASER_CHAR_CODE
-    bne done
+    bne noEraser
     lda #COLLISION_TYPE_ERASER
     sta temp_result
     lda #SOUND_EFFECT_ERASER
+    sta _sound_effect_id
+    jsr triggerSoundEffect
+    rts
+
+    noEraser
+    txa
+    cmp #SLOW_CHAR_CODE_LEFT
+    bcc done
+    cmp #SLOW_CHAR_CODE_RIGHT+1
+    bcs done
+    lda #COLLISION_TYPE_SLOW
+    sta temp_result
+    lda #SOUND_EFFECT_SLOW_FALL
     sta _sound_effect_id
     jsr triggerSoundEffect
     rts

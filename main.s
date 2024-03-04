@@ -65,9 +65,15 @@ startagain
     sta _player1_y
     lda #PLAYER_DIRECTION_UP
     sta _player1_direction
+    lda #PLAYER_EFFECT_TYPE_NONE
+    sta _player1_effect_type
+    lda #0
+    sta _player1_effect_cycles_remaining
+
+    
     lda #PLAYER_STATUS_BOTH_ALIVE
     sta _player_status
-
+    
     ; plot a safe zone around the starting position
     lda _player1_x
     sta center_x
@@ -95,6 +101,10 @@ startagain
     sta _player2_y
     lda #PLAYER_DIRECTION_RIGHT
     sta _player2_direction
+    lda #PLAYER_EFFECT_TYPE_NONE
+    sta _player2_effect_type
+    lda #0
+    sta _player2_effect_cycles_remaining
 
     ; plot a safe zone around the starting position
     lda _player2_x

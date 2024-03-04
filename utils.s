@@ -233,6 +233,7 @@ clear_next_line
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Simple galois16 taken from https://github.com/bbbradsmith/prng_6502/blob/master/galois16.s
+; Take care using this function as it alters the Y register!!!
 ; ------------------------------------------------------------------------------
 _GetRand
 .(

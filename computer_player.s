@@ -7,6 +7,27 @@
 ; -------------------------------------------------------------------
 updateMovementComputerPlayer 
 .(
+    lda _player2_effect_type
+    beq doMove
+
+    cmp #PLAYER_EFFECT_TYPE_SLOW
+    beq processSlow
+    jmp doMove
+
+    processSlow
+    dec _player2_effect_cycles_remaining
+    lda _player2_effect_cycles_remaining
+    beq stopSlow
+    and #01
+    cmp #01
+    beq doMove
+    rts
+
+    stopSlow
+    lda #PLAYER_EFFECT_TYPE_NONE
+    sta _player2_effect_type
+
+    doMove
     lda _player2_direction
     cmp #PLAYER_DIRECTION_LEFT
     beq processCheckLeft
@@ -497,11 +518,16 @@ updateMovementComputerPlayer
     noBlackHole
     ; check for collision with eraser
     cmp #COLLISION_TYPE_ERASER
-    bne storeAndPlot1
+    bne noEraser
     jsr eraseTrailPlayer2
     lda _player2_x
     tay
     jmp plot1
+
+    noEraser
+    cmp #COLLISION_TYPE_SLOW
+    bne storeAndPlot1
+    jsr slowdownPlayer2
 
     storeAndPlot1
     ; store trail data

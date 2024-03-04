@@ -17,7 +17,7 @@ processKeyboardPlayer1
     jsr _GetRand
     rts
 
-nextKey0
+    nextKey0
     ldy key_right_player1_row
     lda _KeyMatrix,y
     beq nextKey1
@@ -32,7 +32,7 @@ nextKey0
     jsr _GetRand 
     rts
 
-nextKey1
+    nextKey1
     ldy key_down_player1_row
     lda _KeyMatrix,y
     and key_down_player1_col_mask
@@ -46,7 +46,7 @@ nextKey1
     jsr _GetRand
     rts
 
-nextKey2
+    nextKey2
     ldy key_up_player1_row
     lda _KeyMatrix,y
     and key_up_player1_col_mask
@@ -59,8 +59,8 @@ nextKey2
     sta _player1_direction
     jsr _GetRand
 
-keyboardDone
-  rts
+    keyboardDone
+    rts
 .)
 
 
@@ -140,7 +140,7 @@ processKeyboardplayer2
     jsr _GetRand
     rts
 
-nextKey0
+    nextKey0
     ldy key_right_player2_row
     lda _KeyMatrix,y
     beq nextKey1
@@ -155,7 +155,7 @@ nextKey0
     jsr _GetRand 
     rts
 
-nextKey1
+    nextKey1
     ldy key_down_player2_row
     lda _KeyMatrix,y
     and key_down_player2_col_mask
@@ -169,7 +169,7 @@ nextKey1
     jsr _GetRand
     rts
 
-nextKey2
+    nextKey2
     ldy key_up_player2_row
     lda _KeyMatrix,y
     and key_up_player2_col_mask
@@ -182,8 +182,8 @@ nextKey2
     sta _player2_direction
     jsr _GetRand
 
-keyboardDone
-  rts
+    keyboardDone
+    rts
 .)
 
 processJoystickPlayer2
@@ -244,25 +244,46 @@ processJoystickPlayer2
 .)
 
 
-
-
-
 updateMovementPlayer1 
 .(
+
+    ;todo
+    rts 
+    lda _player1_effect_type
+    beq doMove
+
+    cmp #PLAYER_EFFECT_TYPE_SLOW
+    beq processSlow
+    jmp doMove
+
+    processSlow
+    dec _player1_effect_cycles_remaining
+    lda _player1_effect_cycles_remaining
+    beq stopSlow
+    and #01
+    cmp #01
+    beq doMove
+    rts
+
+    stopSlow
+    lda #PLAYER_EFFECT_TYPE_NONE
+    sta _player1_effect_type
+
+    :doMove
     lda _player1_direction
     cmp #PLAYER_DIRECTION_LEFT
     bne checkRight
     dec _player1_x
     jmp renderPlayer
 
-checkRight
+    :checkRight
     lda _player1_direction
     cmp #PLAYER_DIRECTION_RIGHT
     bne checkUp
     inc _player1_x
     jmp renderPlayer
 
-checkUp
+    :checkUp
     lda _player1_direction
     cmp #PLAYER_DIRECTION_UP
     bne checkDown
@@ -270,14 +291,14 @@ checkUp
     jmp renderPlayer
 
 
-checkDown
+    :checkDown
     lda _player1_direction
     cmp #PLAYER_DIRECTION_DOWN
     bne checkDone
     movePlayerDown
     inc _player1_y
 
-renderPlayer
+    :renderPlayer
     ldy _player1_y;
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
@@ -323,11 +344,16 @@ renderPlayer
     noBlackHole
     ; check for collision with eraser
     cmp #COLLISION_TYPE_ERASER
-    bne storeAndPlot
+    bne noEraser
     jsr eraseTrailPlayer1
     lda _player1_x
     tay
     jmp plot0
+
+    noEraser
+    cmp #COLLISION_TYPE_SLOW
+    bne storeAndPlot
+    jsr slowdownPlayer1
 
     storeAndPlot
     ; store trail data
@@ -348,7 +374,7 @@ renderPlayer
     lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
-checkDone
+    checkDone
    rts
 
 :playerDead
@@ -400,20 +426,42 @@ checkDone
 
 updateMovementPlayer2 
 .(
+
+    lda _player2_effect_type
+    beq doMove
+
+    cmp #PLAYER_EFFECT_TYPE_SLOW
+    beq processSlow
+    jmp doMove
+
+    processSlow
+    dec _player2_effect_cycles_remaining
+    lda _player2_effect_cycles_remaining
+    beq stopSlow
+    and #01
+    cmp #01
+    beq doMove
+    rts
+
+    stopSlow
+    lda #PLAYER_EFFECT_TYPE_NONE
+    sta _player2_effect_type
+
+    doMove
     lda _player2_direction
     cmp #PLAYER_DIRECTION_LEFT
     bne checkRight
     dec _player2_x
     jmp renderPlayer
 
-checkRight
+    checkRight
     lda _player2_direction
     cmp #PLAYER_DIRECTION_RIGHT
     bne checkUp
     inc _player2_x
     jmp renderPlayer
 
-checkUp
+    checkUp
     lda _player2_direction
     cmp #PLAYER_DIRECTION_UP
     bne checkDown
@@ -421,14 +469,14 @@ checkUp
     jmp renderPlayer
 
 
-checkDown
+    checkDown
     lda _player2_direction
     cmp #PLAYER_DIRECTION_DOWN
     bne checkDone
     movePlayerDown
     inc _player2_y
 
-renderPlayer
+    renderPlayer
     ldy _player2_y;
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
@@ -474,11 +522,17 @@ renderPlayer
     noBlackHole
     ; check for collision with eraser
     cmp #COLLISION_TYPE_ERASER
-    bne storeAndPlot
+    bne noEraser
     jsr eraseTrailPlayer2
     lda _player2_x
     tay
     jmp plot0
+
+    noEraser
+    cmp #COLLISION_TYPE_SLOW
+    bne storeAndPlot
+    jsr slowdownPlayer2
+
 
     storeAndPlot
     ; store trail data
@@ -600,6 +654,126 @@ setupDefaultKeys
 
     lda #DOWN_KEY_PLAYER2_COL_MASK
     sta key_down_player2_col_mask
+    rts
+.)
+
+
+slowdownPlayer1
+.(
+    ldy _player1_y
+    lda OffscreenLineLookupLo,Y
+    sta _line_start_lo
+    lda OffscreenLineLookupHi,y
+    sta _line_start_hi
+    ldy _player1_x
+    lda (_line_start),Y
+    cmp #SLOW_CHAR_CODE_RIGHT
+    bne checkMid
+    dey
+    dey
+    checkMid
+    cmp #SLOW_CHAR_CODE_MID
+    bne atLeft
+    dey
+    atLeft
+    // fill in background with 'grains'
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+    iny
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+    iny
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+
+    ;set player motion state to slow
+    lda #PLAYER_EFFECT_TYPE_SLOW
+    sta _player1_effect_type
+    lda #MAX_CYCLES_SLOW_EFFECT
+    sta _player1_effect_cycles_remaining
+
+
+    rts
+.)
+
+
+slowdownPlayer2
+.(
+    ldy _player2_y
+    lda OffscreenLineLookupLo,Y
+    sta _line_start_lo
+    lda OffscreenLineLookupHi,y
+    sta _line_start_hi
+    ldy _player2_x
+    lda (_line_start),Y
+    cmp #SLOW_CHAR_CODE_RIGHT
+    bne checkMid
+    dey
+    dey
+    checkMid
+    cmp #SLOW_CHAR_CODE_MID
+    bne atLeft
+    dey
+    atLeft
+    // fill in background with 'grains'
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+    iny
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+    iny
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+
+    ;set player motion state to slow
+    lda #PLAYER_EFFECT_TYPE_SLOW
+    sta _player2_effect_type
+    lda #MAX_CYCLES_SLOW_EFFECT
+    sta _player2_effect_cycles_remaining
+
+
     rts
 .)
 

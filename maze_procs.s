@@ -111,6 +111,7 @@ plotStuff
     jsr plotRandomErasers
     jsr plotRandomBlocks
     jsr plot_inner_walls
+    jsr plotRandomSlowSigns
     
     jsr plotRandomBlackHoles
 
@@ -264,7 +265,7 @@ plotRandomErasers
         beq done
         jsr _GetRand
         lda rand_low
-        cmp #251
+        cmp #252
         bcs skip
         adc #01
         sta _plot_ch_x
@@ -292,6 +293,48 @@ plotRandomErasers
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+plotRandomSlowSigns
+.(
+    ldy #100
+    sty y_temp
+
+    .(
+        :loop
+        beq done
+        jsr _GetRand
+        lda rand_low
+        cmp #250
+        bcs skip
+        adc #01
+        sta _plot_ch_x
+        jsr _GetRand
+        lda rand_low
+        cmp #77
+        bcs skip
+        adc #2
+        tay
+        lda OffscreenLineLookupLo,Y
+        sta _maze_line_start_lo
+        lda OffscreenLineLookupHi,y
+        sta _maze_line_start_hi
+        lda #SLOW_CHAR_CODE_LEFT
+        ldy _plot_ch_x
+        sta (_maze_line_start),Y
+        lda #SLOW_CHAR_CODE_MID
+        iny
+        sta (_maze_line_start),Y
+        lda #SLOW_CHAR_CODE_RIGHT
+        iny
+        sta (_maze_line_start),Y
+
+        skip
+        dec y_temp
+        jmp loop
+    .)
+    done 
+    rts
+.)
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; plotSafeSpace: fill an area with 'safe characters'. This is used to ensure that
