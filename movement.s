@@ -245,10 +245,7 @@ processJoystickPlayer2
 
 
 updateMovementPlayer1 
-.(
-
-    ;todo
-    rts 
+.( 
     lda _player1_effect_type
     beq doMove
 
