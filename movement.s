@@ -286,8 +286,6 @@ processJoystickPlayer2
     done rts
 .)
 
-
-;TODO fix death 
 updateMovement
 .( 
     ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
@@ -489,7 +487,12 @@ updateMovement
     jsr plotArea
 
     :updateStatusLine
-    ;TODO detect which player died and update accordingly
+    ldy #PLAYER_DATA_OFFSET_ID
+    lda (_player_data),Y
+    cmp #01
+    bne showPlayer2Death
+    
+    ; detect which player died and update accordingly
     ; print message on status line
     lda #<Player1DeadMessage
     sta loadMessageLoop+1
@@ -499,6 +502,19 @@ updateMovement
 
     ; set flag for player dead
     lda #PLAYER_STATUS_DEAD_PLAYER_1
+    sta _player_status
+    jsr bigDelay
+    rts
+
+    showPlayer2Death
+    lda #<Player2DeadMessage
+    sta loadMessageLoop+1
+    lda #>Player2DeadMessage
+    sta loadMessageLoop+2
+    jsr printStatusMessage
+
+    ; set flag for player dead
+    lda #PLAYER_STATUS_DEAD_PLAYER_2
     sta _player_status
     jsr bigDelay
     rts

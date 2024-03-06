@@ -60,7 +60,6 @@ Keyboard mapper
 
 
 KNOWN ISSUES
-PLAYER 1 moves at double the speed in side by side mode
 Erase Trail/Trail memory incorrect
 Keyboard not as responsive as I would like (add keys as parameters to player data and only
 lookup the keys required, rather than doing a full scan)
