@@ -60,6 +60,16 @@ Keyboard mapper
 
 
 KNOWN ISSUES
-Erase Trail/Trail memory incorrect
 Keyboard not as responsive as I would like (add keys as parameters to player data and only
 lookup the keys required, rather than doing a full scan)
+
+IDEAS/ TODOS
+Score (length or time survived)
+Level (faster and more obstacles)
+Leave no trail for next x moves
+Add obstacles
+Remove obstacles
+Explode other player
+Jump x places in a direction
+Draw lines into area (vert or horizontal or both)
+Collectables (collect in order?)
