@@ -92,6 +92,9 @@ startagain
     sta _player_data_hi
     jsr initTrailMemory
 
+    lda #PLAYER1_SEGEMENT_CHAR_CODE
+    sta _player1_char_code
+
     
     lda #PLAYER_STATUS_BOTH_ALIVE
     sta _player_status
@@ -151,6 +154,9 @@ startagain
     lda #>player2_data
     sta _player_data_hi
     jsr initTrailMemory
+
+    lda #PLAYER2_SEGEMENT_CHAR_CODE
+    sta _player2_char_code
 
     ; plot a safe zone around the starting position
     lda _player2_x

@@ -107,7 +107,7 @@ smallDelay
 .(
     txa
     pha
-    ldx #$1a
+    ldx #$0f
 
     outer_loop
     
@@ -121,7 +121,6 @@ smallDelay
     dex
     cpx #00 
     bpl outer_loop
-
     pla
     tax
     rts    

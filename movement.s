@@ -18,6 +18,7 @@ _player1_trail_data_char
 _player1_trail_data_char_lo .dsb 1
 _player1_trail_data_char_hi .dsb 1
 _player1_trail_index .dsb 1
+_player1_char_code .dsb 1
 
 
 player2_data
@@ -38,6 +39,8 @@ _player2_trail_data_char
 _player2_trail_data_char_lo .dsb 1
 _player2_trail_data_char_hi .dsb 1
 _player2_trail_index .dsb 1
+_player2_char_code .dsb 1
+
 
 processKeyboardPlayer1
 .(
@@ -438,15 +441,13 @@ updateMovement
     tay
     lda (_maze_line_start),Y
     sta trailChar
-    ;tya
-    ;tax
     jsr addTrailItem
-    ;txa
-    ;tay
+    
 
     :plot0
+    ldy #PLAYER_DATA_OFFSET_CHAR_CODE
+    lda (_player_data),y ; character code for segment of light trail
     ldy trailItemX
-    lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
     :checkDone
@@ -464,7 +465,8 @@ updateMovement
     ldy #PLAYER_DATA_OFFSET_X
     lda (_player_data),y
     tay
-    lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
+    ldy #PLAYER_DATA_OFFSET_CHAR_CODE
+    lda (_player_data),y ; character code for segment of light trail
     sta (_maze_line_start),y
 
     ; Set metrics based on screen mode
