@@ -6,7 +6,8 @@
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; getCollisionInfo: returns the type of collision, if any, for a point
-; in the offscreen maze data.
+; in the offscreen maze data. Also triggers the sound effect when 
+; a collision occurs.
 ; Params: 
 ;   temp_param_0: x position
 ;   temp_param_1: y position

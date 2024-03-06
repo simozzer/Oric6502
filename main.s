@@ -155,7 +155,7 @@ startagain
     sta _player_data_hi
     jsr initTrailMemory
 
-    lda #PLAYER2_SEGEMENT_CHAR_CODE
+    lda #PLAYER2_SEGEMENT_CHAR_CODE + 128;  Plus 128 for inverse 
     sta _player2_char_code
 
     ; plot a safe zone around the starting position

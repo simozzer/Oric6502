@@ -292,7 +292,6 @@ updateMovement
     lda (_player_data),y
     beq doMove
 
-    ronny
     cmp #PLAYER_EFFECT_TYPE_SLOW
     beq processSlow1
     jmp doMove
@@ -421,14 +420,14 @@ updateMovement
     ldy #PLAYER_DATA_OFFSET_X
     lda (_player_data),y
     tay
-    jmp plot0
+    jmp storeAndPlot
 
     noEraser
     cmp #COLLISION_TYPE_SLOW
     bne storeAndPlot
     jsr slowdownPlayer
 
-    storeAndPlot
+    :storeAndPlot
     ; store trail data
     ldy #PLAYER_DATA_OFFSET_Y
     lda (_player_data),y
@@ -438,6 +437,10 @@ updateMovement
     sta trailItemX
     tay
     lda (_maze_line_start),Y
+    cmp #ERASER_CHAR_CODE
+    bne storeTrailChar
+    lda #97 ; 1st grain char code
+    storeTrailChar
     sta trailChar
     jsr addTrailItem
     
