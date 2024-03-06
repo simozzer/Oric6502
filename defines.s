@@ -93,7 +93,7 @@
 #DEFINE INTSL_ATMOS $024A ; Return from interrupt handler (normally RTI)
 #DEFINE INTSL_ORIC1 $0230 ;
 
-#DEFINE TRACKER_STEP_LENGTH 3 ;// number of times interrupts handler should be called before advancing to the next step
+#DEFINE TRACKER_STEP_LENGTH 12 ;// number of times interrupts handler should be called before advancing to the next step
 
 #DEFINE PLAYER_DIRECTION_LEFT 0;
 #DEFINE PLAYER_DIRECTION_RIGHT 1;
@@ -182,7 +182,7 @@
 #DEFINE ASCII_SPACE 32
 
 
-#DEFINE TRAIL_MEMORY_LENGTH 8
+#DEFINE TRAIL_MEMORY_LENGTH 50
 
 
 #DEFINE GAME_MODE_RUNNING  0

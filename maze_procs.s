@@ -110,7 +110,8 @@ plot_offscreen
 plotStuff
     jsr plotRandomErasers
     jsr plotRandomBlocks
-    ;TODO revert jsr plot_inner_walls
+    ;TODO revert 
+    jsr plot_inner_walls
     jsr plotRandomSlowSigns
     
     jsr plotRandomBlackHoles

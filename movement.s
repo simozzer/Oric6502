@@ -489,6 +489,7 @@ updateMovement
     jsr plotArea
 
     :updateStatusLine
+    ;TODO detect which player died and update accordingly
     ; print message on status line
     lda #<Player1DeadMessage
     sta loadMessageLoop+1

@@ -1,15 +1,15 @@
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; updateMovementComputerPlayer: updates the movement for the computer 
-; controlled player, checks for any collision types and processes 
-; the collisions
-; Params: none
-; Returns: null
-; -------------------------------------------------------------------
+
 
 _temp_player_x .byt 0
 _temp_player_y .byt 0
 _temp_player_direction .byt 0
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; chooseDirectionForComputerPlayer: updates the direction for the computer
+; controlled player, if required.
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
 chooseDirectionForComputerPlayer
 .(
 
@@ -103,13 +103,15 @@ chooseDirectionForComputerPlayer
 
         ; can only move down
         lda #PLAYER_DIRECTION_DOWN
-        sta _player2_direction
+        ldy #PLAYER_DATA_OFFSET_DIRECTION
+        sta (_player_data),Y
         rts
 
         ; can only move up
         changeFromLeftToUp
         lda #PLAYER_DIRECTION_UP
-        sta _player2_direction
+        ldy #PLAYER_DATA_OFFSET_DIRECTION
+        sta (_player_data),Y
         rts
 
         :chooseADirectionFromLeft
@@ -122,13 +124,15 @@ chooseDirectionForComputerPlayer
         
         ; choose down
         lda #PLAYER_DIRECTION_DOWN
-        sta _player2_direction
+        ldy #PLAYER_DATA_OFFSET_DIRECTION
+        sta (_player_data),Y
         rts
 
 
         chooseUpFromLeft
         lda #PLAYER_DIRECTION_UP
-        sta _player2_direction
+        ldy #PLAYER_DATA_OFFSET_DIRECTION
+        sta (_player_data),Y
         rts
 
         ;------------------------------------------------------------------------------------------------
@@ -212,13 +216,15 @@ chooseDirectionForComputerPlayer
 
     ; can only move down - store direction change and return
     lda #PLAYER_DIRECTION_DOWN
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     ; can only move up
     changeFromRightToUp
     lda #PLAYER_DIRECTION_UP
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
      :chooseADirectionFromRight
@@ -231,12 +237,14 @@ chooseDirectionForComputerPlayer
 
     ; choose down
     lda #PLAYER_DIRECTION_DOWN
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     chooseUpFromRight
     lda #PLAYER_DIRECTION_UP
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     ;--------------------------------------------------------------------------------------
@@ -316,13 +324,15 @@ chooseDirectionForComputerPlayer
 
     ; can only move right
     lda #PLAYER_DIRECTION_RIGHT
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     ; can only move left
     changeFromUpToLeft
     lda #PLAYER_DIRECTION_LEFT
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     ; choose right or left at random
@@ -336,12 +346,14 @@ chooseDirectionForComputerPlayer
 
     ; choose right
     lda #PLAYER_DIRECTION_RIGHT
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     chooseLeftFromUp
     lda #PLAYER_DIRECTION_LEFT
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     ;-------------------------------------------------------------------------------------
@@ -418,13 +430,15 @@ chooseDirectionForComputerPlayer
 
     ; can only move right
     lda #PLAYER_DIRECTION_RIGHT
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     ; can only move left
     changeFromDownToLeft
     lda #PLAYER_DIRECTION_LEFT
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     ; choose right or left at random
@@ -438,11 +452,13 @@ chooseDirectionForComputerPlayer
 
     ; choose right
     lda #PLAYER_DIRECTION_RIGHT
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 
     chooseLeftFromDown
     lda #PLAYER_DIRECTION_LEFT
-    sta _player2_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    sta (_player_data),Y
     rts
 .)

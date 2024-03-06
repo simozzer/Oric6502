@@ -215,7 +215,6 @@ runFullScreen
     jsr smallDelay
     jsr AnimateCharacters
 
-
     jsr processMovements
     
     lda _player_status
@@ -246,10 +245,6 @@ runSideBySide
     sta _player_data_lo
     lda #>player1_data
     sta _player_data_hi
-
-    jsr processKeyboardPlayer1
-    jsr processJoystickPlayer1
-    jsr updateMovement
 
     render0
     jsr plotArea ; render left screen
@@ -306,10 +301,6 @@ runTopToBottom
     sta _player_data_lo
     lda #>player1_data
     sta _player_data_hi
-
-    jsr processKeyboardPlayer1
-    jsr processJoystickPlayer1
-    jsr updateMovement
 
     render0
     jsr plotArea ; render left screen
