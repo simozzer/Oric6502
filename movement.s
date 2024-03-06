@@ -1,4 +1,44 @@
 
+
+player1_data
+_player1_id .dsb 1
+_player1_x .dsb 1
+_player1_y .dsb 1
+_player1_direction .dsb 1
+_player1_effect_type .dsb 1
+_player1_effect_cycles_remaining .dsb 1
+_player1_trail_data
+_player1_trail_data_x
+_player1_trail_data_x_lo .dsb 1
+_player1_trail_data_x_hi .dsb 1
+_player1_trail_data_y
+_player1_trail_data_y_lo .dsb 1
+_player1_trail_data_y_hi .dsb 1
+_player1_trail_data_char
+_player1_trail_data_char_lo .dsb 1
+_player1_trail_data_char_hi .dsb 1
+_player1_trail_index .dsb 1
+
+
+player2_data
+_player2_id .dsb 1
+_player2_x .dsb 1
+_player2_y .dsb 1
+_player2_direction .dsb 1
+_player2_effect_type .dsb 1
+_player2_effect_cycles_remaining .dsb 1
+_player2_trail_data
+_player2_trail_data_x
+_player2_trail_data_x_lo .dsb 1
+_player2_trail_data_x_hi .dsb 1
+_player2_trail_data_y
+_player2_trail_data_y_lo .dsb 1
+_player2_trail_data_y_hi .dsb 1
+_player2_trail_data_char
+_player2_trail_data_char_lo .dsb 1
+_player2_trail_data_char_hi .dsb 1
+_player2_trail_index .dsb 1
+
 processKeyboardPlayer1
 .(
     
@@ -244,18 +284,24 @@ processJoystickPlayer2
 .)
 
 
-updateMovementPlayer1 
+;TODO fix death 
+updateMovement
 .( 
-    lda _player1_effect_type
+    ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
+    lda (_player_data),y
     beq doMove
 
+    ronny
     cmp #PLAYER_EFFECT_TYPE_SLOW
-    beq processSlow
+    beq processSlow1
     jmp doMove
 
-    processSlow
-    dec _player1_effect_cycles_remaining
-    lda _player1_effect_cycles_remaining
+    processSlow1
+    ldy #PLAYER_DATA_OFFSET_CYCLES_REMAINING
+    lda (_player_data),y
+    sec
+    sbc #01
+    sta (_player_data),y
     beq stopSlow
     and #01
     cmp #01
@@ -263,49 +309,75 @@ updateMovementPlayer1
     rts
 
     stopSlow
+    ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
     lda #PLAYER_EFFECT_TYPE_NONE
-    sta _player1_effect_type
+    sta (_player_data),y
 
     :doMove
-    lda _player1_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    lda (_player_data),y
     cmp #PLAYER_DIRECTION_LEFT
     bne checkRight
-    dec _player1_x
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),y
+    sec
+    sbc #01
+    sta (_player_data),y
     jmp renderPlayer
 
     :checkRight
-    lda _player1_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    lda (_player_data),y
     cmp #PLAYER_DIRECTION_RIGHT
     bne checkUp
-    inc _player1_x
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),y
+    clc
+    adc #01
+    sta (_player_data),y
     jmp renderPlayer
 
     :checkUp
-    lda _player1_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    lda (_player_data),y
     cmp #PLAYER_DIRECTION_UP
     bne checkDown
-    dec _player1_y
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),y
+    sec
+    sbc #01
+    sta (_player_data),y
     jmp renderPlayer
 
 
     :checkDown
-    lda _player1_direction
+    ldy #PLAYER_DATA_OFFSET_DIRECTION
+    lda (_player_data),y
     cmp #PLAYER_DIRECTION_DOWN
-    bne checkDone
+    beq movePlayerDown
+    jmp checkDone
     movePlayerDown
-    inc _player1_y
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),y
+    clc
+    adc #01
+    sta (_player_data),y
 
     :renderPlayer
-    ldy _player1_y;
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),y
+    tay
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
 
     ; check for collision with fatal object
-    lda _player1_x
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),y
     sta temp_param_0
-    lda _player1_y
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),y
     sta temp_param_1
     jsr getCollisionInfo
     lda temp_result
@@ -326,7 +398,8 @@ updateMovementPlayer1
         bcs getX
         clc
         adc #05
-        sta _player1_x
+        ldy #PLAYER_DATA_OFFSET_X
+        sta (_player_data),y
 
         getY
         jsr _GetRand;
@@ -335,53 +408,62 @@ updateMovementPlayer1
         bcs getY
         clc
         adc #05
-        sta _player1_y
+        ldy #PLAYER_DATA_OFFSET_Y
+        sta (_player_data),y
     .)
 
     noBlackHole
     ; check for collision with eraser
     cmp #COLLISION_TYPE_ERASER
     bne noEraser
-    jsr eraseTrailPlayer1
-    lda _player1_x
+    jsr eraseTrail
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),y
     tay
     jmp plot0
 
     noEraser
     cmp #COLLISION_TYPE_SLOW
     bne storeAndPlot
-    jsr slowdownPlayer1
+    jsr slowdownPlayer
 
     storeAndPlot
     ; store trail data
-    lda _player1_y
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),y
     sta trailItemY
-    lda _player1_x
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),y
     sta trailItemX
     tay
     lda (_maze_line_start),Y
     sta trailChar
-    tya
-    tax
-    jsr addTrailItemPlayer1
-    txa
-    tay
+    ;tya
+    ;tax
+    jsr addTrailItem
+    ;txa
+    ;tay
 
     :plot0
+    ldy trailItemX
     lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
-    checkDone
-   rts
+    :checkDone
+    rts
 
 :playerDead
     ; update the player position on screen
-    ldy _player1_y;
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),y
+    tay
     lda OffscreenLineLookupLo,Y
     sta _maze_line_start_lo
     lda OffscreenLineLookupHi,y
     sta _maze_line_start_hi
-    ldy _player1_x
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),y
+    tay
     lda #PLAYER1_SEGEMENT_CHAR_CODE ; character code for segment of light trail
     sta (_maze_line_start),y
 
@@ -418,187 +500,6 @@ updateMovementPlayer1
     jsr bigDelay
     rts
 .)
-
-
-
-updateMovementPlayer2 
-.(
-
-    lda _player2_effect_type
-    beq doMove
-
-    cmp #PLAYER_EFFECT_TYPE_SLOW
-    beq processSlow
-    jmp doMove
-
-    processSlow
-    dec _player2_effect_cycles_remaining
-    lda _player2_effect_cycles_remaining
-    beq stopSlow
-    and #01
-    cmp #01
-    beq doMove
-    rts
-
-    stopSlow
-    lda #PLAYER_EFFECT_TYPE_NONE
-    sta _player2_effect_type
-
-    doMove
-    lda _player2_direction
-    cmp #PLAYER_DIRECTION_LEFT
-    bne checkRight
-    dec _player2_x
-    jmp renderPlayer
-
-    checkRight
-    lda _player2_direction
-    cmp #PLAYER_DIRECTION_RIGHT
-    bne checkUp
-    inc _player2_x
-    jmp renderPlayer
-
-    checkUp
-    lda _player2_direction
-    cmp #PLAYER_DIRECTION_UP
-    bne checkDown
-    dec _player2_y
-    jmp renderPlayer
-
-
-    checkDown
-    lda _player2_direction
-    cmp #PLAYER_DIRECTION_DOWN
-    bne checkDone
-    movePlayerDown
-    inc _player2_y
-
-    renderPlayer
-    ldy _player2_y;
-    lda OffscreenLineLookupLo,Y
-    sta _maze_line_start_lo
-    lda OffscreenLineLookupHi,y
-    sta _maze_line_start_hi
-
-    ; check for collision with fatal object
-    lda _player2_x
-    sta temp_param_0
-    lda _player2_y
-    sta temp_param_1
-    jsr getCollisionInfo
-    lda temp_result
-    cmp #COLLISION_TYPE_FATAL
-    beq playerDead
-
-
-    ; check for collision with black hole
-    cmp #COLLISION_TYPE_BLACK_HOLE
-    bne noBlackHole
-    
-    ;process black hole collision
-    .(
-    getX
-        jsr _GetRand; get random x position
-        lda rand_low;
-        cmp #245
-        bcs getX
-        clc
-        adc #05
-        sta _player2_x
-
-        getY
-        jsr _GetRand;
-        lda rand_low;
-        cmp #70
-        bcs getY
-        clc
-        adc #05
-        sta _player2_y
-    .)
-
-    noBlackHole
-    ; check for collision with eraser
-    cmp #COLLISION_TYPE_ERASER
-    bne noEraser
-    jsr eraseTrailPlayer2
-    lda _player2_x
-    tay
-    jmp plot0
-
-    noEraser
-    cmp #COLLISION_TYPE_SLOW
-    bne storeAndPlot
-    jsr slowdownPlayer2
-
-
-    storeAndPlot
-    ; store trail data
-    lda _player2_y
-    sta trailItemY
-    lda _player2_x
-    sta trailItemX
-    tay
-    lda (_maze_line_start),Y
-    sta trailChar
-    tya
-    tax
-    jsr addTrailItemPlayer2
-    txa
-    tay
-
-    :plot0
-    lda #PLAYER2_SEGEMENT_CHAR_CODE + 128; character code for segment of light trail
-    sta (_maze_line_start),y
-
-checkDone
-   rts
-
-:playerDead
-    ; update the player position on screen
-    ldy _player2_y;
-    lda OffscreenLineLookupLo,Y
-    sta _maze_line_start_lo
-    lda OffscreenLineLookupHi,y
-    sta _maze_line_start_hi
-    ldy _player2_x
-    lda #PLAYER2_SEGEMENT_CHAR_CODE ; character code for segment of light trail
-    sta (_maze_line_start),y
-
-    ; Set metrics based on screen mode
-    lda _display_mode
-    cmp #DISPLAY_MODE_SIDE_BY_SIDE
-    beq updateSideBySide
-    cmp #DISPLAY_MODE_FULLSCREEN
-    beq updateStatusLine
-
-    jsr setMetricsForTopScreen
-    jsr plotArea
-    jsr setMetricsForBottomScreen
-    jsr plotArea
-    jmp updateStatusLine
-
-    updateSideBySide
-    jsr setMetricsForLeftScreen
-    jsr plotArea
-    jsr setMetricsForRightScreen
-    jsr plotArea
-
-    :updateStatusLine
-    ; print message on status line
-    lda #<Player2DeadMessage
-    sta loadMessageLoop+1
-    lda #>Player2DeadMessage
-    sta loadMessageLoop+2
-    jsr printStatusMessage
-
-    ; set flag for player dead
-    lda #PLAYER_STATUS_DEAD_PLAYER_2
-    sta _player_status
-    jsr bigDelay
-    rts
-.)
-
-
 
 
 setupDefaultKeys
@@ -655,14 +556,18 @@ setupDefaultKeys
 .)
 
 
-slowdownPlayer1
+slowdownPlayer
 .(
-    ldy _player1_y
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),Y
+    tay
     lda OffscreenLineLookupLo,Y
     sta _line_start_lo
     lda OffscreenLineLookupHi,y
     sta _line_start_hi
-    ldy _player1_x
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),Y
+    tay
     lda (_line_start),Y
     cmp #SLOW_CHAR_CODE_RIGHT
     bne checkMid
@@ -705,70 +610,12 @@ slowdownPlayer1
     sta (_line_start),y
 
     ;set player motion state to slow
+    ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
     lda #PLAYER_EFFECT_TYPE_SLOW
-    sta _player1_effect_type
+    sta (_player_data),y
+    ldy #PLAYER_DATA_OFFSET_CYCLES_REMAINING
     lda #MAX_CYCLES_SLOW_EFFECT
-    sta _player1_effect_cycles_remaining
-
-
-    rts
-.)
-
-
-slowdownPlayer2
-.(
-    ldy _player2_y
-    lda OffscreenLineLookupLo,Y
-    sta _line_start_lo
-    lda OffscreenLineLookupHi,y
-    sta _line_start_hi
-    ldy _player2_x
-    lda (_line_start),Y
-    cmp #SLOW_CHAR_CODE_RIGHT
-    bne checkMid
-    dey
-    dey
-    checkMid
-    cmp #SLOW_CHAR_CODE_MID
-    bne atLeft
-    dey
-    atLeft
-    // fill in background with 'grains'
-    tya
-    pha
-    jsr _GetRand
-    pla
-    tay
-    lda rand_low;
-    and #15
-    adc #97
-    sta (_line_start),y
-    iny
-    tya
-    pha
-    jsr _GetRand
-    pla
-    tay
-    lda rand_low;
-    and #15
-    adc #97
-    sta (_line_start),y
-    iny
-    tya
-    pha
-    jsr _GetRand
-    pla
-    tay
-    lda rand_low;
-    and #15
-    adc #97
-    sta (_line_start),y
-
-    ;set player motion state to slow
-    lda #PLAYER_EFFECT_TYPE_SLOW
-    sta _player2_effect_type
-    lda #MAX_CYCLES_SLOW_EFFECT
-    sta _player2_effect_cycles_remaining
+    sta (_player_data),y
 
 
     rts

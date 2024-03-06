@@ -6,7 +6,7 @@
 ; I've made a couple of small modifications so that the standard RTI addresses can
 ; be used on the Oric1 and Atmos (when not using ROM overlay)
 
-#include "whole_keyboard.h"
+#include "./Keyboard/whole_keyboard.h"
 
 #define ROM
 

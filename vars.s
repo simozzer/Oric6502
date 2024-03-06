@@ -50,21 +50,13 @@ _playback_music_info_byte_addr; the pointer for the information for the note to 
 _playback_music_info_byte_lo .dsb 1
 _playback_music_info_byte_hi .dsb 1
 
+_player_data
+_player_data_lo .dsb 1
+_player_data_hi .dsb 1
 
-_player1_x .dsb 1
-_player1_y .dsb 1
-_player1_direction .dsb 1
-_player1_effect_type .dsb 1
-_player1_effect_cycles_remaining .dsb 1
 
 _player_status .dsb 1
 
-
-_player2_x .dsb 1
-_player2_y .dsb 1
-_player2_direction .dsb 1
-_player2_effect_type .dsb 1
-_player2_effect_cycles_remaining .dsb 1
 
 _maze_line_start
 _maze_line_start_lo .dsb 1

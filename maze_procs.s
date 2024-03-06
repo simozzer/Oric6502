@@ -110,7 +110,7 @@ plot_offscreen
 plotStuff
     jsr plotRandomErasers
     jsr plotRandomBlocks
-    jsr plot_inner_walls
+    ;TODO revert jsr plot_inner_walls
     jsr plotRandomSlowSigns
     
     jsr plotRandomBlackHoles
@@ -133,8 +133,11 @@ plot_inner_walls
         // lookup y position
         ldy _plot_index_y           ; lookup y position for current y index
         lda inner_wall_y_positions,Y
+        cmp #00
+        beq doneIt                  ; exit if y position is zero
+        
         sta center_y                ; store center y positon for walls to be drawn
-        beq done             ; exit if y position is zero
+        
         inc _plot_index_y           ; otherwise move to next position.
 
         lda #00                     ; set index to lookup first x position
@@ -144,6 +147,7 @@ plot_inner_walls
             ldy _plot_index_x               ;lookup x position for current x index
             lda inner_wall_x_positions,Y
             sta center_x                    ; store center x position for walls to be drawn.
+            cmp #00
             beq y_loop                      ; If x position is zero then goto next y position
             inc _plot_index_x               ; otherwise lookup next x position
 
@@ -152,7 +156,8 @@ plot_inner_walls
             jmp x_loop                      ; continue to loop x positions until last item in list is reached
         .)
     .)
-    done
+    doneIt
+    rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -168,14 +173,14 @@ plotRandomBlocks
         jsr _GetRand
         lda rand_low
         cmp #253
-        bcs skip
+        bcs skip_
         clc
         adc #2
         sta _plot_ch_x
         jsr _GetRand
         lda rand_low
         cmp #78
-        bcs skip
+        bcs skip_
         clc
         adc #1
         tay
@@ -189,7 +194,7 @@ plotRandomBlocks
         sta (_maze_line_start),Y
 
 
-        skip
+        skip_
         dec y_temp
         jmp loop
     .)

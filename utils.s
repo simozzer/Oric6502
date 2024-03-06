@@ -107,7 +107,7 @@ smallDelay
 .(
     txa
     pha
-    ldx #$0c
+    ldx #$1a
 
     outer_loop
     
@@ -237,6 +237,8 @@ clear_next_line
 ; ------------------------------------------------------------------------------
 _GetRand
 .(
+    ;tya 
+    ;pha
     ldy #8  
 	lda rand_low
 :back
@@ -249,6 +251,9 @@ _GetRand
 	bne back
 	sta rand_low
 	cmp #0     ; reload flags
+
+    ;pla
+    ;tay
 	rts
     .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

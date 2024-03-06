@@ -8,95 +8,161 @@ trail_x_pos_player_2 .dsb  TRAIL_MEMORY_LENGTH,1
 trail_y_pos_player_2 .dsb  TRAIL_MEMORY_LENGTH,2
 trail_char_player_2 .dsb TRAIL_MEMORY_LENGTH,3
 
-
+_temp_trail_index .dsb 1
 
 initTrailMemory
 .(
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_X
+  lda (_player_data),y ; lo
+  sta initXTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta initXTrailList+2
+
+
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_Y
+  lda (_player_data),y ; lo
+  sta initYTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta initYTrailList+2
+
+
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_CHAR
+  lda (_player_data),y ; lo
+  sta initCharTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta initCharTrailList+2
+
   lda #00
   ldy #00
   loop
-  sta trail_x_pos_player_1,Y
-  sta trail_y_pos_player_1,Y
-  sta trail_char_player_1,y
-  sta trail_x_pos_player_2,Y
-  sta trail_y_pos_player_2,Y
-  sta trail_char_player_2,y
+ 
+  :initXTrailList
+  sta $ffff,y ; uses self modified value
+  
+  :initYTrailList
+  sta $ffff,y ; uses self modified value
+
+  :initCharTrailList
+  sta $ffff,y ; uses self modified value
+  
   iny
   cpy #TRAIL_MEMORY_LENGTH
   bne loop
 
-  sta trail_index_player_1
-  sta trail_index_player_2
+  ldy #PLAYER_DATA_OFFSET_TRAIL_INDEX
+  lda #0
+  sta (_player_data),y
+
   rts
 .)
 
 
-addTrailItemPlayer1
+addTrailItem
 .(
-  ldy trail_index_player_1
-  cpy #TRAIL_MEMORY_LENGTH
+  ldy #PLAYER_DATA_OFFSET_TRAIL_INDEX
+  lda (_player_data),y  
+  cmp #TRAIL_MEMORY_LENGTH
   bne add
-  ldy #0
-  sty trail_index_player_1
+  ldy #PLAYER_DATA_OFFSET_TRAIL_INDEX
+  lda #0
+  sta (_player_data),y
   add
-  lda trailItemX
-  sta trail_x_pos_player_1,y
+  sta _temp_trail_index
 
+  ; find the address of the trail data x position list
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_X
+  lda (_player_data),y ; lo
+  sta storeXTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta storeXTrailList+2
+
+  ; find the address of the trail data y position list
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_Y
+  lda (_player_data),y ; lo
+  sta storeYTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta storeYTrailList+2
+
+  ; find the address of the trail data char list
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_CHAR
+  lda (_player_data),y ; lo
+  sta storeCharTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta storeCharTrailList+2
+
+  ; store the x position in the list
+  ldy _temp_trail_index
+  lda trailItemX
+  :storeXTrailList
+  sta $ffff,y ; value is self modified
+
+  ; store the y position in the list
   lda trailItemY
-  sta trail_y_pos_player_1,y
+  :storeYTrailList
+  sta $ffff,y ; value is self modified
   
+  ; store the y position in the list
   lda trailChar
-  sta trail_char_player_1,y
-  
-  inc trail_index_player_1
+  :storeCharTrailList
+  sta $ffff,y ; value is self modified
+
+  tya
+  clc
+  adc #01
+  ldy #PLAYER_DATA_OFFSET_TRAIL_INDEX
+  sta (_player_data),y
+
   rts
 .)
 
-addTrailItemPlayer2
-.(
-  ldy trail_index_player_2
-  cpy #TRAIL_MEMORY_LENGTH
-  bne add
-  ldy #0
-  sty trail_index_player_2
-  add
-  lda trailItemX
-  sta trail_x_pos_player_2,y
 
-  lda trailItemY
-  sta trail_y_pos_player_2,y
-  
-  lda trailChar
-  sta trail_char_player_2,y
-  
-  inc trail_index_player_2
-  rts
-.)
-
-eraseTrailPlayer1
+eraseTrail
 .(
-  ldx #TRAIL_MEMORY_LENGTH-1
-  loop
-  ldy trail_index_player_1
-  cpy #00
-  bne doItWithDec
+  ;setup pointers to the lists containing the trail memory 
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_X
+  lda (_player_data),y ; lo
+  sta fetchXTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta fetchXTrailList+2
+
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_Y
+  lda (_player_data),y ; lo
+  sta fetchYTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta fetchYTrailList+2
+
+  ldy #PLAYER_DATA_OFFSET_TRAIL_DATA_CHAR
+  lda (_player_data),y ; lo
+  sta fetchCharTrailList+1
+  iny
+  lda (_player_data),y ;hi
+  sta fetchCharTrailList+2
+
+  ; X register will be used to count the iterations until the trail is erased
   ldy #TRAIL_MEMORY_LENGTH-1
-  sty trail_index_player_1
-  jmp doItWithNoDec
+  tya
+  tax
+  loop
 
-  doItWithDec
-  dey
-  sty trail_index_player_1
-  :doItWithNoDec
-  ;get xpos - if it is zero then the entry is empty and we're done
-  lda trail_x_pos_player_1,y
-  beq done
+  :fetchXTrailList
+  lda $ffff,y ;self modified
+  beq skip
   sta trailItemX
 
-  lda trail_y_pos_player_1,Y
+  :fetchYTrailList
+  lda $ffff,y ;self modified
   sta trailItemY
 
-  lda trail_char_player_1,Y
+  :fetchCharTrailList
+  lda $ffff,y ;self modified
   sta trailChar
 
   ; restore the character for the trail item
@@ -109,61 +175,16 @@ eraseTrailPlayer1
   lda trailChar
   sta (_line_start),y
 
+  skip
   dex
-  cpx #00
-  beq done
+  bmi done
+  txa
+  tay
   jmp loop
   
   done
-    jsr initTrailMemory
-    rts
-.)
-
-
-eraseTrailPlayer2
-.(
-  ldx #TRAIL_MEMORY_LENGTH-1
-  loop
-  ldy trail_index_player_2
-  cpy #00
-  bne doItWithDec0
-  ldy #TRAIL_MEMORY_LENGTH-1
-  sty trail_index_player_2
-  jmp doItWithNoDec0
-
-  doItWithDec0
-  dey
-  sty trail_index_player_2
-  :doItWithNoDec0
-  ;get xpos - if it is zero then the entry is empty and we're done
-  lda trail_x_pos_player_2,y
-  beq done
-  sta trailItemX
-
-  lda trail_y_pos_player_2,Y
-  sta trailItemY
-
-  lda trail_char_player_2,Y
-  sta trailChar
-
-  ; restore the character for the trail item
-  ldy trailItemY
-  lda OffscreenLineLookupLo,y
-  sta _line_start_lo
-  lda OffscreenLineLookupHi,y
-  sta _line_start_hi
-  ldy trailItemX
-  lda trailChar
-  sta (_line_start),y
-
-  dex
-  cpx #00
-  beq done
-  jmp loop
-  
-  done
-    jsr initTrailMemory
-    rts
+  jsr initTrailMemory
+  rts
 .)
 
 

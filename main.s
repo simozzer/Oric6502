@@ -21,7 +21,6 @@ StartProg
     jsr _InitIRQ
  
     jsr clearScreen    
-    jsr initTrailMemory 
 
     jsr MakeCharacters_1
     jsr BackupCharacters
@@ -49,7 +48,6 @@ StartProg
 
 
 startagain
-    jsr initTrailMemory
     jsr MazeRender
     jsr clearStatusLine
     jsr clearScreen
@@ -59,6 +57,9 @@ startagain
     sta _player_animation_index
 
     //setup player 1
+    SETUP
+    lda #01
+    sta _player1_id
     lda #PLAYER_1_START_X
     sta _player1_x    
     lda #PLAYER_1_START_Y
@@ -69,6 +70,27 @@ startagain
     sta _player1_effect_type
     lda #0
     sta _player1_effect_cycles_remaining
+    
+    lda #<trail_x_pos_player_1
+    sta _player1_trail_data_x_lo
+    lda #>trail_x_pos_player_1
+    sta _player1_trail_data_x_hi
+
+    lda #<trail_y_pos_player_1
+    sta _player1_trail_data_y_lo
+    lda #>trail_y_pos_player_1
+    sta _player1_trail_data_y_hi
+
+    lda #<trail_char_player_1
+    sta _player1_trail_data_char_lo
+    lda #>trail_char_player_1
+    sta _player1_trail_data_char_hi
+
+    lda #<player1_data
+    sta _player_data_lo
+    lda #>player1_data
+    sta _player_data_hi
+    jsr initTrailMemory
 
     
     lda #PLAYER_STATUS_BOTH_ALIVE
@@ -95,6 +117,8 @@ startagain
 
     
     //setup player 2
+    lda #02
+    sta _player2_id
     lda #PLAYER_2_START_X
     sta _player2_x    
     lda #PLAYER_2_START_Y
@@ -105,6 +129,28 @@ startagain
     sta _player2_effect_type
     lda #0
     sta _player2_effect_cycles_remaining
+
+    lda #<trail_x_pos_player_2
+    sta _player2_trail_data_x_lo
+    lda #>trail_x_pos_player_2
+    sta _player2_trail_data_x_hi
+
+    lda #<trail_y_pos_player_2
+    sta _player2_trail_data_y_lo
+    lda #>trail_y_pos_player_2
+    sta _player2_trail_data_y_hi
+
+    lda #<trail_char_player_2
+    sta _player2_trail_data_char_lo
+    lda #>trail_char_player_2
+    sta _player2_trail_data_char_hi
+
+    
+    lda #<player2_data
+    sta _player_data_lo
+    lda #>player2_data
+    sta _player_data_hi
+    jsr initTrailMemory
 
     ; plot a safe zone around the starting position
     lda _player2_x
@@ -160,25 +206,11 @@ runFullScreen
     bne stop
 
     continue
+    jsr smallDelay
     jsr AnimateCharacters
 
-    jsr processKeyboardPlayer1
-    jsr processJoystickPlayer1
-    jsr updateMovementPlayer1
 
-
-    lda player_count
-    beq _updateMovementComputerPlayer
-    jsr processKeyboardplayer2
-    jsr processJoystickPlayer2
-    jsr updateMovementPlayer2
-    jmp afterMove
-
-    _updateMovementComputerPlayer
-    jsr updateMovementComputerPlayer
-
-    :afterMove
-    jsr smallDelay
+    jsr processMovements
     
     lda _player_status
     cmp #PLAYER_STATUS_BOTH_ALIVE
@@ -202,9 +234,16 @@ runSideBySide
 
     lda _game_mode ; don't update player position if game is not running
     bne render0
+
+    
+    lda #<player1_data
+    sta _player_data_lo
+    lda #>player1_data
+    sta _player_data_hi
+
     jsr processKeyboardPlayer1
     jsr processJoystickPlayer1
-    jsr updateMovementPlayer1
+    jsr updateMovement
 
     render0
     jsr plotArea ; render left screen
@@ -216,16 +255,7 @@ runSideBySide
     lda _game_mode ; don't update position if game is not running
     bne render1
     
-    lda player_count
-    beq _updateMovementComputerPlayer
-    jsr processKeyboardplayer2
-    jsr processJoystickPlayer2
-    jsr updateMovementPlayer2
-    clc
-    bcc render1
-
-    _updateMovementComputerPlayer
-    jsr updateMovementComputerPlayer
+    jsr processMovements
 
     render1
     jsr plotArea 
@@ -265,9 +295,15 @@ runTopToBottom
 
     lda _game_mode ; don't update player position if game is not running
     bne render0
+    
+    lda #<player1_data
+    sta _player_data_lo
+    lda #>player1_data
+    sta _player_data_hi
+
     jsr processKeyboardPlayer1
     jsr processJoystickPlayer1
-    jsr updateMovementPlayer1
+    jsr updateMovement
 
     render0
     jsr plotArea ; render left screen
@@ -279,16 +315,7 @@ runTopToBottom
     lda _game_mode ; don't update position if game is not running
     bne render1
     
-    lda player_count
-    beq _updateMovementComputerPlayer
-    jsr processKeyboardplayer2
-    jsr processJoystickPlayer2
-    jsr updateMovementPlayer2
-    clc
-    bcc render1
-
-    _updateMovementComputerPlayer
-    jsr updateMovementComputerPlayer
+    jsr processMovements
 
     render1
     jsr plotArea 
@@ -674,4 +701,38 @@ renderGameArea
     .)
     rts
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+processMovements
+.(
+    lda #<player1_data
+    sta _player_data_lo
+    lda #>player1_data
+    sta _player_data_hi
+
+    jsr processKeyboardPlayer1
+    jsr processJoystickPlayer1
+    jsr updateMovement
+
+
+    lda #<player2_data
+    sta _player_data_lo
+    lda #>player2_data
+    sta _player_data_hi
+
+    lda player_count
+    beq _updateMovementComputerPlayer
+
+    jsr processKeyboardplayer2
+    jsr processJoystickPlayer2
+    jmp doMove
+
+    _updateMovementComputerPlayer
+    jsr chooseDirectionForComputerPlayer
+
+    :doMove
+    jsr updateMovement
+    jsr smallDelay
+
+    rts
+.)
 
