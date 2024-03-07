@@ -108,9 +108,9 @@ plot_offscreen
     jmp getMazeByte
 
 plotStuff
+    jsr plotRandomArrows
     jsr plotRandomErasers
     jsr plotRandomBlocks
-    ;TODO revert 
     jsr plot_inner_walls
     jsr plotRandomSlowSigns
     
@@ -334,6 +334,49 @@ plotRandomSlowSigns
         iny
         sta (_maze_line_start),Y
 
+        skip
+        dec y_temp
+        jmp loop
+    .)
+    done 
+    rts
+.)
+
+
+plotRandomArrows
+.(
+    ldy #100
+    sty y_temp
+
+    .(
+        :loop
+        beq done
+        jsr _GetRand
+        lda rand_low
+        cmp #245
+        bcs skip
+        adc #08
+        sta _plot_ch_x
+        jsr _GetRand
+        lda rand_low
+        cmp #70
+        bcs skip
+        adc #7
+        tay
+        lda OffscreenLineLookupLo,Y
+        sta _maze_line_start_lo
+        lda OffscreenLineLookupHi,y
+        sta _maze_line_start_hi
+
+        jsr _GetRand
+        lda rand_low
+        and #03
+        clc
+        adc #RIGHT_ARROW_CHAR_CODE
+        
+        ldy _plot_ch_x
+        sta (_maze_line_start),Y
+        
         skip
         dec y_temp
         jmp loop

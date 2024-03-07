@@ -3,6 +3,10 @@
 #define COLLISION_TYPE_BLACK_HOLE 2
 #define COLLISION_TYPE_ERASER 3
 #define COLLISION_TYPE_SLOW 4
+#define COLLISION_TYPE_RIGHT_ARROW 5
+#define COLLISION_TYPE_LEFT_ARROW 6
+#define COLLISION_TYPE_UP_ARROW 7
+#define COLLISION_TYPE_DOWN_ARROW 8
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; getCollisionInfo: returns the type of collision, if any, for a point
@@ -63,12 +67,56 @@ getCollisionInfo
     noEraser
     txa
     cmp #SLOW_CHAR_CODE_LEFT
-    bcc done
+    bcc noSlow
     cmp #SLOW_CHAR_CODE_RIGHT+1
-    bcs done
+    bcs noSlow
     lda #COLLISION_TYPE_SLOW
     sta temp_result
     lda #SOUND_EFFECT_SLOW_FALL
+    sta _sound_effect_id
+    jsr triggerSoundEffect
+    rts
+
+    noSlow
+    txa 
+    cmp #RIGHT_ARROW_CHAR_CODE
+    bne noRightArrow
+    lda #COLLISION_TYPE_RIGHT_ARROW
+    sta temp_result
+    lda #SOUND_EFFECT_FAST_FALL
+    sta _sound_effect_id
+    jsr triggerSoundEffect
+    rts
+
+    noRightArrow
+    txa 
+    cmp #LEFT_ARROW_CHAR_CODE
+    bne noLeftArrow
+    lda #COLLISION_TYPE_LEFT_ARROW
+    sta temp_result
+    lda #SOUND_EFFECT_FAST_FALL
+    sta _sound_effect_id
+    jsr triggerSoundEffect
+    rts
+
+    noLeftArrow
+    txa 
+    cmp #UP_ARROW_CHAR_CODE
+    bne noUpArrow
+    lda #COLLISION_TYPE_UP_ARROW
+    sta temp_result
+    lda #SOUND_EFFECT_FAST_FALL
+    sta _sound_effect_id
+    jsr triggerSoundEffect
+    rts
+
+    noUpArrow
+    txa 
+    cmp #DOWN_ARROW_CHAR_CODE
+    bne done
+    lda #COLLISION_TYPE_DOWN_ARROW
+    sta temp_result
+    lda #SOUND_EFFECT_FAST_FALL
     sta _sound_effect_id
     jsr triggerSoundEffect
     rts

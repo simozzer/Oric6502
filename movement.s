@@ -382,9 +382,11 @@ updateMovement
     jsr getCollisionInfo
     lda temp_result
     cmp #COLLISION_TYPE_FATAL
-    beq playerDead
+    bne checkBlackHole
+    jmp playerDead
 
 
+    checkBlackHole
     ; check for collision with black hole
     cmp #COLLISION_TYPE_BLACK_HOLE
     bne noBlackHole
@@ -424,8 +426,52 @@ updateMovement
 
     noEraser
     cmp #COLLISION_TYPE_SLOW
-    bne storeAndPlot
+    bne noSlow
     jsr slowdownPlayer
+
+    noSlow
+    cmp #COLLISION_TYPE_RIGHT_ARROW
+    bne noRightArrow
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),Y
+    clc
+    adc #ARROW_JUMP_DISTANCE
+    sta trailItemX
+    sta (_player_data),Y
+    jmp storeAndPlot
+
+    noRightArrow
+    cmp #COLLISION_TYPE_LEFT_ARROW
+    bne noLeftArrow
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),Y
+    sec
+    sbc #ARROW_JUMP_DISTANCE
+    sta trailItemX
+    sta (_player_data),Y
+    jmp storeAndPlot
+
+    noLeftArrow 
+    cmp #COLLISION_TYPE_UP_ARROW
+    bne noUpArrow
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),Y
+    sec
+    sbc #ARROW_JUMP_DISTANCE
+    sta trailItemY
+    sta (_player_data),Y
+    jmp storeAndPlot
+
+    noUpArrow
+    cmp #COLLISION_TYPE_DOWN_ARROW
+    bne storeAndPlot
+    ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),Y
+    clc
+    adc #ARROW_JUMP_DISTANCE
+    sta trailItemY
+    sta (_player_data),Y
+    ;jmp storeAndPlot
 
     :storeAndPlot
     ; store trail data
