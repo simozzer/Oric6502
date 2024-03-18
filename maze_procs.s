@@ -278,7 +278,7 @@ plotRandomErasers
         sta _plot_ch_x
         jsr _GetRand
         lda rand_low
-        cmp #78
+        cmp #77
         bcs skip
         adc #2
         tay
@@ -303,7 +303,7 @@ plotRandomErasers
 
 plotRandomSlowSigns
 .(
-    ldy #100
+    ldy #20
     sty y_temp
 
     .(
@@ -345,7 +345,7 @@ plotRandomSlowSigns
 
 plotRandomFastSigns
 .(
-    ldy #100
+    ldy #20
     sty y_temp
 
     .(
