@@ -113,6 +113,7 @@ plotStuff
     jsr plotRandomBlocks
     jsr plot_inner_walls
     jsr plotRandomSlowSigns
+    jsr plotRandomFastSigns
     
     jsr plotRandomBlackHoles
 
@@ -331,6 +332,48 @@ plotRandomSlowSigns
         iny
         sta (_maze_line_start),Y
         lda #SLOW_CHAR_CODE_RIGHT
+        iny
+        sta (_maze_line_start),Y
+
+        skip
+        dec y_temp
+        jmp loop
+    .)
+    done 
+    rts
+.)
+
+plotRandomFastSigns
+.(
+    ldy #100
+    sty y_temp
+
+    .(
+        :loop
+        beq done
+        jsr _GetRand
+        lda rand_low
+        cmp #250
+        bcs skip
+        adc #01
+        sta _plot_ch_x
+        jsr _GetRand
+        lda rand_low
+        cmp #77
+        bcs skip
+        adc #2
+        tay
+        lda OffscreenLineLookupLo,Y
+        sta _maze_line_start_lo
+        lda OffscreenLineLookupHi,y
+        sta _maze_line_start_hi
+        lda #FAST_CHAR_CODE_LEFT
+        ldy _plot_ch_x
+        sta (_maze_line_start),Y
+        lda #FAST_CHAR_CODE_MID
+        iny
+        sta (_maze_line_start),Y
+        lda #FAST_CHAR_CODE_RIGHT
         iny
         sta (_maze_line_start),Y
 

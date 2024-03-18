@@ -711,6 +711,7 @@ processMovements
     jsr updateMovement
 
 
+
     lda #<player2_data
     sta _player_data_lo
     lda #>player2_data
@@ -728,6 +729,47 @@ processMovements
 
     :doMove
     jsr updateMovement
+
+
+
+    // Check if either player is in fast mode and move again
+    ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
+    lda #<player1_data
+    sta _player_data_lo
+    lda #>player1_data
+    sta _player_data_hi
+    lda (_player_data),Y
+    cmp #PLAYER_EFFECT_TYPE_FAST
+    bne checkPlayer2
+    jsr processKeyboardPlayer1
+    jsr processJoystickPlayer1
+    jsr updateMovement
+
+    checkPlayer2
+    ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
+    lda #<player2_data
+    sta _player_data_lo
+    lda #>player2_data
+    sta _player_data_hi
+    lda (_player_data),Y
+    cmp #PLAYER_EFFECT_TYPE_FAST
+    bne doDelay
+
+
+    lda player_count
+    beq _updateMovementComputerPlayer2
+
+    jsr processKeyboardplayer2
+    jsr processJoystickPlayer2
+    jmp doMove2
+
+    _updateMovementComputerPlayer2
+    jsr chooseDirectionForComputerPlayer
+
+    :doMove2
+    jsr updateMovement
+
+    doDelay
     jsr smallDelay
 
     rts

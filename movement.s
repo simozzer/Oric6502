@@ -294,6 +294,9 @@ updateMovement
 
     cmp #PLAYER_EFFECT_TYPE_SLOW
     beq processSlow1
+
+    cmp #PLAYER_EFFECT_TYPE_FAST
+    beq processFast1
     jmp doMove
 
     processSlow1
@@ -312,6 +315,21 @@ updateMovement
     ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
     lda #PLAYER_EFFECT_TYPE_NONE
     sta (_player_data),y
+
+    processFast1
+    ldy #PLAYER_DATA_OFFSET_CYCLES_REMAINING
+    lda (_player_data),y
+    sec
+    sbc #01
+    sta (_player_data),y
+    beq stopFast
+    jmp doMove
+
+    stopFast
+    ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
+    lda #PLAYER_EFFECT_TYPE_NONE
+    sta (_player_data),y
+
 
     :doMove
     ldy #PLAYER_DATA_OFFSET_DIRECTION
@@ -428,8 +446,15 @@ updateMovement
     cmp #COLLISION_TYPE_SLOW
     bne noSlow
     jsr slowdownPlayer
+    jmp storeAndPlot
 
     noSlow
+    cmp #COLLISION_TYPE_FAST
+    bne noFast
+    jsr speedupPlayer
+    jmp storeAndPlot
+
+    noFast
     cmp #COLLISION_TYPE_RIGHT_ARROW
     bne noRightArrow
     ldy #PLAYER_DATA_OFFSET_X
@@ -683,6 +708,71 @@ slowdownPlayer
     sta (_player_data),y
     ldy #PLAYER_DATA_OFFSET_CYCLES_REMAINING
     lda #MAX_CYCLES_SLOW_EFFECT
+    sta (_player_data),y
+
+
+    rts
+.)
+
+speedupPlayer
+.(
+ldy #PLAYER_DATA_OFFSET_Y
+    lda (_player_data),Y
+    tay
+    lda OffscreenLineLookupLo,Y
+    sta _line_start_lo
+    lda OffscreenLineLookupHi,y
+    sta _line_start_hi
+    ldy #PLAYER_DATA_OFFSET_X
+    lda (_player_data),Y
+    tay
+    lda (_line_start),Y
+    cmp #FAST_CHAR_CODE_RIGHT
+    bne checkMid
+    dey
+    dey
+    checkMid
+    cmp #FAST_CHAR_CODE_MID
+    bne atLeft
+    dey
+    atLeft
+    // fill in background with 'grains'
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+    iny
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+    iny
+    tya
+    pha
+    jsr _GetRand
+    pla
+    tay
+    lda rand_low;
+    and #15
+    adc #97
+    sta (_line_start),y
+
+    ;set player motion state to slow
+    ldy #PLAYER_DATA_OFFSET_EFFECT_TYPE
+    lda #PLAYER_EFFECT_TYPE_FAST
+    sta (_player_data),y
+    ldy #PLAYER_DATA_OFFSET_CYCLES_REMAINING
+    lda #MAX_CYCLES_FAST_EFFECT
     sta (_player_data),y
 
 

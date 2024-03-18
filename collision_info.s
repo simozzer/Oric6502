@@ -7,6 +7,7 @@
 #define COLLISION_TYPE_LEFT_ARROW 6
 #define COLLISION_TYPE_UP_ARROW 7
 #define COLLISION_TYPE_DOWN_ARROW 8
+#define COLLISION_TYPE_FAST 9
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; getCollisionInfo: returns the type of collision, if any, for a point
@@ -39,8 +40,13 @@ getCollisionInfo
     tax ;make a copy of the value 
     and #127
     cmp #(MAX_NON_FATAL_CHAR_CODE+1)
-    bpl playerDead
+    bpl _playerDead
+    jmp checkCollisions
 
+    _playerDead
+    jmp playerDead
+
+    :checkCollisions
     txa
     cmp #BLACK_HOLE_TOP_LEFT_CHAR_CODE
     bcc noBlackHole
@@ -113,13 +119,27 @@ getCollisionInfo
     noUpArrow
     txa 
     cmp #DOWN_ARROW_CHAR_CODE
-    bne done
+    bne noDownArrow
     lda #COLLISION_TYPE_DOWN_ARROW
     sta temp_result
     lda #SOUND_EFFECT_FAST_FALL
     sta _sound_effect_id
     jsr triggerSoundEffect
     rts
+
+    noDownArrow
+    txa
+    cmp #FAST_CHAR_CODE_LEFT
+    bcc done
+    cmp #FAST_CHAR_CODE_RIGHT+1
+    bcs done
+    lda #COLLISION_TYPE_FAST
+    sta temp_result
+    lda #SOUND_EFFECT_SLOW_RISE
+    sta _sound_effect_id
+    jsr triggerSoundEffect
+    rts
+
 
     playerDead
     lda #SOUND_EFFECT_DEATH
