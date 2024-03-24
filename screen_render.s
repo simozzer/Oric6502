@@ -8,11 +8,15 @@ plotArea
   ; calculate half width
   lda screen_area_width
   lsr 
+  sec
+  sbc #01
   sta screen_area_half_width
 
   ; calculate half height
   lda screen_area_height
   lsr
+  sec
+  sbc #01
   sta screen_area_half_height
 
   ; Calculate game area top
