@@ -1,5 +1,7 @@
 effect_index .byt 1 ;used as a parameter to determine which row/column to process
 temp_effect_char .byt 1 ;used for temporary storage for wrapping characters when scrolling
+effect_temp .byt 1 ; used to keep count of the number of iterations for repeated operations
+inner_effect_temp .byt 1 ; used to keep count of the number of iterations for repeated operations
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -7,7 +9,6 @@ temp_effect_char .byt 1 ;used for temporary storage for wrapping characters when
 ; character in the leftmost position will appear on the right
 ; Params: 
 ;   effect_index: The index of the line to be scrolled
-;   temp_param_1: y position
 ; Returns: null
 ; -------------------------------------------------------------------
 _scrollLineLeft
@@ -43,6 +44,51 @@ _scrollLineLeft
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _wrapLineLeft: scrolls an individual left until the line is returned
+; to its original state
+; Params: 
+;   effect_index: The index of the line to be scrolled
+; Returns: null
+; -------------------------------------------------------------------
+_wrapLineLeft
+.(
+  lda #0
+  sta inner_effect_temp
+  loop
+  jsr _scrollLineLeft
+  jsr _effectDelay
+  inc inner_effect_temp
+  lda inner_effect_temp
+  cmp #38
+  bne loop
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _wrapLineRight: scrolls an individual right until the line is returned
+; to its original state
+; Params: 
+;   effect_index: The index of the line to be scrolled
+; Returns: null
+; -------------------------------------------------------------------
+_wrapLineRight
+.(
+  lda #0
+  sta inner_effect_temp
+  loop
+  jsr _scrollLineRight
+  jsr _effectDelay
+  inc inner_effect_temp
+  lda inner_effect_temp
+  cmp #38
+  bne loop
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 
@@ -134,7 +180,6 @@ _scrollScreenRight
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-effect_temp .byt 1 ; used to keep count of the number of iterations for repeated
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -184,6 +229,55 @@ wrapScreenRight
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; shredScreenLeft: scrolls each line left, in turn, until the screen
+; is returned to its original state
+; original state
+; Returns: null
+; -------------------------------------------------------------------
+shredScreenLeft
+.(
+  lda #0
+  sta effect_index
+  loop
+  jsr _wrapLineLeft
+  inc effect_index
+
+  lda effect_index
+  cmp #27
+  bne loop
+
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; shredScreenRight: scrolls each line right, in turn, until the screen
+; is returned to its original state
+; original state
+; Returns: null
+; -------------------------------------------------------------------
+shredScreenRight
+.(
+  lda #0
+  sta effect_index
+  loop
+  jsr _wrapLineRight
+  inc effect_index
+
+  lda effect_index
+  cmp #27
+  bne loop
+
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; shredScreenHorizontal: scrolls alternate rows in different 
 ; directions, and continues until the screen is back in its
@@ -222,3 +316,20 @@ shredScreenHorizontal
   rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; Perform a short delay to slow down an effect
+; ------------------------------------------------------------------------------
+_effectDelay
+.(    
+    ; a small delay
+    ldy #100
+    loop
+    dey
+    nop
+    cpy #00
+    Bne loop
+    rts    
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
