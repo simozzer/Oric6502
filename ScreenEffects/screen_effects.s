@@ -1,7 +1,16 @@
-effect_index .byt 1
-temp_effect_char .byt 1
+effect_index .byt 1 ;used as a parameter to determine which row/column to process
+temp_effect_char .byt 1 ;used for temporary storage for wrapping characters when scrolling
 
-scrollLineLeft
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _scrollLineLeft: scrolls an individual line 1 position left. The
+; character in the leftmost position will appear on the right
+; Params: 
+;   effect_index: The index of the line to be scrolled
+;   temp_param_1: y position
+; Returns: null
+; -------------------------------------------------------------------
+_scrollLineLeft
 .(
   ldy effect_index
   lda ScreenLineLookupLo,Y
@@ -32,8 +41,20 @@ scrollLineLeft
 
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-scrollLineRight
+
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _scrollLineRight: scrolls an individual line 1 position right. The
+; character in the rightmost position will appear on the left
+; Params: 
+;   effect_index: The index of the line to be scrolled
+;   temp_param_1: y position
+; Returns: null
+; -------------------------------------------------------------------
+_scrollLineRight
 .(
   ldy effect_index
   lda ScreenLineLookupLo,Y
@@ -65,41 +86,70 @@ scrollLineRight
 
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-scrollScreenLeft
+
+
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _scrollScreenLeft: scrolls entire screen 1 position left. The
+; characters in the leftmost position will appear on the right
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+_scrollScreenLeft
 .(
   ldx #0
   loop
   stx effect_index
-  jsr scrollLineLeft
+  jsr _scrollLineLeft
   inx
   cpx #26
   bne loop
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-scrollScreenRight
+
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _scrollScreenRight: scrolls entire screen 1 position right. The
+; characters in the rightmost position will appear on the left
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+_scrollScreenRight
 .(
   ldx #0
   loop
   stx effect_index
-  jsr scrollLineRight
+  jsr _scrollLineRight
   inx
   cpx #26
   bne loop
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-effect_temp .byt 1
+effect_temp .byt 1 ; used to keep count of the number of iterations for repeated calls
 
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; wrapScreenLeft: scrolls entire screen left until the screen is
+; back in its original state
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
 wrapScreenLeft
 .(
   lda #0
   sta effect_temp
   tay
   loop
-  jsr scrollScreenLeft
+  jsr _scrollScreenLeft
   ldy effect_temp
   iny
   sty effect_temp
@@ -107,14 +157,23 @@ wrapScreenLeft
   bcc loop
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; wrapScreenRight: scrolls entire screen right until the screen is
+; back in its original state
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
 wrapScreenRight
 .(
   lda #0
   sta effect_temp
   tay
   loop
-  jsr scrollScreenRight
+  jsr _scrollScreenRight
   ldy effect_temp
   iny
   sty effect_temp
@@ -122,7 +181,15 @@ wrapScreenRight
   bcc loop
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; shredScreenHorizontal: scrolls alternate rows in different 
+; directions, and continues until the screen is back in its
+; original state
+; Returns: null
+; -------------------------------------------------------------------
 shredScreenHorizontal
 .(
   lda #0
@@ -134,9 +201,9 @@ shredScreenHorizontal
 
   tay
   lineLoop
-  jsr scrollLineLeft
+  jsr _scrollLineLeft
   inc effect_index
-  jsr scrollLineRight
+  jsr _scrollLineRight
   inc effect_index
 
   lda effect_index
@@ -150,3 +217,4 @@ shredScreenHorizontal
 
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
