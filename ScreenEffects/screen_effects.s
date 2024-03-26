@@ -105,7 +105,7 @@ _scrollScreenLeft
   stx effect_index
   jsr _scrollLineLeft
   inx
-  cpx #26
+  cpx #27
   bne loop
   rts
 .)
@@ -128,13 +128,13 @@ _scrollScreenRight
   stx effect_index
   jsr _scrollLineRight
   inx
-  cpx #26
+  cpx #27
   bne loop
   rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-effect_temp .byt 1 ; used to keep count of the number of iterations for repeated calls
+effect_temp .byt 1 ; used to keep count of the number of iterations for repeated
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -203,13 +203,17 @@ shredScreenHorizontal
   lineLoop
   jsr _scrollLineLeft
   inc effect_index
+  lda effect_index
+  cmp #27
+  beq linesDone
   jsr _scrollLineRight
   inc effect_index
 
   lda effect_index
-  cmp #26
+  cmp #28
   bne lineLoop
 
+  linesDone
   inc effect_temp
   lda effect_temp
   cmp #38

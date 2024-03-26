@@ -577,6 +577,7 @@ updateMovement
     ; set flag for player dead
     lda #PLAYER_STATUS_DEAD_PLAYER_1
     sta _player_status
+    jsr wrapScreenRight
     jsr bigDelay
     rts
 
@@ -590,6 +591,7 @@ updateMovement
     ; set flag for player dead
     lda #PLAYER_STATUS_DEAD_PLAYER_2
     sta _player_status
+    jsr wrapScreenRight
     jsr bigDelay
     rts
 .)

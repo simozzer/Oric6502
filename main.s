@@ -45,7 +45,7 @@ StartProg
 
     lda #GAME_MODE_WAITING
     sta _game_mode
-
+    
 
 startagain
     jsr MazeRender
@@ -456,7 +456,9 @@ waitToStart
     :redo
     ; Display start screen
     jsr printStartScreen
+    jsr wrapScreenLeft
     jsr keyDelay
+
 
     :waitLoop
     ; use the modified keyoard handler to check for key presses
@@ -469,10 +471,12 @@ waitToStart
     beq checkS
 
     startGame
+
     jsr initTrailMemory
     lda #GAME_MODE_RUNNING
     sta _game_mode
     jsr renderGameArea
+    jsr shredScreenHorizontal
     rts
 
     checkS
