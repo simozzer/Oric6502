@@ -5,13 +5,13 @@ inner_effect_temp .byt 1 ; used to keep count of the number of iterations for re
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; _scrollLineLeft: scrolls an individual line 1 position left. The
+; _scrollRowLeft: scrolls an individual row 1 position left. The
 ; character in the leftmost position will appear on the right
 ; Params: 
 ;   effect_index: The index of the line to be scrolled
 ; Returns: null
 ; -------------------------------------------------------------------
-_scrollLineLeft
+_scrollRowLeft
 .(
   ldy effect_index
   lda ScreenLineLookupLo,Y
@@ -45,18 +45,18 @@ _scrollLineLeft
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; _wrapLineLeft: scrolls an individual left until the line is returned
+; _wrapRowLeft: scrolls an individual row left until the line is returned
 ; to its original state
 ; Params: 
 ;   effect_index: The index of the line to be scrolled
 ; Returns: null
 ; -------------------------------------------------------------------
-_wrapLineLeft
+_wrapRowLeft
 .(
   lda #0
   sta inner_effect_temp
   loop
-  jsr _scrollLineLeft
+  jsr _scrollRowLeft
   jsr _effectDelay
   inc inner_effect_temp
   lda inner_effect_temp
@@ -69,18 +69,18 @@ _wrapLineLeft
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; _wrapLineRight: scrolls an individual right until the line is returned
+; _wrapRowRight: scrolls an individual row right until the line is returned
 ; to its original state
 ; Params: 
 ;   effect_index: The index of the line to be scrolled
 ; Returns: null
 ; -------------------------------------------------------------------
-_wrapLineRight
+_wrapRowRight
 .(
   lda #0
   sta inner_effect_temp
   loop
-  jsr _scrollLineRight
+  jsr _scrollRowRight
   jsr _effectDelay
   inc inner_effect_temp
   lda inner_effect_temp
@@ -93,14 +93,13 @@ _wrapLineRight
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; _scrollLineRight: scrolls an individual line 1 position right. The
+; _scrollRowRight: scrolls an individual row 1 position right. The
 ; character in the rightmost position will appear on the left
 ; Params: 
 ;   effect_index: The index of the line to be scrolled
-;   temp_param_1: y position
 ; Returns: null
 ; -------------------------------------------------------------------
-_scrollLineRight
+_scrollRowRight
 .(
   ldy effect_index
   lda ScreenLineLookupLo,Y
@@ -149,7 +148,7 @@ _scrollScreenLeft
   ldx #0
   loop
   stx effect_index
-  jsr _scrollLineLeft
+  jsr _scrollRowLeft
   inx
   cpx #27
   bne loop
@@ -172,7 +171,7 @@ _scrollScreenRight
   ldx #0
   loop
   stx effect_index
-  jsr _scrollLineRight
+  jsr _scrollRowRight
   inx
   cpx #27
   bne loop
@@ -231,7 +230,7 @@ wrapScreenRight
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; shredScreenLeft: scrolls each line left, in turn, until the screen
+; shredScreenLeft: scrolls each row left, in turn, until the screen
 ; is returned to its original state
 ; original state
 ; Returns: null
@@ -241,7 +240,7 @@ shredScreenLeft
   lda #0
   sta effect_index
   loop
-  jsr _wrapLineLeft
+  jsr _wrapRowLeft
   inc effect_index
 
   lda effect_index
@@ -254,7 +253,7 @@ shredScreenLeft
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; shredScreenRight: scrolls each line right, in turn, until the screen
+; shredScreenRight: scrolls each row right, in turn, until the screen
 ; is returned to its original state
 ; original state
 ; Returns: null
@@ -264,7 +263,7 @@ shredScreenRight
   lda #0
   sta effect_index
   loop
-  jsr _wrapLineRight
+  jsr _wrapRowRight
   inc effect_index
 
   lda effect_index
@@ -295,12 +294,12 @@ shredScreenHorizontal
 
   tay
   lineLoop
-  jsr _scrollLineLeft
+  jsr _scrollRowLeft
   inc effect_index
   lda effect_index
   cmp #27
   beq linesDone
-  jsr _scrollLineRight
+  jsr _scrollRowRight
   inc effect_index
 
   lda effect_index
@@ -318,9 +317,9 @@ shredScreenHorizontal
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Perform a short delay to slow down an effect
-; ------------------------------------------------------------------------------
+; -------------------------------------------------------------------
 _effectDelay
 .(    
     ; a small delay
