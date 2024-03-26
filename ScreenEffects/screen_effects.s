@@ -1,9 +1,3 @@
-effect_index .byt 1 ;used as a parameter to determine which row/column to process
-temp_effect_char .byt 1 ;used for temporary storage for wrapping characters when scrolling
-effect_temp .byt 1 ; used to keep count of the number of iterations for repeated operations
-inner_effect_temp .byt 1 ; used to keep count of the number of iterations for repeated operations
-
-
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; _scrollRowLeft: scrolls an individual row 1 position left. The
 ; character in the leftmost position will appear on the right
@@ -155,6 +149,14 @@ _scrollScreenLeft
   rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+effect_index .byt 1 ;used as a parameter to determine which row/column to process
+temp_effect_char .byt 1 ;used for temporary storage for wrapping characters when scrolling
+_temp_effect_char .byt 1;
+effect_temp .byt 1 ; used to keep count of the number of iterations for repeated operations
+inner_effect_temp .byt 1 ; used to keep count of the number of iterations for repeated operations
+_temp_row_index .byt 1
 
 
 
@@ -317,7 +319,7 @@ shredScreenHorizontal
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-_temp_row_index .byt 1
+
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -350,9 +352,9 @@ _scrollColumnUp
   sta _line_start_hi
   ldy effect_index
 
-  ; pull the char for the current line and put it on the stack 
+  ; pull the char for the current line and store it
   lda (_line_start),y
-  pha
+  sta _temp_effect_char
 
   ldy _temp_row_index
   dey
@@ -360,9 +362,9 @@ _scrollColumnUp
   sta _line_start_lo
   lda ScreenLineLookupHi,y
   sta _line_start_hi
-  ; pull the char from the stack on put it on the previous line
+  ; retrieve the stored char and put it on the previous line
   ldy effect_index
-  pla
+  lda _temp_effect_char
   sta (_line_start),y
 
   ; go to the next line
@@ -416,9 +418,9 @@ _scrollColumnDown
   sta _line_start_hi
   ldy effect_index
 
-  ; pull the char for the current line and put it on the stack 
+  ; pull the char for the current line and store it
   lda (_line_start),y
-  pha
+  sta _temp_effect_char
 
   ldy _temp_row_index
   iny
@@ -426,9 +428,9 @@ _scrollColumnDown
   sta _line_start_lo
   lda ScreenLineLookupHi,y
   sta _line_start_hi
-  ; pull the char from the stack on put it on the next line
+  ; retrieve the fetched character on put it on the next line
   ldy effect_index
-  pla
+  lda _temp_effect_char
   sta (_line_start),y
 
   ; go to the next line
@@ -450,6 +452,46 @@ _scrollColumnDown
 
   rts
 .)
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; shredScreenVertical: scrolls alternate columns in different 
+; directions, and continues until the screen is back in its
+; original state
+; Returns: null
+; -------------------------------------------------------------------
+shredScreenVertical
+.(
+  lda #0
+  sta effect_temp
+
+  screenLoop
+  lda #2
+  sta effect_index
+
+  tay
+  lineLoop
+  jsr _scrollColumnDown
+  inc effect_index
+  lda effect_index
+  cmp #37
+  beq linesDone
+  jsr _scrollColumnUp
+  inc effect_index
+
+  lda effect_index
+  cmp #38
+  bne lineLoop
+
+  linesDone
+  inc effect_temp
+  lda effect_temp
+  cmp #27
+  bne screenLoop
+
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Perform a short delay to slow down an effect

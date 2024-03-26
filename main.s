@@ -456,7 +456,6 @@ waitToStart
     :redo
     ; Display start screen
     jsr printStartScreen
-    jsr wrapScreenLeft
     jsr keyDelay
 
 
@@ -476,7 +475,6 @@ waitToStart
     lda #GAME_MODE_RUNNING
     sta _game_mode
     jsr renderGameArea
-    jsr shredScreenHorizontal
     rts
 
     checkS
