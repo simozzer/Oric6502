@@ -8,7 +8,7 @@ inner_effect_temp .byt 1 ; used to keep count of the number of iterations for re
 ; _scrollRowLeft: scrolls an individual row 1 position left. The
 ; character in the leftmost position will appear on the right
 ; Params: 
-;   effect_index: The index of the line to be scrolled
+;   effect_index: The index of the row to be scrolled
 ; Returns: null
 ; -------------------------------------------------------------------
 _scrollRowLeft
@@ -48,7 +48,7 @@ _scrollRowLeft
 ; _wrapRowLeft: scrolls an individual row left until the line is returned
 ; to its original state
 ; Params: 
-;   effect_index: The index of the line to be scrolled
+;   effect_index: The index of the row to be scrolled
 ; Returns: null
 ; -------------------------------------------------------------------
 _wrapRowLeft
@@ -72,7 +72,7 @@ _wrapRowLeft
 ; _wrapRowRight: scrolls an individual row right until the line is returned
 ; to its original state
 ; Params: 
-;   effect_index: The index of the line to be scrolled
+;   effect_index: The index of the row to be scrolled
 ; Returns: null
 ; -------------------------------------------------------------------
 _wrapRowRight
@@ -96,7 +96,7 @@ _wrapRowRight
 ; _scrollRowRight: scrolls an individual row 1 position right. The
 ; character in the rightmost position will appear on the left
 ; Params: 
-;   effect_index: The index of the line to be scrolled
+;   effect_index: The index of the row to be scrolled
 ; Returns: null
 ; -------------------------------------------------------------------
 _scrollRowRight
@@ -316,6 +316,140 @@ shredScreenHorizontal
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+_temp_row_index .byt 1
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _scrollColumnUp: scrolls an individual column 1 position up. The
+; character in the top position will appear on the bottom
+; Params: 
+;   effect_index: The index of the column to be scrolled
+; Returns: null
+; -------------------------------------------------------------------
+_scrollColumnUp
+.(
+  ; get the character from the 1st row and store it
+  ldy #0
+  lda ScreenLineLookupLo,y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+  ldy effect_index
+  lda (_line_start),y
+  sta temp_effect_char
+
+  ; move all characters up one position
+  lda #1
+  sta _temp_row_index
+  loop
+  ldy _temp_row_index
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+  ldy effect_index
+
+  ; pull the char for the current line and put it on the stack 
+  lda (_line_start),y
+  pha
+
+  ldy _temp_row_index
+  dey
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+  ; pull the char from the stack on put it on the previous line
+  ldy effect_index
+  pla
+  sta (_line_start),y
+
+  ; go to the next line
+  inc _temp_row_index
+  lda _temp_row_index
+  cmp #27
+  bne loop
+
+  ; put the character which was on the first row onto the last
+  ldy #26
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+
+  lda temp_effect_char
+  ldy effect_index
+  sta (_line_start),y
+
+  rts
+.)
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _scrollColumnDown: scrolls an individual column 1 position down. The
+; character in the bottom position will appear on the top
+; Params: 
+;   effect_index: The index of the column to be scrolled
+; Returns: null
+; -------------------------------------------------------------------
+_scrollColumnDown
+.(
+  ; get the character from the last row and store it
+  ldy #26
+  lda ScreenLineLookupLo,y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+  ldy effect_index
+  lda (_line_start),y
+  sta temp_effect_char
+
+  ; move all characters down one position
+  lda #25
+  sta _temp_row_index
+  loop
+  ldy _temp_row_index
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+  ldy effect_index
+
+  ; pull the char for the current line and put it on the stack 
+  lda (_line_start),y
+  pha
+
+  ldy _temp_row_index
+  iny
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+  ; pull the char from the stack on put it on the next line
+  ldy effect_index
+  pla
+  sta (_line_start),y
+
+  ; go to the next line
+  dec _temp_row_index
+  lda _temp_row_index
+  cmp #0
+  bpl loop
+
+  ; put the character which was on the last row onto the first
+  ldy #0
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+
+  lda temp_effect_char
+  ldy effect_index
+  sta (_line_start),y
+
+  rts
+.)
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Perform a short delay to slow down an effect
