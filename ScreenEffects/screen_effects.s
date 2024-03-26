@@ -151,16 +151,6 @@ _scrollScreenLeft
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-effect_index .byt 1 ;used as a parameter to determine which row/column to process
-temp_effect_char .byt 1 ;used for temporary storage for wrapping characters when scrolling
-_temp_effect_char .byt 1;
-effect_temp .byt 1 ; used to keep count of the number of iterations for repeated operations
-inner_effect_temp .byt 1 ; used to keep count of the number of iterations for repeated operations
-_temp_row_index .byt 1
-
-
-
-
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; _scrollScreenRight: scrolls entire screen 1 position right. The

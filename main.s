@@ -3,7 +3,7 @@ StartProg
 ; Main program
 ; ------------------------------------------------------------------------------
     :start
-    
+
    
     ;// NOKEYCLICK+SCREEN no cursor
 	lda #8+2	

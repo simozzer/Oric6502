@@ -82,7 +82,8 @@ plot_offscreen
     inc _maze_left;
     jmp getMazeByte;
 
-    nexty ldx _plot_ch_y;
+    nexty 
+    ldx _plot_ch_y;
     cpx #OFFSCREEN_LAST_ROW
     beq plotStuff;
     
@@ -111,7 +112,7 @@ plotStuff
     jsr plotRandomArrows
     jsr plotRandomErasers
     jsr plotRandomBlocks
-    jsr plot_inner_walls
+    ;jsr plot_inner_walls  ; TODO check why this hangs
     jsr plotRandomSlowSigns
     jsr plotRandomFastSigns
     
