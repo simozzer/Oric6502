@@ -9,6 +9,7 @@ StartProg
 	lda #8+2	
 	sta $26a
 
+
     jsr setupDefaultKeys
 
     ; enable the tracker interupt but start with music disabled

@@ -1,9 +1,10 @@
 effect_index .dsb 1,0 ;used as a parameter to determine which row/column to process
 temp_effect_char .dsb 1,0 ;used for temporary storage for wrapping characters when scrolling
-_temp_effect_char .dsb 1,0;
+_temp_effect_char .dsb 1,0;used for temporary storage in inner loop for wrapping characters when scrolling 
 effect_temp .dsb 1,0 ; used to keep count of the number of iterations for repeated operations
 inner_effect_temp .dsb 1,0 ; used to keep count of the number of iterations for repeated operations
-_temp_row_index .dsb 1,0
+_temp_row_index .dsb 1,0; used to store row index on routines when scrolling columns up or down
+
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; _scrollRowLeft: scrolls an individual row 1 position left. The
@@ -493,6 +494,101 @@ shredScreenVertical
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _wrapColumnUp: scrolls an individual column up until the line is returned
+; to its original state
+; Params: 
+;   effect_index: The index of the column to be scrolled
+; Returns: null
+; -------------------------------------------------------------------
+_wrapColumnUp
+.(
+  lda #0
+  sta inner_effect_temp
+  loop
+  jsr _scrollColumnUp
+  jsr _effectDelay
+  inc inner_effect_temp
+  lda inner_effect_temp
+  cmp #27
+  bne loop
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _wrapColumnDown: scrolls an individual column down until the line is returned
+; to its original state
+; Params: 
+;   effect_index: The index of the column to be scrolled
+; Returns: null
+; -------------------------------------------------------------------
+_wrapColumnDown
+.(
+  lda #0
+  sta inner_effect_temp
+  loop
+  jsr _scrollColumnDown
+  jsr _effectDelay
+  inc inner_effect_temp
+  lda inner_effect_temp
+  cmp #27
+  bne loop
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; shredScreenUp: scrolls each column up, in turn, until the screen
+; is returned to its original state
+; original state
+; Returns: null
+; -------------------------------------------------------------------
+shredScreenUp
+.(
+  lda #2
+  sta effect_index
+  loop
+  jsr _wrapColumnUp
+  inc effect_index
+
+  lda effect_index
+  cmp #39
+  bne loop
+
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; shredScreenDown: scrolls each column down, in turn, until the screen
+; is returned to its original state
+; original state
+; Returns: null
+; -------------------------------------------------------------------
+shredScreenDown
+.(
+  lda #2
+  sta effect_index
+  loop
+  jsr _wrapColumnDown
+  inc effect_index
+
+  lda effect_index
+  cmp #39
+  bne loop
+
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+;; TODO: wrapScreenUp; wrapScreenDown
+
+
+;;TODO : write program to search for bitmap data
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Perform a short delay to slow down an effect
