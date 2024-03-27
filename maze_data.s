@@ -187,7 +187,7 @@
     .byt %00000010
     .byt %00000001
 
-#DEFINE OffscreenScrollArea $6000 ; This will occupy the memory up to around $afb0
+#DEFINE OffscreenScrollArea $6400 ; This will occupy the memory up to around $b3b0
 
 :OffscreenLineLookupLo 
     .byt <OffscreenScrollArea+0,<OffscreenScrollArea+255,<OffscreenScrollArea+510,<OffscreenScrollArea+765,<OffscreenScrollArea+1020

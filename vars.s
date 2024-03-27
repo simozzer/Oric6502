@@ -87,18 +87,10 @@ trail_data_low_player_1 .dsb 1
 trail_data_hi_player_1 .dsb 1
 trail_index_player_1 .dsb 1
 trail_index_player_2 .dsb 1
-trailItemX .byt 1
-trailItemY .byt 1
-trailChar .byt 1
+trailItemX .dsb 1
+trailItemY .dsb 1
+trailChar .dsb 1
 
-
-
-effect_index .dsb 1 ;used as a parameter to determine which row/column to process
-temp_effect_char .dsb 1 ;used for temporary storage for wrapping characters when scrolling
-_temp_effect_char .dsb 1;
-effect_temp .dsb 1 ; used to keep count of the number of iterations for repeated operations
-inner_effect_temp .dsb 1 ; used to keep count of the number of iterations for repeated operations
-_temp_row_index .dsb 1
 
 ; <BEGIN KEYMAP WARNING>
 ; THESE KEY MAPPINGS ARE IN A FIXED ORDER TO MAKE WRITING

@@ -1,3 +1,10 @@
+effect_index .dsb 1,0 ;used as a parameter to determine which row/column to process
+temp_effect_char .dsb 1,0 ;used for temporary storage for wrapping characters when scrolling
+_temp_effect_char .dsb 1,0;
+effect_temp .dsb 1,0 ; used to keep count of the number of iterations for repeated operations
+inner_effect_temp .dsb 1,0 ; used to keep count of the number of iterations for repeated operations
+_temp_row_index .dsb 1,0
+
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; _scrollRowLeft: scrolls an individual row 1 position left. The
 ; character in the leftmost position will appear on the right
@@ -334,7 +341,7 @@ _scrollColumnUp
   ; move all characters up one position
   lda #1
   sta _temp_row_index
-  loop
+  __loopy
   ldy _temp_row_index
   lda ScreenLineLookupLo,Y
   sta _line_start_lo
@@ -361,7 +368,7 @@ _scrollColumnUp
   inc _temp_row_index
   lda _temp_row_index
   cmp #27
-  bne loop
+  bne __loopy
 
   ; put the character which was on the first row onto the last
   ldy #26
@@ -376,6 +383,7 @@ _scrollColumnUp
 
   rts
 .)
+
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -400,7 +408,7 @@ _scrollColumnDown
   ; move all characters down one position
   lda #25
   sta _temp_row_index
-  loop
+  _loop_y
   ldy _temp_row_index
   lda ScreenLineLookupLo,Y
   sta _line_start_lo
@@ -427,7 +435,7 @@ _scrollColumnDown
   dec _temp_row_index
   lda _temp_row_index
   cmp #0
-  bpl loop
+  bpl _loop_y
 
   ; put the character which was on the last row onto the first
   ldy #0
@@ -442,6 +450,8 @@ _scrollColumnDown
 
   rts
 .)
+
+
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -482,6 +492,7 @@ shredScreenVertical
   rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Perform a short delay to slow down an effect
