@@ -33,7 +33,7 @@ _temp_effect_char .dsb 1,0;used for temporary storage in inner loop for wrapping
 effect_temp .dsb 1,0 ; used to keep count of the number of iterations for repeated operations
 inner_effect_temp .dsb 1,0 ; used to keep count of the number of iterations for repeated operations
 _temp_row_index .dsb 1,0; used to store row index on routines when scrolling columns up or down
-_temp_row_data .byt 40,0; used to store the contents of an entire row of character data
+_temp_row_data .dsb 40,0; used to store the contents of an entire row of character data
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
