@@ -759,6 +759,54 @@ _scrollScreenDown
 
   rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; wrapScreenUp: scrolls entire screen up until the screen is
+; back in its original state
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+wrapScreenUp
+.(
+  lda #0
+  sta effect_temp
+  tay
+  loop
+  jsr _scrollScreenUp
+  ldy effect_temp
+  iny
+  sty effect_temp
+  cpy #27
+  bcc loop
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; wrapScreenDown: scrolls entire screen down until the screen is
+; back in its original state
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+wrapScreenDown
+.(
+  lda #0
+  sta effect_temp
+  tay
+  loop
+  jsr _scrollScreenDown
+  ldy effect_temp
+  iny
+  sty effect_temp
+  cpy #27
+  bcc loop
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 ;;TODO : write program to search for bitmap data
 
