@@ -615,7 +615,8 @@ shredScreenDown
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-;; TODO: wrapScreenUp; wrapScreenDown
+
+
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; _scrollScreenUp: scrolls entire screen 1 position up. The
