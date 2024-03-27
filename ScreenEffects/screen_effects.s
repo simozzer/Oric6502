@@ -1,9 +1,39 @@
+/*
+1.) This unit also requires lookup.s, or you could include the following:
+
+;////////////////////////////////////
+; Lookup tables for lo and hi bytes 
+; of each line in text mode
+;////////////////////////////////////
+:ScreenLineLookupLo 
+  .byt $A8,$D0,$F8,$20,$48,$70,$98,$C0,$E8,$10                        
+  .byt $38,$60,$88,$B0,$D8,$00,$28,$50,$78,$A0                            
+  .byt $C8,$F0,$18,$40,$68,$90,$B8  
+
+:ScreenLineLookupHi 
+  .byt $BB,$BB,$BB,$BC,$BC,$BC,$BC,$BC,$BC,$BD                        
+  .byt $BD,$BD,$BD,$BD,$BD,$BE,$BE,$BE,$BE,$BE                            
+  .byt $BE,$BE,$BF,$BF,$BF,$BF,$BF
+
+
+2.) Also need zero page variables declaring e.g.
+
+_line_start
+_line_start_lo .dsb 1
+_line_start_hi .dsb 1
+_secondary_line_start
+_secondary_line_start_lo .dsb 1
+_secondary_line_start_hi .dsb 1
+
+*/
+
 effect_index .dsb 1,0 ;used as a parameter to determine which row/column to process
 temp_effect_char .dsb 1,0 ;used for temporary storage for wrapping characters when scrolling
 _temp_effect_char .dsb 1,0;used for temporary storage in inner loop for wrapping characters when scrolling 
 effect_temp .dsb 1,0 ; used to keep count of the number of iterations for repeated operations
 inner_effect_temp .dsb 1,0 ; used to keep count of the number of iterations for repeated operations
 _temp_row_index .dsb 1,0; used to store row index on routines when scrolling columns up or down
+_temp_row_data .byt 40,0; used to store the contents of an entire row of character data
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -587,6 +617,148 @@ shredScreenDown
 
 ;; TODO: wrapScreenUp; wrapScreenDown
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _scrollScreenUp: scrolls entire screen 1 position up. The
+; characters in the top position will appear on the bottom
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+_scrollScreenUp
+.(
+  ; copy 1st row into buffer
+  ldy #0
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+
+  ldy #2
+  copyFirstLineLoop
+  lda (_line_start),Y
+  sta _temp_row_data,y
+  iny
+  cpy #38
+  bne copyFirstLineLoop
+
+  ; copy rest of the rows up
+  ldy #1
+  sty _temp_row_index
+
+  copyAllLinesLoop
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+  dey
+  lda ScreenLineLookupLo,Y
+  sta _secondary_line_start_lo
+  lda ScreenLineLookupHi,Y
+  sta _secondary_line_start_hi
+  iny
+  iny
+  sty _temp_row_index
+
+  ldy #2
+  copyCharsInLineLoop
+  lda (_line_start),Y
+  sta (_secondary_line_start),Y
+  iny
+  cpy #39
+  bne copyCharsInLineLoop
+
+  ldy _temp_row_index
+  cpy #27
+  bne copyAllLinesLoop
+
+  ;copy data from buffer onto last row
+  ldy #26
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,Y
+  sta _line_start_hi
+
+  ldy #2
+  plotLastRow
+  lda _temp_row_data,Y
+  sta (_line_start),Y
+  iny
+  cpy #38
+  bne plotLastRow
+
+  rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _scrollScreenDown: scrolls entire screen 1 position down. The
+; characters in the bottom position will appear on the top
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+_scrollScreenDown
+.(
+  ; copy last row into buffer
+  ldy #26
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+
+  ldy #2
+  copyLastLineLoop
+  lda (_line_start),Y
+  sta _temp_row_data,y
+  iny
+  cpy #38
+  bne copyLastLineLoop
+
+  ; copy rest of the rows down
+  ldy #25
+  sty _temp_row_index
+
+  copyAllLinesLoop
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,y
+  sta _line_start_hi
+  iny
+  lda ScreenLineLookupLo,Y
+  sta _secondary_line_start_lo
+  lda ScreenLineLookupHi,Y
+  sta _secondary_line_start_hi
+  dey
+  dey
+  sty _temp_row_index
+
+  ldy #2
+  copyCharsInLineLoop
+  lda (_line_start),Y
+  sta (_secondary_line_start),Y
+  iny
+  cpy #39
+  bmi copyCharsInLineLoop
+
+  ldy _temp_row_index
+  cpy #$ff
+  bne copyAllLinesLoop
+
+  ;copy data from buffer onto 1st row
+  ldy #0
+  lda ScreenLineLookupLo,Y
+  sta _line_start_lo
+  lda ScreenLineLookupHi,Y
+  sta _line_start_hi
+
+  ldy #2
+  plotFirstRow
+  lda _temp_row_data,Y
+  sta (_line_start),Y
+  iny
+  cpy #38
+  bne plotFirstRow
+
+  rts
+.)
 
 ;;TODO : write program to search for bitmap data
 

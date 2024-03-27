@@ -80,6 +80,9 @@ _plot_ascii .dsb 1
 _line_start
 _line_start_lo .dsb 1
 _line_start_hi .dsb 1
+_secondary_line_start
+_secondary_line_start_lo .dsb 1
+_secondary_line_start_hi .dsb 1
 
 
 trail_data_player_1
