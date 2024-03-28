@@ -60,8 +60,8 @@ Keyboard mapper
 
 
 KNOWN ISSUES
-Keyboard not as responsive as I would like (add keys as parameters to player data and only
-lookup the keys required, rather than doing a full scan)
+~~Keyboard not as responsive as I would like (add keys as parameters to player data and only
+lookup the keys required, rather than doing a full scan)~~
 
 IDEAS/ TODOS
 Score (length or time survived)
@@ -70,6 +70,6 @@ Leave no trail for next x moves
 Add obstacles
 Remove obstacles
 Explode other player
-Jump x places in a direction
+~~Jump x places in a direction~~
 Draw lines into area (vert or horizontal or both)
 Collectables (collect in order?)

@@ -30,6 +30,8 @@ runKeyboardMapper
 
   jsr highlightSelectedRow
 
+  jsr setAllKeysActive
+
   loop
     ldy #4
     lda _KeyMatrix,y
@@ -90,6 +92,7 @@ runKeyboardMapper
     bne quit
     jmp loop
     quit
+    jsr setupStartScreenActiveKeys
     jsr keyDelay
     rts
 

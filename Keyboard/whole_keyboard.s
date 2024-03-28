@@ -1,6 +1,5 @@
 ; This code was from Dhbug after reading the following article on the Oric forums
-; https://osdk.org/index.php?page=articles&ref=ART20
-
+; ./os./
 ; The original code can be found here: https://github.com/Oric-Software-Development-Kit/Keyboard-FullMatrix
 
 ; I've made a couple of small modifications so that the standard RTI addresses can
@@ -52,6 +51,13 @@ tmprow				.dsb 1
 _KeyMatrix            .dsb 4     ; The virtual Key Matrix (top half)
 _KeyRowArrows         .dsb 4     ; The virtual Key Matrix (bottom half starting on the row with the arrows and the space bar)
 _KeyCapsLock          .byt 1     ; By default we use CAPS letter (only acceptable values are 0 and 1)
+
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;Simozzer: Modifications
+_KeysToScanMatrix     .dsb 8     ; Used to determine which keys to scan
+_tempRowData           .dsb 1    ; used to temporarily store a byte from the _KeysToScanMatrix
+_KeyToScanRowData      .dsb 1    ; used to temporarily store the data for a key being scanned within loop_column
+;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 ; Regarding SHIFT and CAPS LOCK:
 ; - SHIFT does impact all the keys (letters, symbols, numbers)
@@ -202,6 +208,17 @@ loop_row   ;Clear relevant bank
     lda #00 
     sta _KeyMatrix,x 
 
+    ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    ;Simozzer- modification
+    ; Check to see if we need to scan any of the keys on the row
+    lda _KeysToScanMatrix,X
+    cmp #00
+    beq skip2
+    sta _temp_row_data
+    ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    lda #00
+
     ; Write 0 to Column Register 
 
     sta via_porta 
@@ -234,8 +251,19 @@ loop_row   ;Clear relevant bank
 
     ; Store Column 
     tya
-loop_column   
-    eor #$FF 
+loop_column  
+    eor #$FF
+    
+    ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    ;Simozzer- modification
+    ; Check to see if this key is one we want to scan
+    sta _KeyToScanRowData
+    eor #$ff
+    and _temp_row_data
+    beq skip1
+    lda _KeyToScanRowData
+    ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
     sta via_porta 
     lda #$fd 

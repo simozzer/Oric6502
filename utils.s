@@ -39,7 +39,6 @@ Loop
 ;// Copy memory (could be further opitimised using comments from dhbug)
 ; ------------------------------------------------------------------------------
 CopyMemory 
-
     ldx _copy_mem_src_lo          
     stx LoadSourceByte+1                      
     ldx _copy_mem_src_hi                        

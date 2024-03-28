@@ -11,6 +11,8 @@ StartProg
     
     jsr setupDefaultKeys
 
+    jsr setupStartScreenActiveKeys
+
     ; enable the tracker interupt but start with music disabled
     lda #1
     sta _tracker_running;
@@ -55,6 +57,7 @@ startagain
     jsr SetInk
     lda #0
     sta _player_animation_index
+    jsr setupStartScreenActiveKeys
 
     //setup player 1
     SETUP
@@ -472,10 +475,12 @@ waitToStart
     startGame
 
     jsr initTrailMemory
+    jsr setGameKeysActive
     lda #GAME_MODE_RUNNING
     sta _game_mode
     jsr renderGameArea
     jsr shredScreenHorizontal
+    
     rts
 
     checkS
