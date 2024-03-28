@@ -107,6 +107,10 @@ _InitIRQ
     ;I've set this to 50Hz for my purposes. This allows
     ; for more regular calls to the Tracker interupt which I use on RTI.
     ; This will allow for more granular timing when adding sound effects
+    ; NB: The background music and sound effects also use this interupt 
+    ; handler. If the value here is altered then you should also
+    ; change the value for TRACKER_STEP_LENGTH to keep the
+    ; music ruuning at an appropriate speed!!!
     lda #<20000
     sta via_t1ll 
     lda #>20000

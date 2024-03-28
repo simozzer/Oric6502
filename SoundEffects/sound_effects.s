@@ -29,7 +29,7 @@ triggerSoundEffect
     
     ; disable music playback on channel 3 and the noise channel 
     ; so that we can play a sound effect on those whilst the music runs
-    jsr silenceForEffect
+    jsr _silenceEffect
     
     ; restore any previously established sound parameters
     jsr restoreSoundParams
@@ -50,13 +50,12 @@ triggerSoundEffect
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; silenceForEffect: silence tone channel 3 and noise channel, 
-; as music may be playing. This will free up the channels for playing 
-; a sound effect
+; _silenceEffect: silence tone channel 3 and noise channel, called when
+; an effect finishes.
 ; Params: none
 ; Returns: null
 ; -------------------------------------------------------------------
-silenceForEffect
+_silenceEffect
 .(
     ; silence channel 3
     jsr WipeParams
@@ -92,29 +91,36 @@ silenceForEffect
 
 ; lookup table for jumps to the sound effect routines
 _sound_effect_routines
-    .word playSoundEffectEraser
-    .word playSoundEffectBlackHole
-    .word playSoundEffectDeath
-    .word playSoundEffectSlowRise
-    .word playSoundEffectMediumRise 
-    .word playSoundEffectFastRise
-    .word playSoundEffectBlipRise
-    .word playSoundEffectSlowFall
-    .word playSoundEffectMediumFall
-    .word playSoundEffectFastFall
-    .word playSoundEffectBlipFall
+    .word _playSoundEffectEraser
+    .word _playSoundEffectBlackHole
+    .word _playSoundEffectDeath
+    .word _playSoundEffectSlowRise
+    .word _playSoundEffectMediumRise 
+    .word _playSoundEffectFastRise
+    .word _playSoundEffectBlipRise
+    .word _playSoundEffectSlowFall
+    .word _playSoundEffectMediumFall
+    .word _playSoundEffectFastFall
+    .word _playSoundEffectBlipFall
 
 
 
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; playSoundEffects: jump to the appopriate routine to play a section
-; of a specified sound effect
+; of a specified sound effect.
+; This is called from within trackerInterrupt (in tracker_interrupt.s)
 ; Params: _sound_effect_id - the id of the sound effect to be 
 ; executed
 ; Returns: null
 ; -------------------------------------------------------------------
 playSoundEffects
 .(
+    lda _sound_effect_cycles_remaining
+    cmp #01
+    bne play
+    jsr _silenceEffect
+    rts
+    play
     lda _sound_effect_id
     asl
     tay
@@ -128,15 +134,15 @@ playSoundEffects
     rts
 .)
 
-playSoundEffectEraser
-.(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-    play
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectEraser: play a short rising tone mixed with noise
+; which also increases in pitch. 
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+_playSoundEffectEraser
+.(
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -148,7 +154,6 @@ playSoundEffectEraser
     lda #10
     sta PARAMS_5
     jsr independentSound
-
 
     jsr WipeParams
     lda #06
@@ -169,18 +174,17 @@ playSoundEffectEraser
     jsr independentPlay
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-
-playSoundEffectBlackHole
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectBlackHole: play a short falling tone mixed with noise
+; which decreases in pitch. 
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+_playSoundEffectBlackHole
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-    play
-
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -215,18 +219,17 @@ playSoundEffectBlackHole
     jsr independentPlay
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-// similar to explode
-playSoundEffectDeath
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectDeath: play a burst of random white noise(which is 
+; similar to explode)
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
+_playSoundEffectDeath
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-    
-    play
     jsr WipeParams
     lda #06
     sta PARAMS_1;
@@ -250,16 +253,17 @@ playSoundEffectDeath
     jsr independentPlay
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-playSoundEffectSlowRise
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectSlowRise: play a series of notes which slowly rise in
+; pitch
+; Params: none
+; Returns: null
+; ------------------------------------------------------------------
+_playSoundEffectSlowRise
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-
-    play
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -272,17 +276,17 @@ playSoundEffectSlowRise
     jsr independentSound
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-playSoundEffectMediumRise
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectMediumRise: play a series of notes which rise in pitch at
+; a medium rate
+; Params: none
+; Returns: null
+; ------------------------------------------------------------------
+_playSoundEffectMediumRise
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-
-    play
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -297,16 +301,17 @@ playSoundEffectMediumRise
     jsr independentSound
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-playSoundEffectFastRise
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectFastRise: play a series of notes which rise in pitch at
+; a fast rate
+; Params: none
+; Returns: null
+; ------------------------------------------------------------------
+_playSoundEffectFastRise
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-
-    play
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -322,17 +327,18 @@ playSoundEffectFastRise
     jsr independentSound
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-playSoundEffectBlipRise
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectBlipRise: play a series of notes which rise in pitch at
+; a very fast rate
+; Params: none
+; Returns: null
+; ------------------------------------------------------------------
+_playSoundEffectBlipRise
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-
-    play
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -350,42 +356,18 @@ playSoundEffectBlipRise
 
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-playSoundEffectSlowFall
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectSlowFall: play a series of notes which fall in pitch at
+; a slow rate
+; Params: none
+; Returns: null
+; ------------------------------------------------------------------
+_playSoundEffectSlowFall
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-
-    play
-    jsr WipeParams
-    lda #03
-    sta PARAMS_1
-    clc
-    lda #32
-    sbc _sound_effect_cycles_remaining
-    tay
-    lda slidePitchData,y
-    sta PARAMS_4
-    sta PARAMS_3
-    lda #12
-    sta PARAMS_5
-    jsr independentSound
-    rts
-.)
-
-
-playSoundEffectMediumFall
-.(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-
-    play
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -394,7 +376,6 @@ playSoundEffectMediumFall
     sbc _sound_effect_cycles_remaining
     tay
     lda slidePitchData,y
-    asl
     sta PARAMS_4
     sta PARAMS_3
     lda #12
@@ -402,17 +383,18 @@ playSoundEffectMediumFall
     jsr independentSound
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-playSoundEffectFastFall
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectMediumFall: play a series of notes which fall in pitch at
+; a medium rate
+; Params: none
+; Returns: null
+; ------------------------------------------------------------------
+_playSoundEffectMediumFall
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-
-    play
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -422,7 +404,6 @@ playSoundEffectFastFall
     tay
     lda slidePitchData,y
     asl
-    asl
     sta PARAMS_4
     sta PARAMS_3
     lda #12
@@ -430,16 +411,18 @@ playSoundEffectFastFall
     jsr independentSound
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-playSoundEffectBlipFall
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectFastFall: play a series of notes which fall in pitch at
+; a fast rate
+; Params: none
+; Returns: null
+; ------------------------------------------------------------------
+_playSoundEffectFastFall
 .(
-    lda _sound_effect_cycles_remaining
-    cmp #01
-    bne play
-    jsr silenceForEffect
-    rts
-
-    play
     jsr WipeParams
     lda #03
     sta PARAMS_1
@@ -450,6 +433,35 @@ playSoundEffectBlipFall
     lda slidePitchData,y
     asl
     asl
+    sta PARAMS_4
+    sta PARAMS_3
+    lda #12
+    sta PARAMS_5
+    jsr independentSound
+    rts
+.)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; _playSoundEffectBlipFall: play a series of notes which fall in pitch at
+; a very fast rate
+; Params: none
+; Returns: null
+; ------------------------------------------------------------------
+_playSoundEffectBlipFall
+.(
+    jsr WipeParams
+    lda #03
+    sta PARAMS_1
+    clc
+    lda #32
+    sbc _sound_effect_cycles_remaining
+    tay
+    lda slidePitchData,y
+    asl
+    asl
     asl
     sta PARAMS_4
     sta PARAMS_3
@@ -458,9 +470,11 @@ playSoundEffectBlipFall
     jsr independentSound
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 
+; Data used for note pitch for the 'fall' and 'rise' sound effects
 :slidePitchData
 .byt 16,24,32,40,48,56,64,72,80
 .byt 88,96,104,112,120,128,136,144,152,160
