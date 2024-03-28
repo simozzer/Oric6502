@@ -1,94 +1,61 @@
-; disable music playback on channel 3 and the noise channel 
-; so that we can play a sound effect on those whilst the music runs
-; TODO:: setting up the length would be better with a simple lookup table
+; lookup table for lengths of each sound effect
+_sound_effect_lengths 
+    .byt SOUND_EFFECT_LENGTH_ERASER
+    .byt SOUND_EFFECT_LENGTH_BLACK_HOLE
+    .byt SOUND_EFFECT_LENGTH_DEATH
+    .byt SOUND_EFFECT_LENGTH_SLOW_RISE
+    .byt SOUND_EFFECT_LENGTH_MEDIUM_RISE
+    .byt SOUND_EFFECT_LENGTH_FAST_RISE
+    .byt SOUND_EFFECT_LENGTH_BLIP_RISE
+    .byt SOUND_EFFECT_LENGTH_SLOW_FALL
+    .byt SOUND_EFFECT_LENGTH_MEDIUM_FALL
+    .byt SOUND_EFFECT_LENGTH_FAST_FALL
+    .byt SOUND_EFFECT_LENGTH_BLIP_FALL
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; triggerSoundEffect: start a sound effect running by setting the
+; _sound_effect_cycles_remaining to an appropriate length
+; for the specified sound effect.
+; Params: _sound_effect_id - the id of the effect to be triggered
+; Returns: null
+; -------------------------------------------------------------------
 triggerSoundEffect
 .(
+    ; disable the interrupt handler which might be running music or doing something with the sound
     sei
+
+    ; Make a copy of any parameters that might be being used for sound
     jsr copySoundParams
+    
+    ; disable music playback on channel 3 and the noise channel 
+    ; so that we can play a sound effect on those whilst the music runs
     jsr silenceForEffect
+    
+    ; restore any previously established sound parameters
     jsr restoreSoundParams
 
-    lda _sound_effect_id
-    cmp #SOUND_EFFECT_ERASER
-    bne n1
-    lda #SOUND_EFFECT_LENGTH_ERASER
-    sta _sound_effect_cycles_remaining
-
-    n1 
-    cmp #SOUND_EFFECT_BLACK_HOLE
-    bne n2
-    lda #SOUND_EFFECT_LENGTH_BLACK_HOLE
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n2
-    cmp #SOUND_EFFECT_DEATH
-    bne n3
-    lda #SOUND_EFFECT_LENGTH_DEATH
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n3 
-    cmp #SOUND_EFFECT_SLOW_RISE
-    bne n4
-    lda #SOUND_EFFECT_LENGTH_SLOW_RISE
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n4 
-    cmp #SOUND_EFFECT_MEDIUM_RISE
-    bne n5
-    lda #SOUND_EFFECT_LENGTH_MEDIUM_RISE
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n5
-    cmp #SOUND_EFFECT_FAST_RISE
-    bne n6
-    lda #SOUND_EFFECT_LENGTH_FAST_RISE
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n6
-    cmp #SOUND_EFFECT_BLIP_RISE
-    bne n7
-    lda #SOUND_EFFECT_LENGTH_BLIP_RISE
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n7 
-    cmp #SOUND_EFFECT_SLOW_FALL
-    bne n8
-    lda #SOUND_EFFECT_LENGTH_SLOW_FALL
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n8
-    cmp #SOUND_EFFECT_MEDIUM_FALL
-    bne n9
-    lda #SOUND_EFFECT_LENGTH_MEDIUM_FALL
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n9
-    cmp #SOUND_EFFECT_FAST_FALL
-    bne n10
-    lda #SOUND_EFFECT_LENGTH_FAST_FALL
-    sta _sound_effect_cycles_remaining
-    jmp done
-
-    n10
-    cmp #SOUND_EFFECT_BLIP_FALL
-    bne done
-    lda #SOUND_EFFECT_LENGTH_BLIP_FALL
+    ; lookup the length for the triggered sound, from the table above, 
+    ; and store value in _sound_effect_cycles_remaining
+    ldy _sound_effect_id
+    lda _sound_effect_lengths,Y
     sta _sound_effect_cycles_remaining
 
     :done
+
+    ; reenable the interupt handler
     cli
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; silenceForEffect: silence tone channel 3 and noise channel, 
+; as music may be playing. This will free up the channels for playing 
+; a sound effect
+; Params: none
+; Returns: null
+; -------------------------------------------------------------------
 silenceForEffect
 .(
     ; silence channel 3
@@ -107,7 +74,6 @@ silenceForEffect
     sta PARAMS_1
     lda #00
     sta PARAMS_3
-    lda #00
     sta PARAMS_5
     jsr independentSound
 
@@ -121,76 +87,44 @@ silenceForEffect
     jsr independentPlay
     rts
 .)
+; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+; lookup table for jumps to the sound effect routines
+_sound_effect_routines
+    .word playSoundEffectEraser
+    .word playSoundEffectBlackHole
+    .word playSoundEffectDeath
+    .word playSoundEffectSlowRise
+    .word playSoundEffectMediumRise 
+    .word playSoundEffectFastRise
+    .word playSoundEffectBlipRise
+    .word playSoundEffectSlowFall
+    .word playSoundEffectMediumFall
+    .word playSoundEffectFastFall
+    .word playSoundEffectBlipFall
+
+
+
+; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; playSoundEffects: jump to the appopriate routine to play a section
+; of a specified sound effect
+; Params: _sound_effect_id - the id of the sound effect to be 
+; executed
+; Returns: null
+; -------------------------------------------------------------------
 playSoundEffects
 .(
     lda _sound_effect_id
-    cmp #SOUND_EFFECT_ERASER
-    beq p1
-    cmp #SOUND_EFFECT_BLACK_HOLE
-    beq p2
-    cmp #SOUND_EFFECT_DEATH
-    beq p3
-    cmp #SOUND_EFFECT_SLOW_RISE
-    beq p4
-    cmp #SOUND_EFFECT_MEDIUM_RISE
-    beq p5
-    cmp #SOUND_EFFECT_FAST_RISE
-    beq p6
-    cmp #SOUND_EFFECT_BLIP_RISE
-    beq p7
-    cmp #SOUND_EFFECT_SLOW_FALL
-    beq p8
-    cmp #SOUND_EFFECT_MEDIUM_FALL
-    beq p9
-    cmp #SOUND_EFFECT_FAST_FALL
-    beq p10
-    cmp #SOUND_EFFECT_BLIP_FALL
-    beq p11
-    rts
-
-    p1
-    jsr playSoundEffectEraser
-    rts
-
-    p2
-    jsr playSoundEffectBlackHole
-    rts
-
-    p3 
-    jsr playSoundEffectDeath
-    rts
-
-    p4
-    jsr playSoundEffectSlowRise
-    rts
-
-    p5 
-    jsr playSoundEffectMediumRise
-    rts
-
-    p6 
-    jsr playSoundEffectFastRise
-    rts
-
-    p7
-    jsr playSoundEffectBlipRise
-    rts
-
-    p8
-    jsr playSoundEffectSlowFall
-    rts
-
-    p9 
-    jsr playSoundEffectMediumFall
-    rts
-
-    p10 
-    jsr playSoundEffectFastFall
-    rts
-
-    p11
-    jsr playSoundEffectBlipFall
+    asl
+    tay
+    lda _sound_effect_routines,y
+    sta jumpToSoundEffect+1
+    iny
+    lda _sound_effect_routines,Y
+    sta jumpToSoundEffect+2
+    :jumpToSoundEffect   
+    jsr $ffff; This value is self modified
     rts
 .)
 
@@ -323,15 +257,6 @@ playSoundEffectSlowRise
     cmp #01
     bne play
     jsr silenceForEffect
-
-    ;silence noise
-    jsr WipeParams
-    lda #06
-    sta PARAMS_1
-    lda #00
-    sta PARAMS_3
-    sta PARAMS_5
-    jsr independentSound
     rts
 
     play
@@ -355,15 +280,6 @@ playSoundEffectMediumRise
     cmp #01
     bne play
     jsr silenceForEffect
-
-    ;silence noise
-    jsr WipeParams
-    lda #06
-    sta PARAMS_1
-    lda #00
-    sta PARAMS_3
-    sta PARAMS_5
-    jsr independentSound
     rts
 
     play
@@ -388,15 +304,6 @@ playSoundEffectFastRise
     cmp #01
     bne play
     jsr silenceForEffect
-
-    ;silence noise
-    jsr WipeParams
-    lda #06
-    sta PARAMS_1
-    lda #00
-    sta PARAMS_3
-    sta PARAMS_5
-    jsr independentSound
     rts
 
     play
@@ -423,15 +330,6 @@ playSoundEffectBlipRise
     cmp #01
     bne play
     jsr silenceForEffect
-
-    ;silence noise
-    jsr WipeParams
-    lda #06
-    sta PARAMS_1
-    lda #00
-    sta PARAMS_3
-    sta PARAMS_5
-    jsr independentSound
     rts
 
     play
@@ -459,15 +357,6 @@ playSoundEffectSlowFall
     cmp #01
     bne play
     jsr silenceForEffect
-
-    ;silence noise
-    jsr WipeParams
-    lda #06
-    sta PARAMS_1
-    lda #00
-    sta PARAMS_3
-    sta PARAMS_5
-    jsr independentSound
     rts
 
     play
@@ -494,15 +383,6 @@ playSoundEffectMediumFall
     cmp #01
     bne play
     jsr silenceForEffect
-
-    ;silence noise
-    jsr WipeParams
-    lda #06
-    sta PARAMS_1
-    lda #00
-    sta PARAMS_3
-    sta PARAMS_5
-    jsr independentSound
     rts
 
     play
@@ -530,15 +410,6 @@ playSoundEffectFastFall
     cmp #01
     bne play
     jsr silenceForEffect
-
-    ;silence noise
-    jsr WipeParams
-    lda #06
-    sta PARAMS_1
-    lda #00
-    sta PARAMS_3
-    sta PARAMS_5
-    jsr independentSound
     rts
 
     play
@@ -566,15 +437,6 @@ playSoundEffectBlipFall
     cmp #01
     bne play
     jsr silenceForEffect
-
-    ;silence noise
-    jsr WipeParams
-    lda #06
-    sta PARAMS_1
-    lda #00
-    sta PARAMS_3
-    sta PARAMS_5
-    jsr independentSound
     rts
 
     play
@@ -596,6 +458,7 @@ playSoundEffectBlipFall
     jsr independentSound
     rts
 .)
+
 
 
 :slidePitchData

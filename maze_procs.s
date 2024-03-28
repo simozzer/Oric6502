@@ -112,7 +112,7 @@ plotStuff
     jsr plotRandomArrows
     jsr plotRandomErasers
     jsr plotRandomBlocks
-    ;jsr plot_inner_walls  ; TODO check why this hangs
+    jsr plot_inner_walls
     jsr plotRandomSlowSigns
     jsr plotRandomFastSigns
     
@@ -397,7 +397,7 @@ plotRandomArrows
         beq done
         jsr _GetRand
         lda rand_low
-        cmp #245
+        cmp #240
         bcs skip
         adc #08
         sta _plot_ch_x

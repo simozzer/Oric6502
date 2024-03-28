@@ -121,7 +121,7 @@ addTrailItem
   rts
 .)
 
-; TODO:: investigate why this sometimes produces unexpected results
+
 eraseTrail
 .(
   ;setup pointers to the lists containing the trail memory 
