@@ -1,4 +1,14 @@
 // 8 bars of music data (for 3 channels, each word uses the format described above)
+// To produce some new music please use FourBar (https://github.com/simozzer/FourBar)
+// this allows you to create 8 bars of music. 
+// The way I thenk get the music data into the correct format is to use Oricutron then, in FourBar,
+// I usee the 'Save' function to copy the data to a known area of memory. The data can then
+// be dumped to a file using using the Oricutron Monitor with the command 
+// 'fw $9000 $300 musicdata'. I then use Windows Powershell to get the data as
+// a text file with the command 'format-hex musicdata > musicdata.txt'.  Next up
+// edit the text file in a text editor to produce the data in the correct format.
+// This process is a bit long-winded, I know, but it works for me.
+// There is probably a better way of doing this.
 trackerMusicData
 .byt $25,$06,$00,$00,$01,$8B,$25,$86,$00,$00,$00,$00,$38,$05,$21,$07
 .byt $76,$94,$38,$85,$00,$00,$00,$00,$00,$00,$00,$00,$02,$8B,$38,$05
@@ -49,6 +59,8 @@ trackerMusicData
 .byt $76,$84,$53,$07,$21,$07,$00,$00,$00,$00,$00,$00,$02,$8B,$51,$07
 .byt $21,$07,$00,$00,$00,$07,$21,$87,$76,$84,$41,$07,$21,$07,$00,$00
 
+
+// Lookup tables for finding each step of the sequence
 trackerMusicDataLo
     ;bar 0
     .byt <trackerMusicData+0,<trackerMusicData+6,<trackerMusicData+12,<trackerMusicData+18
@@ -134,18 +146,27 @@ trackerMusicDataHi
     .byt >trackerMusicData+744,>trackerMusicData+750,>trackerMusicData+756,>trackerMusicData+762    
 
 
+// A small lookup table for the first note in each bar
 trackerBarStartLookup
 .byt 0,16,32,48,64,80,96,112,128
 
+// This is used as a temporary buffer for preserving any sound params when an interupt is executed
 soundParamCopyBuffer
 .byt 00,00,00,00,00,00,00,00,00
 
+// The sequence in which the bars are to be played. Each bye is the index of a bar. The sequence 
+// is terminated with $ff. When $ff is read the song restarts at the beginning of the sequence.
 barSequenceData
 .byt 00,01,02,03,04,05,06,07,$ff
 
+
+// There are 7 possible tones available in the noise channel, which is used for percussive sounds.
+// This small table determines the pitch for each tone 
 noisePitchLookup
 .byt 4,8,12,16,20,24,28
 
+// There are 7 possible tones available in the noise channel, which is used for percussive sounds.
+// This small table determines the volume for each tone 
 noiseVolumeLookup
 .byt 8,8,8,8,8,8,8
 
