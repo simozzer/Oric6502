@@ -824,3 +824,18 @@ _effectDelay
     rts    
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+shake
+.(
+  jsr _scrollScreenLeft
+  jsr _scrollScreenUp
+  jsr _scrollScreenRight  
+  jsr _scrollScreenDown
+
+  jsr _scrollScreenUp
+  jsr _scrollScreenLeft
+  jsr _scrollScreenDown  
+  jsr _scrollScreenRight
+  rts
+.)
