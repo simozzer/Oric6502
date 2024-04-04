@@ -39,6 +39,46 @@ _player2_trail_data_char_hi .dsb 1
 _player2_trail_index .dsb 1
 _player2_char_code .dsb 1
 
+player3_data
+_player3_id .dsb 1
+_player3_x .dsb 1
+_player3_y .dsb 1
+_player3_direction .dsb 1
+_player3_effect_type .dsb 1
+_player3_effect_cycles_remaining .dsb 1
+_player3_trail_data
+_player3_trail_data_x
+_player3_trail_data_x_lo .dsb 1
+_player3_trail_data_x_hi .dsb 1
+_player3_trail_data_y
+_player3_trail_data_y_lo .dsb 1
+_player3_trail_data_y_hi .dsb 1
+_player3_trail_data_char
+_player3_trail_data_char_lo .dsb 1
+_player3_trail_data_char_hi .dsb 1
+_player3_trail_index .dsb 1
+_player3_char_code .dsb 1
+
+player4_data
+_player4_id .dsb 1
+_player4_x .dsb 1
+_player4_y .dsb 1
+_player4_direction .dsb 1
+_player4_effect_type .dsb 1
+_player4_effect_cycles_remaining .dsb 1
+_player4_trail_data
+_player4_trail_data_x
+_player4_trail_data_x_lo .dsb 1
+_player4_trail_data_x_hi .dsb 1
+_player4_trail_data_y
+_player4_trail_data_y_lo .dsb 1
+_player4_trail_data_y_hi .dsb 1
+_player4_trail_data_char
+_player4_trail_data_char_lo .dsb 1
+_player4_trail_data_char_hi .dsb 1
+_player4_trail_index .dsb 1
+_player4_char_code .dsb 1
+
 
 processKeyboardPlayer1
 .(
