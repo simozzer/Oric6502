@@ -369,9 +369,8 @@ _shredScreenHorizontal
   adc #01
   sta _max_row_index
 
-  lda screen_area_left
-  sec
-  sbc #02
+  ;calculate number of horizonal iterations
+  lda #00
   sta effect_temp
 
   screenLoop
