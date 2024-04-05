@@ -221,14 +221,19 @@ _scrollRowRight
 ; Params: none
 ; Returns: null
 ; -------------------------------------------------------------------
+_scroll_left_max_index .byt 1
 _scrollScreenLeft
 .(
-  ldx screen_area_top
+  lda screen_area_top
+  tax
+  clc
+  adc screen_area_height
+  sta _scroll_left_max_index
   loop
   stx effect_index
   jsr _scrollRowLeft
   inx
-  cpx screen_area_height
+  cpx _scroll_left_max_index
   bne loop
   rts
 .)
@@ -242,14 +247,19 @@ _scrollScreenLeft
 ; Params: none
 ; Returns: null
 ; -------------------------------------------------------------------
+_scroll_right_max_index .byt 1
 _scrollScreenRight
 .(
-  ldx screen_area_top
+  lda screen_area_top
+  tax
+  clc
+  adc screen_area_height
+  sta _scroll_right_max_index
   loop
   stx effect_index
   jsr _scrollRowRight
   inx
-  cpx screen_area_height
+  cpx _scroll_right_max_index
   bne loop
   rts
 .)
@@ -265,7 +275,7 @@ _scrollScreenRight
 ; -------------------------------------------------------------------
 _wrapScreenLeft
 .(
-  lda screen_area_top
+  lda #0
   sta effect_temp
   tay
   loop
@@ -310,18 +320,22 @@ _wrapScreenRight
 ; original state
 ; Returns: null
 ; -------------------------------------------------------------------
+_end_shred_index .byt 1
 _shredScreenLeft
 .(
 
 
   lda screen_area_top
   sta effect_index
+  clc
+  adc screen_area_height
+  sta _end_shred_index
   loop
   jsr _wrapRowLeft
   inc effect_index
 
   lda effect_index
-  cmp screen_area_height
+  cmp _end_shred_index
   bne loop
 
   rts
@@ -337,14 +351,17 @@ _shredScreenLeft
 ; -------------------------------------------------------------------
 _shredScreenRight
 .(
-  lda #0
+  lda screen_area_top
   sta effect_index
+  clc
+  adc screen_area_height
+  sta _end_shred_index
   loop
   jsr _wrapRowRight
   inc effect_index
 
   lda effect_index
-  cmp #27
+  cmp _end_shred_index
   bne loop
 
   rts
@@ -361,13 +378,18 @@ _shredScreenRight
 ; Returns: null
 ; -------------------------------------------------------------------
 _max_row_index .byt 1
+_max_row_index_less_one .byt 1
 _shredScreenHorizontal
 .(
   ; calculate max row index
   lda screen_area_height
   clc
   adc #01
+  adc screen_area_top
   sta _max_row_index
+  sec
+  sbc #01
+  sta _max_row_index_less_one
 
   ;calculate number of horizonal iterations
   lda #00
@@ -382,7 +404,7 @@ _shredScreenHorizontal
   jsr _scrollRowLeft
   inc effect_index
   lda effect_index
-  cmp screen_area_height
+  cmp _max_row_index_less_one
   beq linesDone
   jsr _scrollRowRight
   inc effect_index
