@@ -24,12 +24,10 @@ clearStatusLine
     lda #32
 .(
 Loop
-    cpy #38 ;
-    beq ExitClear                        
-    sta $BB82,Y                     
-    iny                             
-    jmp Loop
-    ExitClear 
+    sta $BB82,Y
+    iny
+    cpy #38
+    bne Loop
     rts
 .)
 ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -118,8 +116,7 @@ smallDelay
     cpy #00
     Bne loop
     dex
-    cpx #00 
-    bpl outer_loop
+    bne outer_loop
     pla
     tax
     rts    
@@ -147,7 +144,6 @@ bigDelay
     cpy #00
     Bne loop
     dex
-    cpx #00 
     bne outer_loop
 
     pla
@@ -178,8 +174,7 @@ keyDelay
     Bne loop
     dex
     cpx #00 
-    bne outer_loop
-
+    
     pla
     tax
     rts    
